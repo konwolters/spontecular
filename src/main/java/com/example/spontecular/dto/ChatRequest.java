@@ -22,5 +22,5 @@ public class ChatRequest {
         this.messages.add(new Message("user", prompt));
     }
 
-    https://www.baeldung.com/spring-boot-chatgpt-api-openai
+    //https://www.baeldung.com/spring-boot-chatgpt-api-openai
 }
