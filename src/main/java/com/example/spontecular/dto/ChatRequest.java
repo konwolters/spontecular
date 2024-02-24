@@ -1,5 +1,6 @@
 package com.example.spontecular.dto;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,19 +9,15 @@ import java.util.List;
 
 @Getter
 @Setter
+@Builder
 public class ChatRequest {
 
     private String model;
     private List<Message> messages;
     private int n;
     private double temperature;
+    private String response_format;
 
-    public ChatRequest(String model, String prompt) {
-        this.model = model;
-        
-        this.messages = new ArrayList<>();
-        this.messages.add(new Message("user", prompt));
-    }
 
     //https://www.baeldung.com/spring-boot-chatgpt-api-openai
 }
