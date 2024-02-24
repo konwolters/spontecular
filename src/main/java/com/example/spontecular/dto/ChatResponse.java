@@ -3,6 +3,7 @@ package com.example.spontecular.dto;
 import java.util.List;
 
 public class ChatResponse {
+    String system_fingerprint;
 
     private List<Choice> choices;
 
