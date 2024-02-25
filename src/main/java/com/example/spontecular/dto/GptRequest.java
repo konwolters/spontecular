@@ -3,20 +3,20 @@ package com.example.spontecular.dto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @Setter
 @Builder
-public class ChatRequest {
+@ToString
+public class GptRequest {
 
     private String model;
-    private List<Message> messages;
-    private int n;
+    private List<GptMessage> messages;
     private double temperature;
-    private String response_format;
+    private ResponseFormat response_format;
 
 
     //https://www.baeldung.com/spring-boot-chatgpt-api-openai
