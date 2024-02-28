@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div class="col-6 px-3" th:fragment="extractionField">
+    <h5 th:value="${fieldTitle}"></h5>
+    <div class="position-relative">
+    <textarea id="jsonInput" class="form-control" th:text="${gptResponseMessage}" rows="5" readonly
+              style="overflow-y: auto;">
+    </textarea>
+    <button type="button" class="btn btn-light py-1 position-absolute end-0 top-0 mt-1 me-3" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        <i class="bi bi-box-arrow-up-right"></i>
+    </button>
+</div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel" th:value="${modalTitle}"></h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="modal-body">
+                    <textarea id="modalInput" class="form-control" th:text="${gptResponseMessage}" rows="30"
+                              style="overflow-y: auto;"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="saveButton">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
