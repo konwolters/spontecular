@@ -26,10 +26,7 @@ public class GptController {
     @Value("${PROMPT.AXIOMS}")
     private String promptConstraints;
 
-    @PostMapping("/getClasses")
-    public String getResponse(@RequestParam String inputText, Model model, HttpSession session) {
-        //String gptResponseMessage = gptService.getGptResponseMessage(inputText, promptClasses);
-        String gptResponseMessage = """
+    String gptResponseMessage = """
                 {
                   "class": "LivingThing",
                   "subclasses": [
@@ -85,51 +82,55 @@ public class GptController {
                   ]
                 }""";
 
+    @PostMapping("/getClasses")
+    public String getClasses(@RequestParam String inputText, Model model, HttpSession session) {
+        //String gptResponseMessage = gptService.getGptResponseMessage(inputText, promptClasses);
+
         model.addAttribute("gptResponseMessage", gptResponseMessage);
         model.addAttribute("fieldTitle", "Classes:");
-        model.addAttribute("modelTitle", "Edit Classes:");
+        model.addAttribute("modalTitle", "Edit Classes:");
         session.setAttribute("classes", gptResponseMessage);
 
-        return "fragments :: extractionField";
+        return "fragments :: classesFragment";
     }
 
     @PostMapping("/getHierarchy")
     public String getHierarchy(Model model, @RequestParam String inputText, HttpSession session) {
         String classes = (String) session.getAttribute("classes");
 
-        String gptResponseMessage = gptService.getGptResponseMessage(inputText, promptHierarchy + classes);
+        //String gptResponseMessage = gptService.getGptResponseMessage(inputText, promptHierarchy + classes);
 
-        model.addAttribute("gptResponse", gptResponseMessage);
+        model.addAttribute("gptResponseMessage", gptResponseMessage);
         model.addAttribute("fieldTitle", "Hierarchy:");
-        model.addAttribute("modelTitle", "Edit Hierarchy:");
+        model.addAttribute("modalTitle", "Edit Hierarchy:");
         session.setAttribute("hierarchy", gptResponseMessage);
 
-        return "fragments :: extractionField";
+        return "fragments :: hierarchyFragment";
     }
 
     @PostMapping("/getRelations")
     public String getRelations(Model model, @RequestParam String inputText, HttpSession session) {
         String classes = (String) session.getAttribute("classes");
-        String gptResponseMessage = gptService.getGptResponseMessage(inputText, promptRelations + classes);
+        //String gptResponseMessage = gptService.getGptResponseMessage(inputText, promptRelations + classes);
 
-        model.addAttribute("gptResponse", gptResponseMessage);
+        model.addAttribute("gptResponseMessage", gptResponseMessage);
         model.addAttribute("fieldTitle", "Non-taxonomic Relations:");
-        model.addAttribute("modelTitle", "Edit non-taxonomic Relations:");
+        model.addAttribute("modalTitle", "Edit non-taxonomic Relations:");
         session.setAttribute("relations", gptResponseMessage);
-        return "fragments :: extractionField";
+        return "fragments :: relationsFragment";
     }
 
-    @PostMapping("/getAxioms")
+    @PostMapping("/getConstraints")
     public String getConstraints(Model model, @RequestParam String inputText, HttpSession session) {
         String relations = (String) session.getAttribute("relations");
-        String gptResponseMessage = gptService.getGptResponseMessage(inputText, promptConstraints + relations);
+        //String gptResponseMessage = gptService.getGptResponseMessage(inputText, promptConstraints + relations);
 
-        model.addAttribute("gptResponse", gptResponseMessage);
+        model.addAttribute("gptResponseMessage", gptResponseMessage);
         model.addAttribute("fieldTitle", "Constraints:");
-        model.addAttribute("modelTitle", "Edit Constraints:");
+        model.addAttribute("modalTitle", "Edit Constraints:");
         session.setAttribute("constraints", gptResponseMessage);
 
-        return "fragments :: extractionField";
+        return "fragments :: constraintsFragment";
     }
 }
 

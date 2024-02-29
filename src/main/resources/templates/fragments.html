@@ -1,29 +1,161 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
-<div class="col-6 px-3" th:fragment="extractionField">
-    <h5 th:value="${fieldTitle}"></h5>
+
+<!-- Classes Fragment -->
+<div th:fragment="classesFragment" style="border-color: #cccccc;">
+    <h5 th:text="${fieldTitle}"></h5>
     <div class="position-relative">
-    <textarea id="jsonInput" class="form-control" th:text="${gptResponseMessage}" rows="5" readonly
+    <textarea id="jsonClasses" class="form-control" th:text="${gptResponseMessage}" rows="6" readonly
               style="overflow-y: auto;">
     </textarea>
-    <button type="button" class="btn btn-light py-1 position-absolute end-0 top-0 mt-1 me-3" data-bs-toggle="modal" data-bs-target="#exampleModal">
-        <i class="bi bi-box-arrow-up-right"></i>
-    </button>
-</div>
+        <button type="button" class="btn btn-light py-1 position-absolute end-0 top-0 mt-1 me-3" data-bs-toggle="modal"
+                data-bs-target="#classesModal">
+            <i class="bi bi-box-arrow-up-right"></i>
+        </button>
+        <div>
+            <button th:hx-post="@{/getHierarchy}" hx-swap="outerHTML"
+                    type="submit" class="btn btn-secondary mt-1">Continue
+            </button>
+        </div>
+    </div>
+    <div class="position-absolute bottom-0 end-0 mb-5 me-5">
+        <div class="d-flex justify-content-end">
+            <button type="button" class="btn btn-secondary me-2">Restart</button>
+            <button type="button" class="btn btn-primary">Export</button>
+        </div>
+    </div>
 
-    <!-- Modal -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="classesModal" tabindex="-1" aria-labelledby="classedModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-fullscreen">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel" th:value="${modalTitle}"></h1>
+                    <h1 class="modal-title fs-5" id="classedModalLabel" th:text="${modalTitle}"></h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="modal-body">
                     <textarea id="modalInput" class="form-control" th:text="${gptResponseMessage}" rows="30"
-                              style="overflow-y: auto;"></textarea>
+                              style="overflow-y: auto;">
+                    </textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="saveButton">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hierarchy Fragment -->
+<div class="pt-3" th:fragment="hierarchyFragment">
+    <h5 th:text="${fieldTitle}"></h5>
+    <div class="position-relative">
+    <textarea id="jsonHierarchy" class="form-control" th:text="${gptResponseMessage}" rows="6" readonly
+              style="overflow-y: auto;">
+    </textarea>
+        <button type="button" class="btn btn-light py-1 position-absolute end-0 top-0 mt-1 me-3" data-bs-toggle="modal"
+                data-bs-target="#hierarchyModal">
+            <i class="bi bi-box-arrow-up-right"></i>
+        </button>
+        <div>
+            <button th:hx-post="@{/getRelations}" hx-swap="outerHTML"
+                    type="submit" class="btn btn-secondary mt-1">Continue
+            </button>
+        </div>
+    </div>
+
+    <div class="modal fade" id="hierarchyModal" tabindex="-1" aria-labelledby="hierarchyModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="hierarchyModalLabel" th:text="${modalTitle}"></h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="modal-body">
+                    <textarea id="modalInput" class="form-control" th:text="${gptResponseMessage}" rows="30"
+                              style="overflow-y: auto;">
+                    </textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="saveButton">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Relations Fragment -->
+<div class="pt-3" th:fragment="relationsFragment">
+    <h5 th:text="${fieldTitle}"></h5>
+    <div class="position-relative">
+    <textarea id="jsonRelations" class="form-control" th:text="${gptResponseMessage}" rows="6" readonly
+              style="overflow-y: auto;">
+    </textarea>
+        <button type="button" class="btn btn-light py-1 position-absolute end-0 top-0 mt-1 me-3" data-bs-toggle="modal"
+                data-bs-target="#relationsModal">
+            <i class="bi bi-box-arrow-up-right"></i>
+        </button>
+        <div>
+            <button th:hx-post="@{/getConstraints}" hx-swap="outerHTML"
+                    type="submit" class="btn btn-secondary mt-1">Continue
+            </button>
+        </div>
+    </div>
+
+    <div class="modal fade" id="relationsModal" tabindex="-1" aria-labelledby="relationsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="relationsModalLabel" th:text="${modalTitle}"></h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="modal-body">
+                    <textarea id="modalInput" class="form-control" th:text="${gptResponseMessage}" rows="30"
+                              style="overflow-y: auto;">
+                    </textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="saveButton">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Constraints Fragment -->
+<div class="pt-3" th:fragment="constraintsFragment">
+    <h5 th:text="${fieldTitle}"></h5>
+    <div class="position-relative">
+    <textarea id="jsonConstraints" class="form-control" th:text="${gptResponseMessage}" rows="6" readonly
+              style="overflow-y: auto;">
+    </textarea>
+        <button type="button" class="btn btn-light py-1 position-absolute end-0 top-0 mt-1 me-3" data-bs-toggle="modal"
+                data-bs-target="#constraintsModal">
+            <i class="bi bi-box-arrow-up-right"></i>
+        </button>
+    </div>
+
+    <div class="modal fade" id="constraintsModal" tabindex="-1" aria-labelledby="constraintsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="constraintsModalLabel" th:text="${modalTitle}"></h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="modal-body">
+                    <textarea id="modalInput" class="form-control" th:text="${gptResponseMessage}" rows="30"
+                              style="overflow-y: auto;">
+                    </textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
