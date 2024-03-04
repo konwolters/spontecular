@@ -3,10 +3,14 @@
 <body>
 
 <!-- Classes Fragment -->
-<div th:fragment="classesFragment"
-     x-data="{ showModal: false, text:'', tempText:'' }"
+<div th:fragment="featureFragment"
+     th:data-gpt-response-message="${gptResponseMessage}"
+     x-data="{ showModal: false, text: '', tempText: '' }"
+     x-init="text = $el.dataset.gptResponseMessage"
      class="py-1">
 
+
+    <h5 th:text="${fieldTitle}"></h5>
     <div class="relative"> <!-- New wrapper div -->
         <textarea type="text" x-model="text" placeholder="Enter text here"
                   class="input border rounded w-full px-2 py-1 text-gray-700 leading-tight focus:outline-none
@@ -16,11 +20,20 @@
         ></textarea>
 
         <button type="button" @click="tempText = text; showModal = true"
-                class="mx-4 my-4 bg-blue-500 text-white rounded hover:bg-blue-700
+                class="mx-6 my-4 px-1 bg-slate-100 text-black border rounded hover:bg-slate-50
                 focus:outline-none mt-2 absolute top-0 right-0">
-            Open Modal
+            <i class="bi bi-box-arrow-up-right"></i>
         </button>
     </div>
+    <button @click="isLoading = false;"
+            x-show="isLoading"
+            class="px-6 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded shadow-md"
+            th:hx-post="@{|${endpointUrl}|}"
+            th:attr="hx-target=@{|#${targetElementId}|}"
+            type="submit">
+        Continue
+    </button>
+
 
     <!-- Overlay -->
     <div x-show="showModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full"
@@ -57,126 +70,6 @@
                             class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
                             @click="text = tempText; showModal = false">Save
                     </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-<!-- Hierarchy Fragment -->
-<div class="pt-3" th:fragment="hierarchyFragment">
-    <h5 th:text="${fieldTitle}"></h5>
-    <div class="position-relative">
-    <textarea id="jsonHierarchy" class="form-control" th:text="${gptResponseMessage}" rows="6" readonly
-              style="overflow-y: auto;">
-    </textarea>
-        <button type="button" class="btn btn-light py-1 position-absolute end-0 top-0 mt-1 me-3" data-bs-toggle="modal"
-                data-bs-target="#hierarchyModal">
-            <i class="bi bi-box-arrow-up-right"></i>
-        </button>
-        <div>
-            <button th:hx-post="@{/getRelations}" hx-swap="outerHTML"
-                    type="submit" class="btn btn-secondary mt-1">Continue
-            </button>
-        </div>
-    </div>
-
-    <div class="modal fade" id="hierarchyModal" tabindex="-1" aria-labelledby="hierarchyModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-fullscreen">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="hierarchyModalLabel" th:text="${modalTitle}"></h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="modal-body">
-                    <textarea id="modalInput" class="form-control" th:text="${gptResponseMessage}" rows="30"
-                              style="overflow-y: auto;">
-                    </textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="saveButton">Save changes</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Relations Fragment -->
-<div class="pt-3" th:fragment="relationsFragment">
-    <h5 th:text="${fieldTitle}"></h5>
-    <div class="position-relative">
-    <textarea id="jsonRelations" class="form-control" th:text="${gptResponseMessage}" rows="6" readonly
-              style="overflow-y: auto;">
-    </textarea>
-        <button type="button" class="btn btn-light py-1 position-absolute end-0 top-0 mt-1 me-3" data-bs-toggle="modal"
-                data-bs-target="#relationsModal">
-            <i class="bi bi-box-arrow-up-right"></i>
-        </button>
-        <div>
-            <button th:hx-post="@{/getConstraints}" hx-swap="outerHTML"
-                    type="submit" class="btn btn-secondary mt-1">Continue
-            </button>
-        </div>
-    </div>
-
-    <div class="modal fade" id="relationsModal" tabindex="-1" aria-labelledby="relationsModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-fullscreen">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="relationsModalLabel" th:text="${modalTitle}"></h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="modal-body">
-                    <textarea id="modalInput" class="form-control" th:text="${gptResponseMessage}" rows="30"
-                              style="overflow-y: auto;">
-                    </textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="saveButton">Save changes</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Constraints Fragment -->
-<div class="pt-3" th:fragment="constraintsFragment">
-    <h5 th:text="${fieldTitle}"></h5>
-    <div class="position-relative">
-    <textarea id="jsonConstraints" class="form-control" th:text="${gptResponseMessage}" rows="6" readonly
-              style="overflow-y: auto;">
-    </textarea>
-        <button type="button" class="btn btn-light py-1 position-absolute end-0 top-0 mt-1 me-3" data-bs-toggle="modal"
-                data-bs-target="#constraintsModal">
-            <i class="bi bi-box-arrow-up-right"></i>
-        </button>
-    </div>
-
-    <div class="modal fade" id="constraintsModal" tabindex="-1" aria-labelledby="constraintsModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog modal-fullscreen">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="constraintsModalLabel" th:text="${modalTitle}"></h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="modal-body">
-                    <textarea id="modalInput" class="form-control" th:text="${gptResponseMessage}" rows="30"
-                              style="overflow-y: auto;">
-                    </textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="saveButton">Save changes</button>
                 </div>
             </div>
         </div>
