@@ -86,16 +86,33 @@ public class GptController {
     public String getClasses(@RequestParam String inputText, Model model, HttpSession session) {
         //String gptResponseMessage = gptService.getGptResponseMessage(inputText, promptClasses);
 
+        try {
+            // Pause for 5 seconds
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            // Handle exception
+            e.printStackTrace();
+        }
+
         model.addAttribute("gptResponseMessage", gptResponseMessage);
         model.addAttribute("fieldTitle", "Classes:");
         model.addAttribute("modalTitle", "Edit Classes:");
+        model.addAttribute("endpointUrl", "/getHierarchy");
+        model.addAttribute("targetElementId", "hierarchyDiv");
         session.setAttribute("classes", gptResponseMessage);
 
-        return "fragments :: classesFragment";
+        return "fragments :: featureFragment";
     }
 
     @PostMapping("/getHierarchy")
     public String getHierarchy(Model model, @RequestParam String inputText, HttpSession session) {
+        try {
+            // Pause for 5 seconds
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            // Handle exception
+            e.printStackTrace();
+        }
         String classes = (String) session.getAttribute("classes");
 
         //String gptResponseMessage = gptService.getGptResponseMessage(inputText, promptHierarchy + classes);
@@ -103,25 +120,43 @@ public class GptController {
         model.addAttribute("gptResponseMessage", gptResponseMessage);
         model.addAttribute("fieldTitle", "Hierarchy:");
         model.addAttribute("modalTitle", "Edit Hierarchy:");
+        model.addAttribute("endpointUrl", "/getRelations");
+        model.addAttribute("targetElementId", "relationsDiv");
         session.setAttribute("hierarchy", gptResponseMessage);
 
-        return "fragments :: hierarchyFragment";
+        return "fragments :: featureFragment";
     }
 
     @PostMapping("/getRelations")
     public String getRelations(Model model, @RequestParam String inputText, HttpSession session) {
+        try {
+            // Pause for 5 seconds
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            // Handle exception
+            e.printStackTrace();
+        }
         String classes = (String) session.getAttribute("classes");
         //String gptResponseMessage = gptService.getGptResponseMessage(inputText, promptRelations + classes);
 
         model.addAttribute("gptResponseMessage", gptResponseMessage);
         model.addAttribute("fieldTitle", "Non-taxonomic Relations:");
         model.addAttribute("modalTitle", "Edit non-taxonomic Relations:");
+        model.addAttribute("endpointUrl", "/getConstraints");
+        model.addAttribute("targetElementId", "constraintsDiv");
         session.setAttribute("relations", gptResponseMessage);
-        return "fragments :: relationsFragment";
+        return "fragments :: featureFragment";
     }
 
     @PostMapping("/getConstraints")
     public String getConstraints(Model model, @RequestParam String inputText, HttpSession session) {
+        try {
+            // Pause for 5 seconds
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            // Handle exception
+            e.printStackTrace();
+        }
         String relations = (String) session.getAttribute("relations");
         //String gptResponseMessage = gptService.getGptResponseMessage(inputText, promptConstraints + relations);
 
@@ -130,7 +165,7 @@ public class GptController {
         model.addAttribute("modalTitle", "Edit Constraints:");
         session.setAttribute("constraints", gptResponseMessage);
 
-        return "fragments :: constraintsFragment";
+        return "fragments :: featureFragment";
     }
 }
 
