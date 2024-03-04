@@ -86,6 +86,14 @@ public class GptController {
     public String getClasses(@RequestParam String inputText, Model model, HttpSession session) {
         //String gptResponseMessage = gptService.getGptResponseMessage(inputText, promptClasses);
 
+        try {
+            // Pause for 5 seconds
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            // Handle exception
+            e.printStackTrace();
+        }
+
         model.addAttribute("gptResponseMessage", gptResponseMessage);
         model.addAttribute("fieldTitle", "Classes:");
         model.addAttribute("modalTitle", "Edit Classes:");

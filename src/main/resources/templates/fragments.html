@@ -1,53 +1,68 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:x-transition="http://www.w3.org/1999/xhtml">
 <body>
 
 <!-- Classes Fragment -->
-<div th:fragment="classesFragment" style="border-color: #cccccc;">
-    <h5 th:text="${fieldTitle}"></h5>
-    <div class="position-relative">
-    <textarea id="jsonClasses" class="form-control" th:text="${gptResponseMessage}" rows="6" readonly
-              style="overflow-y: auto;">
-    </textarea>
-        <button type="button" class="btn btn-light py-1 position-absolute end-0 top-0 mt-1 me-3" data-bs-toggle="modal"
-                data-bs-target="#classesModal">
-            <i class="bi bi-box-arrow-up-right"></i>
+<div th:fragment="classesFragment"
+     x-data="{ showModal: false, text:'', tempText:'' }"
+     class="py-1">
+
+    <div class="relative"> <!-- New wrapper div -->
+        <textarea type="text" x-model="text" placeholder="Enter text here"
+                  class="input border rounded w-full px-2 py-1 text-gray-700 leading-tight focus:outline-none
+              focus:shadow-outline"
+                  rows="6"
+                  style="overflow-y: auto;"
+        ></textarea>
+
+        <button type="button" @click="tempText = text; showModal = true"
+                class="mx-4 my-4 bg-blue-500 text-white rounded hover:bg-blue-700
+                focus:outline-none mt-2 absolute top-0 right-0">
+            Open Modal
         </button>
-        <div>
-            <button th:hx-post="@{/getHierarchy}" hx-swap="outerHTML"
-                    type="submit" class="btn btn-secondary mt-1">Continue
-            </button>
-        </div>
-    </div>
-    <div class="position-absolute bottom-0 end-0 mb-5 me-5">
-        <div class="d-flex justify-content-end">
-            <button type="button" class="btn btn-secondary me-2">Restart</button>
-            <button type="button" class="btn btn-primary">Export</button>
-        </div>
     </div>
 
-    <div class="modal fade" id="classesModal" tabindex="-1" aria-labelledby="classedModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-fullscreen">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="classedModalLabel" th:text="${modalTitle}"></h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <!-- Overlay -->
+    <div x-show="showModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-300"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0">
+
+        <!-- Modal Container, clicking outside this will close the modal -->
+        <div class="container mx-auto h-full flex justify-center items-start">
+            <div class="bg-white mt-10 rounded shadow-lg w-4/5" @click.away="showModal = false">
+                <div class="border-b px-4 py-2 flex justify-between items-center">
+                    <h3 class="font-semibold text-lg" th:text="${modalTitle}"></h3>
+                    <button type="button"
+                            class="text-black"
+                            @click="showModal = false">&times;
+                    </button>
                 </div>
-                <div class="modal-body">
-                    <div class="modal-body">
-                    <textarea id="modalInput" class="form-control" th:text="${gptResponseMessage}" rows="30"
+                <div class="p-3">
+                    <textarea x-model="tempText"
+                              rows="35"
+                              class="input border rounded w-full px-2 py-1 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                               style="overflow-y: auto;">
                     </textarea>
-                    </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="saveButton">Save changes</button>
+                <div class="flex justify-end items-center w-100 border-t p-3">
+                    <button type="button"
+                            class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700 mr-2"
+                            @click="showModal = false">Cancel
+                    </button>
+                    <button type="button"
+                            class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+                            @click="text = tempText; showModal = false">Save
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
 
 <!-- Hierarchy Fragment -->
 <div class="pt-3" th:fragment="hierarchyFragment">
@@ -144,7 +159,8 @@
         </button>
     </div>
 
-    <div class="modal fade" id="constraintsModal" tabindex="-1" aria-labelledby="constraintsModalLabel" aria-hidden="true">
+    <div class="modal fade" id="constraintsModal" tabindex="-1" aria-labelledby="constraintsModalLabel"
+         aria-hidden="true">
         <div class="modal-dialog modal-fullscreen">
             <div class="modal-content">
                 <div class="modal-header">
