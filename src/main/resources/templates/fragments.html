@@ -2,19 +2,16 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:x-transition="http://www.w3.org/1999/xhtml">
 <body>
 
-<!-- Classes Fragment -->
 <div th:fragment="featureFragment"
      th:data-gpt-response-message="${gptResponseMessage}"
      x-data="{ showModal: false, text: '', tempText: '' }"
      x-init="text = $el.dataset.gptResponseMessage"
      class="py-1">
 
-
     <h5 th:text="${fieldTitle}"></h5>
-    <div class="relative"> <!-- New wrapper div -->
+    <div class="relative">
         <textarea type="text" x-model="text" placeholder="Enter text here"
-                  class="input border rounded w-full px-2 py-1 text-gray-700 leading-tight focus:outline-none
-              focus:shadow-outline"
+                  class="input border rounded w-full px-2 py-1 text-gray-700 leading-tight focus:outline-none focus:border-indigo-500"
                   rows="6"
                   style="overflow-y: auto;"
         ></textarea>
@@ -30,13 +27,17 @@
             class="px-6 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded shadow-md"
             th:hx-post="@{|${endpointUrl}|}"
             th:attr="hx-target=@{|#${targetElementId}|}"
+            hx-indicator="#loading"
             type="submit">
         Continue
     </button>
+    <span class="flex justify-center htmx-indicator" id="loading">
+        <img src="/img/spinner.gif" alt="Loading..." class="w-10 h-10 mt-20">
+    </span>
 
 
     <!-- Overlay -->
-    <div x-show="showModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full"
+    <div x-show="showModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
          x-transition:enter="transition ease-out duration-300"
          x-transition:enter-start="opacity-0"
          x-transition:enter-end="opacity-100"
@@ -44,7 +45,6 @@
          x-transition:leave-start="opacity-100"
          x-transition:leave-end="opacity-0">
 
-        <!-- Modal Container, clicking outside this will close the modal -->
         <div class="container mx-auto h-full flex justify-center items-start">
             <div class="bg-white mt-10 rounded shadow-lg w-4/5" @click.away="showModal = false">
                 <div class="border-b px-4 py-2 flex justify-between items-center">

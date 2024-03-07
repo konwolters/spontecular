@@ -1,8 +1,10 @@
-document.body.addEventListener('htmx:afterSwap', function (event) {
-        document.getElementById('saveButton').addEventListener('click', function () {
-        var modalInput = document.getElementById('modalInput');
-        var jsonInput = document.getElementById('jsonInput');
-        jsonInput.value = modalInput.value;
-        $('#classesModal').modal('hide');
-    });
+document.body.addEventListener('htmx:afterOnLoad', function() {
+    adjustIndicatorHeight();
 });
+
+function adjustIndicatorHeight() {
+    const indicators = document.querySelectorAll('span.htmx-indicator');
+    indicators.forEach(indicator => {
+        indicator.style.height = '0';
+    });
+}
