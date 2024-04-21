@@ -2,6 +2,23 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:x-transition="http://www.w3.org/1999/xhtml">
 <body>
 
+<th:block th:fragment="headers">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="/css/output.css" rel="stylesheet">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script type="text/javascript" th:src="@{/js/htmx.min.js}"></script>
+</th:block>
+
+<th:block th:fragment="footer">
+    <!-- Loading Indicator - Hidden by default -->
+    <div id="loadingIndicator"
+         class="fixed inset-0 z-50 flex items-center justify-center bg-white bg-opacity-75 hidden">
+        <div class="border-4 border-blue-500 border-opacity-50 border-t-transparent rounded-full w-16 h-16 animate-spin"></div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" th:src="@{/js/scripts.js}"></script>
+</th:block>
+
 <div th:fragment="featureFragment"
      th:data-gpt-response-message="${gptResponseMessage}"
      x-data="{ showModal: false, text: '', tempText: '' }"
@@ -22,19 +39,13 @@
             <i class="bi bi-box-arrow-up-right"></i>
         </button>
     </div>
-    <button @click="isLoading = false;"
-            x-show="isLoading"
-            class="px-6 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded shadow-md"
+    <button
+            class="px-6 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded shadow-md continueButton"
             th:hx-post="@{|${endpointUrl}|}"
             th:attr="hx-target=@{|#${targetElementId}|}"
-            hx-indicator="#loading"
             type="submit">
         Continue
     </button>
-    <span class="flex justify-center htmx-indicator" id="loading">
-        <img src="/img/spinner.gif" alt="Loading..." class="w-10 h-10 mt-20">
-    </span>
-
 
     <!-- Overlay -->
     <div x-show="showModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
