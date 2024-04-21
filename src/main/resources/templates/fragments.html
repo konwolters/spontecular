@@ -39,19 +39,13 @@
             <i class="bi bi-box-arrow-up-right"></i>
         </button>
     </div>
-    <button @click="isLoading = false;"
-            x-show="isLoading"
-            class="px-6 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded shadow-md"
+    <button
+            class="px-6 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded shadow-md continueButton"
             th:hx-post="@{|${endpointUrl}|}"
             th:attr="hx-target=@{|#${targetElementId}|}"
-            hx-indicator="#loading"
             type="submit">
         Continue
     </button>
-    <span class="flex justify-center htmx-indicator" id="loading">
-        <img src="/img/spinner.gif" alt="Loading..." class="w-10 h-10 mt-20">
-    </span>
-
 
     <!-- Overlay -->
     <div x-show="showModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"

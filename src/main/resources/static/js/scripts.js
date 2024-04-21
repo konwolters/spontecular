@@ -1,10 +1,11 @@
-document.body.addEventListener('htmx:afterOnLoad', function() {
-    adjustIndicatorHeight();
+document.body.addEventListener('htmx:beforeRequest', function() {
+    document.getElementById('loadingIndicator').classList.remove('hidden');
 });
 
-function adjustIndicatorHeight() {
-    const indicators = document.querySelectorAll('span.htmx-indicator');
-    indicators.forEach(indicator => {
-        indicator.style.height = '0';
-    });
-}
+document.body.addEventListener('htmx:beforeSwap', function() {
+    document.querySelectorAll('.continueButton').forEach(button => { button.remove()});
+});
+
+document.body.addEventListener('htmx:afterRequest', function() {
+    document.getElementById('loadingIndicator').classList.add('hidden');
+});
