@@ -4,10 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Demo</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link href="/css/output.css" rel="stylesheet">
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <th:block th:replace="~{fragments :: headers}"></th:block>
 </head>
 <body class="bg-gray-100">
 
@@ -51,8 +48,6 @@
         </div>
     </div>
 </form>
-<!-- Optional: Include Alpine.js for interactive components -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script type="text/javascript" th:src="@{/js/scripts.js}"></script>
+<th:block th:replace="~{fragments :: footer}"></th:block>
 </body>
 </html>
