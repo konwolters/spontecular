@@ -2,6 +2,7 @@ package com.example.spontecular.controller;
 
 import com.example.spontecular.dto.Classes;
 import com.example.spontecular.dto.Hierarchy;
+import com.example.spontecular.dto.Relations;
 import com.example.spontecular.service.GptService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -135,17 +136,11 @@ public class GptController {
 
     @PostMapping("/getRelations")
     public String getRelations(Model model, @RequestParam String inputText, HttpSession session) {
-        try {
-            // Pause for 5 seconds
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            // Handle exception
-            e.printStackTrace();
-        }
         String classes = (String) session.getAttribute("classes");
-        //String gptResponseMessage = gptService.getGptResponseMessage(inputText, promptRelations + classes);
 
-        model.addAttribute("gptResponseMessage", gptResponseMessage);
+        Relations relations = gptService.getRelations(inputText, classes);
+
+        model.addAttribute("gptResponseMessage", relations.toString());
         model.addAttribute("fieldTitle", "Non-taxonomic Relations:");
         model.addAttribute("modalTitle", "Edit non-taxonomic Relations:");
         model.addAttribute("endpointUrl", "/getConstraints");
