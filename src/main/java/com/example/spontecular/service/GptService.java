@@ -1,6 +1,7 @@
 package com.example.spontecular.service;
 
 import com.example.spontecular.dto.Classes;
+import com.example.spontecular.dto.Constraints;
 import com.example.spontecular.dto.Hierarchy;
 import com.example.spontecular.dto.Relations;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,9 @@ public class GptService {
 
     @Value("classpath:/prompts/relations-prompt.st")
     private Resource relationsPrompt;
+
+    @Value("classpath:/prompts/constraints-prompt.st")
+    private Resource constraintsPrompt;
 
 //    private String call(String inputText, String prompt) {
 //        ChatResponse chatResponse = chatClient.call(
@@ -85,6 +89,19 @@ public class GptService {
         PromptTemplate promptTemplate = new PromptTemplate(
                 relationsPrompt,
                 Map.of("inputText", inputText, "classes", classes)
+        );
+
+        ChatResponse response = chatClient.call(promptTemplate.create());
+
+        return outputParser.parse(response.getResult().getOutput().getContent());
+    }
+
+    public Constraints getConstraints(String inputText, String relations){
+        OutputParser<Constraints> outputParser = new BeanOutputParser<>(Constraints.class);
+
+        PromptTemplate promptTemplate = new PromptTemplate(
+                constraintsPrompt,
+                Map.of("inputText", inputText, "relations", relations)
         );
 
         ChatResponse response = chatClient.call(promptTemplate.create());

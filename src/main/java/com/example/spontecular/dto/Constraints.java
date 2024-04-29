@@ -14,12 +14,10 @@ public class Constraints {
 
     @Override
     public String toString() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            // Convert the object to a JSON string
-            return objectMapper.writeValueAsString(this);
-        } catch (JsonProcessingException e) {
-            return "Error converting to JSON";
+        StringBuilder sb = new StringBuilder();
+        for (List<String> constraintsElement : constraints) {
+            sb.append(constraintsElement.toString()).append(",\n");
         }
+        return sb.toString();
     }
 }

@@ -1,6 +1,7 @@
 package com.example.spontecular.controller;
 
 import com.example.spontecular.dto.Classes;
+import com.example.spontecular.dto.Constraints;
 import com.example.spontecular.dto.Hierarchy;
 import com.example.spontecular.dto.Relations;
 import com.example.spontecular.service.GptService;
@@ -137,34 +138,40 @@ public class GptController {
     @PostMapping("/getRelations")
     public String getRelations(Model model, @RequestParam String inputText, HttpSession session) {
         String classes = (String) session.getAttribute("classes");
+        //Relations relations = gptService.getRelations(inputText, classes);
 
-        Relations relations = gptService.getRelations(inputText, classes);
+        String dummyRelations = """
+                ["Chassis", "consistsOf", "Framework"],
+                    ["Sidewall", "isMadeFrom", "Circuit board"],
+                    ["Sidewall", "servesAs", "Circuit board"],
+                    ["Double-sided circuit board", "mayServeAs", "Circuit board"],
+                    ["Solar cell", "isMountedOn", "Printed circuit board"],
+                    ["Satellite", "needs", "Connector"],
+                    ["Internal module", "consistOf", "FR-4"],
+                    ["Internal module", "consistOf", "Circuit board"],
+                    ["Module", "isStackedInside", "Satellite"],
+                    ["Elastic bushing", "isPlacedIn", "Groove"]
+                """;
 
-        model.addAttribute("gptResponseMessage", relations.toString());
+        model.addAttribute("gptResponseMessage", dummyRelations);
         model.addAttribute("fieldTitle", "Non-taxonomic Relations:");
         model.addAttribute("modalTitle", "Edit non-taxonomic Relations:");
         model.addAttribute("endpointUrl", "/getConstraints");
         model.addAttribute("targetElementId", "constraintsDiv");
-        session.setAttribute("relations", gptResponseMessage);
+        session.setAttribute("relations", dummyRelations);
         return "fragments :: featureFragment";
     }
 
     @PostMapping("/getConstraints")
     public String getConstraints(Model model, @RequestParam String inputText, HttpSession session) {
-        try {
-            // Pause for 5 seconds
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            // Handle exception
-            e.printStackTrace();
-        }
         String relations = (String) session.getAttribute("relations");
-        //String gptResponseMessage = gptService.getGptResponseMessage(inputText, promptConstraints + relations);
 
-        model.addAttribute("gptResponseMessage", gptResponseMessage);
+        Constraints constraints = gptService.getConstraints(inputText, relations);
+
+        model.addAttribute("gptResponseMessage", constraints.toString());
         model.addAttribute("fieldTitle", "Constraints:");
         model.addAttribute("modalTitle", "Edit Constraints:");
-        session.setAttribute("constraints", gptResponseMessage);
+        session.setAttribute("constraints", constraints.toString());
 
         return "fragments :: featureFragment";
     }
