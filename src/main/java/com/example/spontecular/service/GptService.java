@@ -24,7 +24,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class GptService {
     private final OpenAiChatClient chatClient;
-    private final ResponseObjectMapper responseObjectMapper;
 
     @Value("classpath:/prompts/classes-prompt.st")
     private Resource classesPrompt;
@@ -37,25 +36,6 @@ public class GptService {
 
     @Value("classpath:/prompts/constraints-prompt.st")
     private Resource constraintsPrompt;
-
-//    private String call(String inputText, String prompt) {
-//        ChatResponse chatResponse = chatClient.call(
-//                new Prompt(
-//                        Arrays.asList(
-//                                new SystemMessage(systemMessage),
-//                                new UserMessage(inputText),
-//                                new UserMessage(prompt)
-//                        )
-//                )
-//        );
-//        return chatResponse.getResult().getOutput().getContent();
-//
-//    }
-
-//    public Object getResponse(String inputText, String ontologyFeature, String prompt){
-//        String response = call(inputText, prompt);
-//        return responseObjectMapper.mapResponse(response, ontologyFeature);
-//    }
 
     public Classes getClasses(String inputText){
         OutputParser<Classes> outputParser = new BeanOutputParser<>(Classes.class);
