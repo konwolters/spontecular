@@ -1,6 +1,7 @@
 package com.example.spontecular.controller;
 
 import com.example.spontecular.dto.Classes;
+import com.example.spontecular.dto.Hierarchy;
 import com.example.spontecular.service.GptService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -16,43 +17,28 @@ public class GptController {
     private final GptService gptService;
 
     String gptResponseMessage = """
+            {
+              "class": "LivingThing",
+              "subclasses": [
                 {
-                  "class": "LivingThing",
+                  "class": "Animal",
                   "subclasses": [
                     {
-                      "class": "Animal",
+                      "class": "Mammal",
                       "subclasses": [
                         {
-                          "class": "Mammal",
-                          "subclasses": [
-                            {
-                              "class": "Dog",
-                              "subclasses": []
-                            },
-                            {
-                              "class": "Cat",
-                              "subclasses": [
-                                {
-                                  "class": "PersianCat",
-                                  "subclasses": []
-                                },
-                                {
-                                  "class": "SiameseCat",
-                                  "subclasses": []
-                                }
-                              ]
-                            }
-                          ]
+                          "class": "Dog",
+                          "subclasses": []
                         },
                         {
-                          "class": "Bird",
+                          "class": "Cat",
                           "subclasses": [
                             {
-                              "class": "Sparrow",
+                              "class": "PersianCat",
                               "subclasses": []
                             },
                             {
-                              "class": "Eagle",
+                              "class": "SiameseCat",
                               "subclasses": []
                             }
                           ]
@@ -60,51 +46,89 @@ public class GptController {
                       ]
                     },
                     {
-                      "class": "Plant",
+                      "class": "Bird",
                       "subclasses": [
                         {
-                          "class": "FloweringPlant",
+                          "class": "Sparrow",
+                          "subclasses": []
+                        },
+                        {
+                          "class": "Eagle",
                           "subclasses": []
                         }
                       ]
                     }
                   ]
-                }""";
+                },
+                {
+                  "class": "Plant",
+                  "subclasses": [
+                    {
+                      "class": "FloweringPlant",
+                      "subclasses": []
+                    }
+                  ]
+                }
+              ]
+            }""";
 
     @PostMapping("/getClasses")
     public String getClasses(@RequestParam String inputText, Model model, HttpSession session) {
+        //Classes classes = gptService.getClasses(inputText);
 
-        Classes classes = gptService.getClasses(inputText);
+        String dummyClasses = """
+                         Satellite,
+                         Chassis,
+                         Framework,
+                         Rail,
+                         Sidewall,
+                         Circuit board,
+                         Solar cell,
+                         Sensor wire,
+                         Magnetic coil,
+                         Groove,
+                         Attitude Determination and Control System,
+                         Connector,
+                         Module,
+                         Bus connector,
+                         Cable
+                """;
 
-        model.addAttribute("gptResponseMessage", classes.toString());
+        model.addAttribute("gptResponseMessage", dummyClasses);
         model.addAttribute("fieldTitle", "Classes:");
         model.addAttribute("modalTitle", "Edit Classes:");
         model.addAttribute("endpointUrl", "/getHierarchy");
         model.addAttribute("targetElementId", "hierarchyDiv");
-        session.setAttribute("classes", gptResponseMessage);
+        session.setAttribute("classes", dummyClasses);
 
         return "fragments :: featureFragment";
     }
 
     @PostMapping("/getHierarchy")
     public String getHierarchy(Model model, @RequestParam String inputText, HttpSession session) {
-        try {
-            // Pause for 5 seconds
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            // Handle exception
-            e.printStackTrace();
-        }
         String classes = (String) session.getAttribute("classes");
+        //Hierarchy hierarchy = gptService.getHierarchy(inputText, classes);
 
-        //String gptResponseMessage = gptService.getGptResponseMessage(inputText, promptHierarchy + classes);
+        String dummyHierarchy = """
+                 ["Component", "Chassis"],
+                    ["Component", "Rail"],
+                    ["Component", "Framework"],
+                    ["Component", "Sidewall"],
+                    ["Component", "Circuit board"],
+                    ["Component", "Elastic blushing"],
+                    ["Circuit board", "Double-sided circuit board"],
+                    ["Circuit board", "FR-4"],
+                    ["Circuit board", "Printed Circuit Board"],
+                    ["Component", "Connector"],
+                    ["Connector", "Bus connector"]
+                """;
 
-        model.addAttribute("gptResponseMessage", gptResponseMessage);
+        model.addAttribute("gptResponseMessage", dummyHierarchy);
         model.addAttribute("fieldTitle", "Hierarchy:");
         model.addAttribute("modalTitle", "Edit Hierarchy:");
         model.addAttribute("endpointUrl", "/getRelations");
         model.addAttribute("targetElementId", "relationsDiv");
-        session.setAttribute("hierarchy", gptResponseMessage);
+        session.setAttribute("hierarchy", dummyHierarchy);
 
         return "fragments :: featureFragment";
     }

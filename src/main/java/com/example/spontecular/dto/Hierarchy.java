@@ -14,12 +14,10 @@ public class Hierarchy {
 
     @Override
     public String toString() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            // Convert the object to a JSON string
-            return objectMapper.writeValueAsString(this);
-        } catch (JsonProcessingException e) {
-            return "Error converting to JSON";
+        StringBuilder sb = new StringBuilder();
+        for (List<String> hierarchyElement : hierarchy) {
+            sb.append(hierarchyElement.toString()).append(",\n");
         }
+        return sb.toString();
     }
 }

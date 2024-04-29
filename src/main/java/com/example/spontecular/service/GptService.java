@@ -1,6 +1,7 @@
 package com.example.spontecular.service;
 
 import com.example.spontecular.dto.Classes;
+import com.example.spontecular.dto.Hierarchy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.messages.SystemMessage;
@@ -25,6 +26,9 @@ public class GptService {
 
     @Value("classpath:/prompts/classes-prompt.st")
     private Resource classesPrompt;
+
+    @Value("classpath:/prompts/hierarchy-prompt.st")
+    private Resource hierarchyPrompt;
 
 //    private String call(String inputText, String prompt) {
 //        ChatResponse chatResponse = chatClient.call(
@@ -51,6 +55,19 @@ public class GptService {
         PromptTemplate promptTemplate = new PromptTemplate(
                 classesPrompt,
                 Map.of("inputText", inputText)
+        );
+
+        ChatResponse response = chatClient.call(promptTemplate.create());
+
+        return outputParser.parse(response.getResult().getOutput().getContent());
+    }
+
+    public Hierarchy getHierarchy(String inputText, String classes){
+        OutputParser<Hierarchy> outputParser = new BeanOutputParser<>(Hierarchy.class);
+
+        PromptTemplate promptTemplate = new PromptTemplate(
+                hierarchyPrompt,
+                Map.of("inputText", inputText, "classes", classes)
         );
 
         ChatResponse response = chatClient.call(promptTemplate.create());
