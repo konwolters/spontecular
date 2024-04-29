@@ -1,6 +1,5 @@
 package com.example.spontecular.service;
 
-import com.example.spontecular.dto.OntClassNode;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * JenaService is a service class that provides methods for creating ontology classes, class hierarchies, subclasses, and non-taxonomic relations.
+ * Service class that provides methods for creating ontology classes, class hierarchies, subclasses, and non-taxonomic relations.
  */
 public class JenaService {
     public void createOntClasses(String jsonString) {
@@ -40,63 +39,6 @@ public class JenaService {
         }
     }
 
-    /**
-     * This method is used to create a class hierarchy in an ontology model.
-     * It accepts a JSON string that represents the class hierarchy to be created.
-     * The JSON string is deserialized into an OntClassNode object that represents the root of the class hierarchy.
-     * The method creates an OntClass for the root class and calls the createSubclasses method to create its subclasses.
-     * If an IOException is thrown during the deserialization of the JSON string, it is caught and printed to the console.
-     *
-     * @param model      The ontology model to which the class hierarchy is to be added.
-     * @param namespace  The namespace of the ontology model.
-     * @param jsonString The JSON string that represents the class hierarchy to be created.
-     */
-    public void createClassHierarchy(OntModel model, String namespace, String jsonString) {
-        ObjectMapper mapper = new ObjectMapper();
-
-        try {
-            OntClassNode root = mapper.readValue(jsonString, OntClassNode.class);
-            OntClass rootClass = model.createClass(namespace + root.getClassName());
-            createSubclasses(model, namespace, rootClass, root.getSubclasses());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * This method is used to create subclasses in an ontology model.
-     * It accepts a parent OntClass and a list of OntClassNode objects representing the subclasses to be created.
-     * Each OntClassNode object contains the name of the subclass and a list of its own subclasses.
-     * The method iterates over the list of OntClassNode objects, creates an OntClass for each one, and adds it as a subclass to the parent OntClass.
-     * The method then recursively calls itself with the new OntClass and the list of its subclasses.
-     *
-     * @param model      The ontology model to which the subclasses are to be added.
-     * @param nameSpace  The namespace of the ontology model.
-     * @param parent     The parent OntClass to which the subclasses are to be added.
-     * @param subclasses The list of OntClassNode objects representing the subclasses to be created.
-     */
-    private void createSubclasses(OntModel model, String nameSpace, OntClass parent, List<OntClassNode> subclasses) {
-        for (OntClassNode subclassNode : subclasses) {
-            OntClass subclass = model.createClass(nameSpace + subclassNode.getClassName());
-            parent.addSubClass(subclass);
-            createSubclasses(model, nameSpace, subclass, subclassNode.getSubclasses());
-        }
-    }
-
-
-    /**
-     * This method is used to create non-taxonomic relations between classes in an ontology model.
-     * It accepts a JSON string that specifies the relations to be created.
-     * Each relation is specified as a three-element array: [source class name, property name, target class name].
-     * The method retrieves the source class, target class, and property from the model.
-     * If the property does not exist, it is created.
-     * The method then establishes the relation by adding the property to the source class with the target class as its value.
-     * If either the source class or the target class does not exist, an error message is printed to the console.
-     *
-     * @param model      The ontology model to which the relations are to be added.
-     * @param namespace  The namespace of the ontology model.
-     * @param jsonString The JSON string that specifies the relations to be created.
-     */
     public static void createNonTaxonomicRelations(OntModel model, String namespace, String jsonString) {
         ObjectMapper mapper = new ObjectMapper();
 

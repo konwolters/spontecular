@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Export</title>
+    <th:block th:replace="~{fragments :: headers}"></th:block>
+</head>
+<body class="bg-gray-100">
+
+<form action="@{/getExport}" method="post">
+    <div class="container mx-auto my-3 bg-white p-5 rounded-md shadow-lg">
+        <div class="w-full mb-2">
+            <h1 class="font-bold">Export:</h1>
+            <textarea
+                    class="form-textarea p-2 block w-full h-full border border-gray-200 rounded-md focus:outline-none
+                    focus:border-indigo-500 overflow-auto resize-none"
+                    style="box-sizing: border-box;"
+                    th:text="${content}"
+                    name="inputText" rows="30"></textarea>
+        </div>
+        <button type="button" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded shadow-md">
+            Download
+        </button>
+    </div>
+</form>
+<th:block th:replace="~{fragments :: footer}"></th:block>
+</body>
+</html>
