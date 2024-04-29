@@ -16,21 +16,10 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-@RequiredArgsConstructor
 public class AppController {
-    private final ChatClient chatClient;
 
     @GetMapping("/")
     public String index() {
-        return "index";
-    }
-
-    @GetMapping("/ai/generate")
-    public String generate(Model model, @RequestParam(value = "message", defaultValue = "Tell me about your day in a short assay in json format.") String message) {
-        SystemMessage systemMessage = new SystemMessage("You are a pirate and talk accordingly.");
-        UserMessage userMessage = new UserMessage(message);
-        Prompt prompt = new Prompt(List.of(systemMessage, userMessage));
-        model.addAttribute("gptResponse", chatClient.call(prompt).getResult().getOutput().getContent());
         return "index";
     }
 

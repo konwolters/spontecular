@@ -1,5 +1,6 @@
 package com.example.spontecular.controller;
 
+import com.example.spontecular.dto.Classes;
 import com.example.spontecular.service.GptService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -13,18 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequiredArgsConstructor
 public class GptController {
     private final GptService gptService;
-
-    @Value("${PROMPT.CLASSES}")
-    private String promptClasses;
-
-    @Value("${PROMPT.HIERARCHY}")
-    private String promptHierarchy;
-
-    @Value("${PROMPT.RELATIONS}")
-    private String promptRelations;
-
-    @Value("${PROMPT.AXIOMS}")
-    private String promptConstraints;
 
     String gptResponseMessage = """
                 {
@@ -84,17 +73,10 @@ public class GptController {
 
     @PostMapping("/getClasses")
     public String getClasses(@RequestParam String inputText, Model model, HttpSession session) {
-        //String gptResponseMessage = gptService.getGptResponseMessage(inputText, promptClasses);
 
-        try {
-            // Pause for 5 seconds
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            // Handle exception
-            e.printStackTrace();
-        }
+        Classes classes = gptService.getClasses(inputText);
 
-        model.addAttribute("gptResponseMessage", gptResponseMessage);
+        model.addAttribute("gptResponseMessage", classes.toString());
         model.addAttribute("fieldTitle", "Classes:");
         model.addAttribute("modalTitle", "Edit Classes:");
         model.addAttribute("endpointUrl", "/getHierarchy");

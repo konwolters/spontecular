@@ -1,25 +1,22 @@
 package com.example.spontecular.dto;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @Setter
 public class Classes {
-    private List<String> classes;
+    private List<String> classes = new ArrayList<>();
 
     @Override
     public String toString() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            // Convert the object to a JSON string
-            return objectMapper.writeValueAsString(this);
-        } catch (JsonProcessingException e) {
-            return "Error converting to JSON";
+        StringBuilder sb = new StringBuilder();
+        for (String className : classes) {
+            sb.append(className).append(",\n");
         }
+        return sb.toString();
     }
 }
