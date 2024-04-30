@@ -7,7 +7,9 @@ import com.example.spontecular.dto.Relations;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.jena.ontology.ObjectProperty;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -29,47 +32,51 @@ import java.util.Map;
  */
 @Service
 public class JenaService {
-    private final OntModel model;
     private final StringUtils stringUtils;
-    private final String NAMESPACE = "http://www.semanticweb.org/ontologies/2021/0/untitled-ontology-1#";
+    private final String NAMESPACE;
 
     public JenaService(StringUtils stringUtils) {
         this.stringUtils = stringUtils;
-        this.model = ModelFactory.createOntologyModel();
+        LocalDate now = LocalDate.now();
+        this.NAMESPACE = "https://www.example.org/ontologies/"
+                + now.getYear() + "/"
+                + now.getMonthValue() + "/untitled-ontology/";
     }
 
-    public String createOntology(Classes classes, Hierarchy hierarchy, Relations relations, Constraints constraints) {
-        createOntologyClasses(classes);
-        createClassHierarchy(hierarchy);
-        createRelationships(relations);
-        applyCardinalityConstraints(constraints);
+    public Response createOntology(Classes classes, Hierarchy hierarchy, Relations relations, Constraints constraints) {
+        List<String> errorMessages = new ArrayList<>();
+        OntModel model = ModelFactory.createOntologyModel();
 
-        return modelToString();
+        createOntologyClasses(classes, model, errorMessages);
+        createClassHierarchy(hierarchy, model, errorMessages);
+        createRelationships(relations, model, errorMessages);
+        applyCardinalityConstraints(constraints, model, errorMessages);
+
+        return new Response(modelToString(model), errorMessages);
     }
 
-    private String modelToString() {
+    private String modelToString(OntModel model) {
         StringWriter writer = new StringWriter();
         model.write(writer, "RDF/XML-ABBREV");
         return writer.toString();
     }
 
-    private void createOntologyClasses(Classes classObj) {
-        // Iterate through each class name and add it to the ontology model
+    private void createOntologyClasses(Classes classObj, OntModel model, List<String> errorMessages) {
         for (String className : classObj.getClasses()) {
             className = stringUtils.toUpperCamelCase(className);
-            if (model.getOntClass(NAMESPACE + className) == null) { // Check if class already exists to prevent duplicates
+            if (model.getOntClass(NAMESPACE + className) == null) {
                 OntClass ontClass = model.createClass(NAMESPACE + className);
                 System.out.println("Created class: " + ontClass.getURI());
             } else {
-                System.out.println("Class already exists: " + NAMESPACE + className);
+                errorMessages.add("Class already exists: " + NAMESPACE + className);
             }
         }
     }
 
-    private void createClassHierarchy(Hierarchy hierarchy) {
+    private void createClassHierarchy(Hierarchy hierarchy, OntModel model, List<String> errorMessages) {
         for (List<String> hierarchyElement : hierarchy.getHierarchy()) {
             if (hierarchyElement.size() < 2) {
-                System.out.println("Hierarchy element " + hierarchyElement + " does not contain enough information.");
+                errorMessages.add("Hierarchy element " + hierarchyElement + " does not contain enough information.");
                 continue;
             }
             String parentName = stringUtils.toUpperCamelCase(hierarchyElement.get(0));
@@ -78,7 +85,7 @@ public class JenaService {
             OntClass parentClass = model.getOntClass(NAMESPACE + parentName);
             OntClass childClass = model.getOntClass(NAMESPACE + childName);
             if (parentClass == null || childClass == null) {
-                System.out.println("One or more classes in the hierarchy (" + hierarchyElement + ") do not exist.");
+                errorMessages.add("One or more classes in the hierarchy (" + hierarchyElement + ") do not exist.");
                 continue;
             }
             childClass.addSuperClass(parentClass);
@@ -86,10 +93,10 @@ public class JenaService {
         }
     }
 
-    private void createRelationships(Relations relations) {
+    private void createRelationships(Relations relations, OntModel model, List<String> errorMessages) {
         for (List<String> relation : relations.getRelations()) {
             if (relation.size() != 3) {
-                System.out.println("Relation element " + relation + " does not contain correct information format.");
+                errorMessages.add("Relation element " + relation + " does not contain correct information format.");
                 continue;
             }
             String subjectName = stringUtils.toUpperCamelCase(relation.get(0));
@@ -99,7 +106,7 @@ public class JenaService {
             OntClass subjectClass = model.getOntClass(NAMESPACE + subjectName);
             OntClass objectClass = model.getOntClass(NAMESPACE + objectName);
             if (subjectClass == null || objectClass == null) {
-                System.out.println("One or more classes in the relation (" + relation + ") do not exist.");
+                errorMessages.add("One or more classes in the relation (" + relation + ") do not exist.");
                 continue;
             }
 
@@ -109,10 +116,10 @@ public class JenaService {
         }
     }
 
-    private void applyCardinalityConstraints(Constraints constraints) {
+    private void applyCardinalityConstraints(Constraints constraints, OntModel model, List<String> errorMessages) {
         for (List<String> constraint : constraints.getConstraints()) {
             if (constraint.size() != 5) {
-                System.out.println("Constraint element does not contain correct information format.");
+                errorMessages.add("Constraint element " + constraint + " does not contain correct information format.");
                 continue;
             }
             String subjectName = stringUtils.toUpperCamelCase(constraint.get(0));
@@ -128,7 +135,7 @@ public class JenaService {
                     maxCardinality = Integer.parseInt(maxCard);
                 }
             } catch (NumberFormatException e) {
-                System.out.println("Invalid cardinality values: " + e.getMessage());
+                errorMessages.add("Invalid cardinality values: " + e.getMessage());
                 continue;
             }
 
@@ -137,25 +144,25 @@ public class JenaService {
             ObjectProperty property = model.getObjectProperty(NAMESPACE + predicateName);
 
             if (subjectClass == null || objectClass == null || property == null) {
-                System.out.println("Invalid class or property in the constraint: " + constraint);
+                errorMessages.add("Invalid class or property in the constraint: " + constraint);
                 continue;
             }
 
-            if (!relationExists(subjectClass, property, objectClass)) {
-                System.out.println("No existing relation found for the constraint: " + constraint);
+            if (!relationExists(subjectClass, property, objectClass, model)) {
+                errorMessages.add("No existing relation found for the constraint: " + constraint);
                 continue;
             }
-            applyCardinality(subjectClass, property, objectClass, minCardinality, maxCardinality);
+            applyCardinality(subjectClass, property, objectClass, minCardinality, maxCardinality, model);
         }
     }
 
-    private boolean relationExists(OntClass subjectClass, Property property, OntClass objectClass) {
+    private boolean relationExists(OntClass subjectClass, Property property, OntClass objectClass, OntModel model) {
         ExtendedIterator<Statement> statements = model.listStatements(subjectClass, property, objectClass);
         return statements.hasNext();
     }
 
     private void applyCardinality(OntClass subjectClass, ObjectProperty property, OntClass objectClass,
-                                  int minCardinality, Integer maxCardinality) {
+                                  int minCardinality, Integer maxCardinality, OntModel model) {
         if (minCardinality >= 0) {
             Restriction minCardinalityRestriction = model.createMinCardinalityRestriction(null, property, minCardinality);
             minCardinalityRestriction.addSubClass(model.createSomeValuesFromRestriction(null, property, objectClass));
@@ -166,6 +173,18 @@ public class JenaService {
             Restriction maxCardinalityRestriction = model.createMaxCardinalityRestriction(null, property, maxCardinality);
             maxCardinalityRestriction.addSubClass(model.createSomeValuesFromRestriction(null, property, objectClass));
             subjectClass.addSubClass(maxCardinalityRestriction);
+        }
+    }
+
+    @Getter
+    @Setter
+    public static class Response {
+        private String modelAsString;
+        private List<String> errorMessages;
+
+        public Response(String modelAsString, List<String> errorMessages) {
+            this.modelAsString = modelAsString;
+            this.errorMessages = errorMessages;
         }
     }
 }
