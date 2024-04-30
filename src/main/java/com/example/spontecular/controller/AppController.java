@@ -1,6 +1,10 @@
 package com.example.spontecular.controller;
 
 import com.example.spontecular.dto.Classes;
+import com.example.spontecular.dto.Constraints;
+import com.example.spontecular.dto.Hierarchy;
+import com.example.spontecular.dto.Relations;
+import com.example.spontecular.service.JenaService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +23,9 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
+@RequiredArgsConstructor
 public class AppController {
+    private final JenaService jenaService;
 
     @GetMapping("/")
     public String index() {
@@ -29,7 +35,12 @@ public class AppController {
     @PostMapping("/export")
     public String export(Model model, HttpSession session) {
         Classes classes = (Classes) session.getAttribute("classes");
-        model.addAttribute("content", classes.toString());
+        Hierarchy hierarchy = (Hierarchy) session.getAttribute("hierarchy");
+        Relations relations = (Relations) session.getAttribute("relations");
+        Constraints constraints = (Constraints) session.getAttribute("constraints");
+
+        String content = jenaService.createOntology(classes, hierarchy, relations, constraints);
+        model.addAttribute("content", content);
         return "export";
     }
 

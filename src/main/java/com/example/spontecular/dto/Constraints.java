@@ -1,16 +1,15 @@
 package com.example.spontecular.dto;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @Setter
 public class Constraints {
-    List<List<String>> constraints;
+    List<List<String>> constraints = new ArrayList<>();
 
     @Override
     public String toString() {
