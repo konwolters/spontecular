@@ -5,12 +5,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @Setter
 public class Relations {
-    private List<List<String>> relations;
+    private List<List<String>> relations = new ArrayList<>();
 
     @Override
     public String toString() {

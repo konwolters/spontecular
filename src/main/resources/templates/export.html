@@ -11,13 +11,30 @@
 <form action="@{/getExport}" method="post">
     <div class="container mx-auto my-3 bg-white p-5 rounded-md shadow-lg">
         <div class="w-full mb-2">
-            <h1 class="font-bold">Export:</h1>
+            <h1 class="font-bold text-2xl mb-2">Export:</h1>
             <textarea
                     class="form-textarea p-2 block w-full h-full border border-gray-200 rounded-md focus:outline-none
                     focus:border-indigo-500 overflow-auto resize-none"
                     style="box-sizing: border-box;"
                     th:text="${content}"
-                    name="inputText" rows="30"></textarea>
+                    name="inputText"
+                    rows="30">
+            </textarea>
+
+            <div x-data="{ open: false }" th:if="${#lists.size(errorMessages)}">
+                <button type="button" @click="open = !open"
+                        class="py-2 mt-4 bg-gray-200 border border-gray-300 text-black w-full rounded-md">Error log
+                </button>
+                <div x-show="open" x-transition>
+            <textarea
+                    class="form-textarea p-2 block w-full border border-gray-200 rounded-md focus:outline-none
+                focus:border-indigo-500 overflow-auto resize-none"
+                    style="box-sizing: border-box;"
+                    rows="10"
+                    readonly><th:block th:each="errorMessage : ${errorMessages}" th:text="|${errorMessage}&#10;|"></th:block>
+            </textarea>
+                </div>
+            </div>
         </div>
         <button type="button" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded shadow-md">
             Download

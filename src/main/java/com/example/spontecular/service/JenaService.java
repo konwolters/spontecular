@@ -1,14 +1,28 @@
 package com.example.spontecular.service;
 
+import com.example.spontecular.dto.Classes;
+import com.example.spontecular.dto.Constraints;
+import com.example.spontecular.dto.Hierarchy;
+import com.example.spontecular.dto.Relations;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.jena.ontology.ObjectProperty;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
+import org.apache.jena.ontology.Restriction;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.util.iterator.ExtendedIterator;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.io.StringWriter;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -16,66 +30,161 @@ import java.util.Map;
 /**
  * Service class that provides methods for creating ontology classes, class hierarchies, subclasses, and non-taxonomic relations.
  */
+@Service
 public class JenaService {
-    public void createOntClasses(String jsonString) {
-        String SOURCE = "http://www.semanticweb.org/ontologies/2021/0/untitled-ontology-1";
-        String NAMESPACE = SOURCE + "#";
+    private final StringUtils stringUtils;
+    private final String NAMESPACE;
 
+    public JenaService(StringUtils stringUtils) {
+        this.stringUtils = stringUtils;
+        LocalDate now = LocalDate.now();
+        this.NAMESPACE = "https://www.example.org/ontologies/"
+                + now.getYear() + "/"
+                + now.getMonthValue() + "/untitled-ontology/";
+    }
+
+    public Response createOntology(Classes classes, Hierarchy hierarchy, Relations relations, Constraints constraints) {
+        List<String> errorMessages = new ArrayList<>();
         OntModel model = ModelFactory.createOntologyModel();
 
-        ObjectMapper mapper = new ObjectMapper();
-        ArrayList<String> classes = new ArrayList<>();
+        createOntologyClasses(classes, model, errorMessages);
+        createClassHierarchy(hierarchy, model, errorMessages);
+        createRelationships(relations, model, errorMessages);
+        applyCardinalityConstraints(constraints, model, errorMessages);
 
-        try {
-            Map<String, Object> map = mapper.readValue(jsonString, new TypeReference<Map<String, Object>>() {
-            });
-            classes = (ArrayList<String>) map.get("classes");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        return new Response(modelToString(model), errorMessages);
+    }
 
-        for (String className : classes) {
-            OntClass ontClass = model.createClass(NAMESPACE + className);
+    private String modelToString(OntModel model) {
+        StringWriter writer = new StringWriter();
+        model.write(writer, "RDF/XML-ABBREV");
+        return writer.toString();
+    }
+
+    private void createOntologyClasses(Classes classObj, OntModel model, List<String> errorMessages) {
+        for (String className : classObj.getClasses()) {
+            className = stringUtils.toUpperCamelCase(className);
+            if (model.getOntClass(NAMESPACE + className) == null) {
+                OntClass ontClass = model.createClass(NAMESPACE + className);
+                System.out.println("Created class: " + ontClass.getURI());
+            } else {
+                errorMessages.add("Class already exists: " + NAMESPACE + className);
+            }
         }
     }
 
-    public static void createNonTaxonomicRelations(OntModel model, String namespace, String jsonString) {
-        ObjectMapper mapper = new ObjectMapper();
-
-        try {
-            JsonNode rootNode = mapper.readTree(jsonString);
-            JsonNode relationsNode = rootNode.path("relations");
-
-            for (JsonNode relation : relationsNode) {
-                if (relation.size() == 3) { // Ensure each relation array has exactly 3 elements
-                    String sourceClassName = relation.get(0).asText();
-                    String propertyName = relation.get(1).asText();
-                    String targetClassName = relation.get(2).asText();
-
-                    // Retrieve or create the object property
-                    String propertyUri = namespace + propertyName;
-                    ObjectProperty property = model.getObjectProperty(propertyUri);
-                    if (property == null) {
-                        property = model.createObjectProperty(propertyUri);
-                    }
-
-                    // Retrieve existing source and target classes
-                    OntClass sourceClass = model.getOntClass(namespace + sourceClassName);
-                    OntClass targetClass = model.getOntClass(namespace + targetClassName);
-
-                    // Check if both classes exist
-                    if (sourceClass != null && targetClass != null) {
-                        // Add the property assertion
-                        sourceClass.addProperty(property, targetClass);
-                    } else {
-                        System.err.println("One or both classes not found for relation: " + relation);
-                    }
-                } else {
-                    System.err.println("Invalid relation format, expected 3 elements per relation: " + relation);
-                }
+    private void createClassHierarchy(Hierarchy hierarchy, OntModel model, List<String> errorMessages) {
+        for (List<String> hierarchyElement : hierarchy.getHierarchy()) {
+            if (hierarchyElement.size() < 2) {
+                errorMessages.add("Hierarchy element " + hierarchyElement + " does not contain enough information.");
+                continue;
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+            String parentName = stringUtils.toUpperCamelCase(hierarchyElement.get(0));
+            String childName = stringUtils.toUpperCamelCase(hierarchyElement.get(1));
+
+            OntClass parentClass = model.getOntClass(NAMESPACE + parentName);
+            OntClass childClass = model.getOntClass(NAMESPACE + childName);
+            if (parentClass == null || childClass == null) {
+                errorMessages.add("One or more classes in the hierarchy (" + hierarchyElement + ") do not exist.");
+                continue;
+            }
+            childClass.addSuperClass(parentClass);
+            System.out.println("Added " + childName + " as a subclass of " + parentName);
+        }
+    }
+
+    private void createRelationships(Relations relations, OntModel model, List<String> errorMessages) {
+        for (List<String> relation : relations.getRelations()) {
+            if (relation.size() != 3) {
+                errorMessages.add("Relation element " + relation + " does not contain correct information format.");
+                continue;
+            }
+            String subjectName = stringUtils.toUpperCamelCase(relation.get(0));
+            String predicateName = stringUtils.toLowerCamelCase(relation.get(1));
+            String objectName = stringUtils.toUpperCamelCase(relation.get(2));
+
+            OntClass subjectClass = model.getOntClass(NAMESPACE + subjectName);
+            OntClass objectClass = model.getOntClass(NAMESPACE + objectName);
+            if (subjectClass == null || objectClass == null) {
+                errorMessages.add("One or more classes in the relation (" + relation + ") do not exist.");
+                continue;
+            }
+
+            ObjectProperty property = model.createObjectProperty(NAMESPACE + predicateName);
+            model.add(subjectClass, property, objectClass);
+            System.out.println("Added relationship: " + subjectName + " " + predicateName + " " + objectName);
+        }
+    }
+
+    private void applyCardinalityConstraints(Constraints constraints, OntModel model, List<String> errorMessages) {
+        for (List<String> constraint : constraints.getConstraints()) {
+            if (constraint.size() != 5) {
+                errorMessages.add("Constraint element " + constraint + " does not contain correct information format.");
+                continue;
+            }
+            String subjectName = stringUtils.toUpperCamelCase(constraint.get(0));
+            String predicateName = stringUtils.toLowerCamelCase(constraint.get(1));
+            String objectName = stringUtils.toUpperCamelCase(constraint.get(2));
+            int minCardinality;
+            Integer maxCardinality = null;
+
+            try {
+                minCardinality = Integer.parseInt(constraint.get(3));
+                String maxCard = constraint.get(4);
+                if (!"N".equals(maxCard)) {
+                    maxCardinality = Integer.parseInt(maxCard);
+                }
+            } catch (NumberFormatException e) {
+                errorMessages.add("Invalid cardinality values: " + e.getMessage());
+                continue;
+            }
+
+            OntClass subjectClass = model.getOntClass(NAMESPACE + subjectName);
+            OntClass objectClass = model.getOntClass(NAMESPACE + objectName);
+            ObjectProperty property = model.getObjectProperty(NAMESPACE + predicateName);
+
+            if (subjectClass == null || objectClass == null || property == null) {
+                errorMessages.add("Invalid class or property in the constraint: " + constraint);
+                continue;
+            }
+
+            if (!relationExists(subjectClass, property, objectClass, model)) {
+                errorMessages.add("No existing relation found for the constraint: " + constraint);
+                continue;
+            }
+            applyCardinality(subjectClass, property, objectClass, minCardinality, maxCardinality, model);
+        }
+    }
+
+    private boolean relationExists(OntClass subjectClass, Property property, OntClass objectClass, OntModel model) {
+        ExtendedIterator<Statement> statements = model.listStatements(subjectClass, property, objectClass);
+        return statements.hasNext();
+    }
+
+    private void applyCardinality(OntClass subjectClass, ObjectProperty property, OntClass objectClass,
+                                  int minCardinality, Integer maxCardinality, OntModel model) {
+        if (minCardinality >= 0) {
+            Restriction minCardinalityRestriction = model.createMinCardinalityRestriction(null, property, minCardinality);
+            minCardinalityRestriction.addSubClass(model.createSomeValuesFromRestriction(null, property, objectClass));
+            subjectClass.addSubClass(minCardinalityRestriction);
+        }
+
+        if (maxCardinality != null) {
+            Restriction maxCardinalityRestriction = model.createMaxCardinalityRestriction(null, property, maxCardinality);
+            maxCardinalityRestriction.addSubClass(model.createSomeValuesFromRestriction(null, property, objectClass));
+            subjectClass.addSubClass(maxCardinalityRestriction);
+        }
+    }
+
+    @Getter
+    @Setter
+    public static class Response {
+        private String modelAsString;
+        private List<String> errorMessages;
+
+        public Response(String modelAsString, List<String> errorMessages) {
+            this.modelAsString = modelAsString;
+            this.errorMessages = errorMessages;
         }
     }
 }
