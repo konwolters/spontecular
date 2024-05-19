@@ -2,6 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:x-transition="http://www.w3.org/1999/xhtml">
 <body>
 
+<!--Header Fragment-->
 <th:block th:fragment="headers">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="/css/output.css" rel="stylesheet">
@@ -9,6 +10,7 @@
     <script type="text/javascript" th:src="@{/js/htmx.min.js}"></script>
 </th:block>
 
+<!--Footer Fragment-->
 <th:block th:fragment="footer">
     <!-- Loading Indicator - Hidden by default -->
     <div id="loadingIndicator"
@@ -19,6 +21,8 @@
     <script type="text/javascript" th:src="@{/js/scripts.js}"></script>
 </th:block>
 
+
+<!--Feature Fragment-->
 <div th:fragment="featureFragment"
      th:data-gpt-response-message="${gptResponseMessage}"
      x-data="{ showModal: false, text: '', tempText: '' }"
@@ -86,5 +90,16 @@
         </div>
     </div>
 </div>
+
+<!--Specification Fragment-->
+<th:block th:fragment="specificationFragment">
+    <div class="w-full h-full">
+            <textarea class="form-textarea text-sm p-2 block w-full h-full border border-gray-200 rounded-md focus:outline-none focus:border-indigo-500"
+                      placeholder="Enter text here" name="inputText"
+                      th:x-init="|inputText = '${#strings.escapeJavaScript(specification)}'|"
+                      x-model="inputText"
+                      style="overflow-y: auto; resize: none;"></textarea>
+    </div>
+</th:block>
 </body>
 </html>

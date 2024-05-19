@@ -36,13 +36,18 @@ public class AppController {
 
     @GetMapping("/")
     public String index(Model model) {
+        return "index";
+    }
+
+    @GetMapping("/loadExampleSpecification")
+    public String loadExampleSpecification(Model model) {
         try {
             String content = specification.getContentAsString(StandardCharsets.UTF_8);
             model.addAttribute("specification", content);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return "index";
+        return "fragments :: specificationFragment";
     }
 
     @PostMapping("/export")

@@ -9,23 +9,40 @@
 <body class="bg-gray-100">
 
 <form th:action="@{/export}" method="post">
-    <div class="container mx-auto my-3 flex flex-wrap items-stretch bg-white p-2 rounded-md shadow-lg relative"
-         x-data="{ showButtons: false }">
-        <div class="w-full lg:w-1/2">
-            <textarea
-                    class="form-textarea p-2 block w-full h-full border border-gray-200 rounded-md focus:outline-none focus:border-indigo-500"
-                    th:text="${specification}"
-                    placeholder="Enter text here" name="inputText" rows="38"
-                    style="overflow-y: auto; resize: none;"></textarea>
+    <div class="container mx-auto my-10 flex flex-wrap items-stretch bg-white border p-2 rounded-md shadow-lg relative"
+         x-data="{showButtons: false, inputText: ''}">
+        <div class="w-full lg:w-1/2 h-[800px]" id="specificationDiv">
+            <div class="p-2 flex items-center justify-center h-full border border-gray-300 bg-gray-200 rounded-md focus:outline-none focus:border-indigo-500">
+                <div class="flex flex-col space-y-3 items-center">
+                    <button class="bg-white w-64 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow flex items-center space-x-2 transform transition hover:bg-blue-200">
+                        <i class="bi bi-file-earmark-word text-blue-600 text-2xl"></i>
+                        <span>Import from Word</span>
+                    </button>
+                    <button class="bg-white w-64 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow flex items-center space-x-2 transform transition hover:bg-red-200">
+                        <i class="bi bi-file-earmark-pdf text-red-600 text-2xl"></i>
+                        <span>Import from PDF</span>
+                    </button>
+                    <button class="bg-white w-64 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow flex items-center space-x-2 transform transition hover:bg-green-200"
+                            th:hx-get="@{/loadExampleSpecification}"
+                            hx-target="#specificationDiv">
+                        <i class="bi bi-file-earmark-text text-green-600 text-2xl"></i>
+                        <span>Example specification</span>
+                    </button>
+                </div>
+            </div>
         </div>
         <div class="w-full lg:w-1/2 px-6 space-y3">
             <div id="classesDiv">
                 <div class="pt-6 flex justify-center">
                     <button @click="showButtons = true;"
-                            class="px-6 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded shadow-md"
+                            :disabled="inputText.trim() === ''"
+                            :title="inputText.trim() === '' ? 'Please load or enter specification text.' : ''"
+                            :class="{'bg-gray-200 cursor-not-allowed': inputText.trim() === '', 'bg-blue-800 hover:bg-blue-900': inputText.trim() !== ''}"
+                            class="px-6 py-2 text-white flex items-center  rounded shadow-md"
                             th:hx-post="@{/getClasses}"
                             hx-target="#classesDiv" type="submit">
-                        Start Ontology Generation
+                        <i class="bi bi-rocket-takeoff text-2xl mr-2"></i>
+                        <span>Start Ontology Generation</span>
                     </button>
                 </div>
             </div>
