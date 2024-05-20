@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="/css/output.css" rel="stylesheet">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <script type="text/javascript" th:src="@{/js/htmx.min.js}"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
 </th:block>
 
 <!--Footer Fragment-->
@@ -94,12 +94,14 @@
 <!--Specification Fragment-->
 <th:block th:fragment="specificationFragment">
     <div class="w-full h-full">
-            <textarea class="form-textarea text-sm p-2 block w-full h-full border border-gray-200 rounded-md focus:outline-none focus:border-indigo-500"
-                      placeholder="Enter text here" name="inputText"
-                      th:x-init="|inputText = '${#strings.escapeJavaScript(specification)}'|"
-                      x-model="inputText"
-                      style="overflow-y: auto; resize: none;"></textarea>
+            <textarea
+                    class="form-textarea text-sm p-2 block w-full h-full border border-gray-200 rounded-md focus:outline-none focus:border-indigo-500"
+                    placeholder="Enter text here" name="inputText"
+                    th:x-init="|inputText = '${#strings.escapeJavaScript(specification)}'|"
+                    x-model="inputText"
+                    style="overflow-y: auto; resize: none;"></textarea>
     </div>
 </th:block>
+
 </body>
 </html>
