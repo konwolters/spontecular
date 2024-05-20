@@ -7,7 +7,6 @@ import com.example.spontecular.dto.Relations;
 import com.example.spontecular.service.JenaService;
 import com.example.spontecular.service.SpecificationService;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -27,9 +25,8 @@ public class AppController {
     private final SpecificationService specificationService;
 
 
-
-    @GetMapping("/")
-    public String index(Model model) {
+    @GetMapping({"/", "/restart"})
+    public String index() {
         return "index";
     }
 
@@ -37,7 +34,7 @@ public class AppController {
     public String loadSpecification(Model model,
                                     @RequestParam(name = "specification_type") String specificationType,
                                     @RequestParam(required = false, name = "pdfFile") MultipartFile pdfFile,
-                                    @RequestParam(required = false, name = "wordFile") MultipartFile wordFile){
+                                    @RequestParam(required = false, name = "wordFile") MultipartFile wordFile) {
 
         String specification = switch (specificationType) {
             case "example" -> specificationService.loadExampleSpecification();
@@ -59,7 +56,7 @@ public class AppController {
     }
 
     @PostMapping("/export")
-    public String export(Model model, HttpSession session,
+    public String export(Model model,
                          @RequestParam String classesText,
                          @RequestParam String hierarchyText,
                          @RequestParam(required = false) String relationsText,
@@ -81,7 +78,7 @@ public class AppController {
     }
 
     @GetMapping("favicon.ico")
-    void favicon(HttpServletResponse response) throws IOException {
+    void favicon(HttpServletResponse response) {
         response.setStatus(HttpServletResponse.SC_NO_CONTENT);
     }
 }
