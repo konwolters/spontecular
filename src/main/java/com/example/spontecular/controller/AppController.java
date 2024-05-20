@@ -7,8 +7,8 @@ import com.example.spontecular.dto.Relations;
 import com.example.spontecular.service.JenaService;
 import com.example.spontecular.service.SpecificationService;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -26,9 +25,8 @@ public class AppController {
     private final SpecificationService specificationService;
 
 
-
-    @GetMapping("/")
-    public String index(Model model) {
+    @GetMapping({"/", "/restart"})
+    public String index() {
         return "index";
     }
 
@@ -36,7 +34,7 @@ public class AppController {
     public String loadSpecification(Model model,
                                     @RequestParam(name = "specification_type") String specificationType,
                                     @RequestParam(required = false, name = "pdfFile") MultipartFile pdfFile,
-                                    @RequestParam(required = false, name = "wordFile") MultipartFile wordFile){
+                                    @RequestParam(required = false, name = "wordFile") MultipartFile wordFile) {
 
         String specification = switch (specificationType) {
             case "example" -> specificationService.loadExampleSpecification();
@@ -50,12 +48,25 @@ public class AppController {
         return "fragments :: specificationFragment";
     }
 
+    @PostMapping("/updateFeature")
+    public ResponseEntity<String> parseSpecification(@RequestParam String inputText) {
+        System.out.println("Received featureId: " + inputText);
+        System.out.println();
+        return ResponseEntity.ok("success");
+    }
+
     @PostMapping("/export")
-    public String export(Model model, HttpSession session) {
-        Classes classes = (Classes) session.getAttribute("classes");
-        Hierarchy hierarchy = (Hierarchy) session.getAttribute("hierarchy");
-        Relations relations = (Relations) session.getAttribute("relations");
-        Constraints constraints = (Constraints) session.getAttribute("constraints");
+    public String export(Model model,
+                         @RequestParam String classesText,
+                         @RequestParam String hierarchyText,
+                         @RequestParam(required = false) String relationsText,
+                         @RequestParam(required = false) String constraintsText) {
+        Classes classes = new Classes(classesText);
+
+        System.out.println("Hierarchy: " + hierarchyText);
+        Hierarchy hierarchy = hierarchyText != null ? new Hierarchy(hierarchyText) : null;
+        Relations relations = relationsText != null ? new Relations(relationsText) : null;
+        Constraints constraints = constraintsText != null ? new Constraints(constraintsText) : null;
 
         JenaService.Response response = jenaService.createOntology(classes, hierarchy, relations, constraints);
         String content = response.getModelAsString();
@@ -67,7 +78,7 @@ public class AppController {
     }
 
     @GetMapping("favicon.ico")
-    void favicon(HttpServletResponse response) throws IOException {
+    void favicon(HttpServletResponse response) {
         response.setStatus(HttpServletResponse.SC_NO_CONTENT);
     }
 }

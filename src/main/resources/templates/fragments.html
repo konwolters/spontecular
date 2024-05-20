@@ -21,17 +21,16 @@
     <script type="text/javascript" th:src="@{/webjars/htmx.org/dist/htmx.min.js}"></script>
 </th:block>
 
-
 <!--Feature Fragment-->
 <div th:fragment="featureFragment"
-     th:data-gpt-response-message="${gptResponseMessage}"
      x-data="{ showModal: false, text: '', tempText: '' }"
-     x-init="text = $el.dataset.gptResponseMessage"
+     th:x-init="|text = '${#strings.escapeJavaScript(gptResponseMessage)}'|"
      class="py-1">
 
     <h5 th:text="${fieldTitle}"></h5>
     <div class="relative">
         <textarea type="text" x-model="text" placeholder="Enter text here"
+                  th:name="${ feature + 'Text'}"
                   class="input border rounded w-full px-2 py-1 text-gray-700 leading-tight focus:outline-none focus:border-indigo-500"
                   rows="6"
                   style="overflow-y: auto;"
@@ -63,7 +62,7 @@
         <div class="container mx-auto h-full flex justify-center items-start">
             <div class="bg-white mt-10 rounded shadow-lg w-4/5" @click.away="showModal = false">
                 <div class="border-b px-4 py-2 flex justify-between items-center">
-                    <h3 class="font-semibold text-lg" th:text="${modalTitle}"></h3>
+                    <h3 class="font-semibold text-lg" th:text="${'Edit'  + modalTitle}"></h3>
                     <button type="button"
                             class="text-black"
                             @click="showModal = false">&times;
@@ -83,6 +82,7 @@
                     </button>
                     <button type="button"
                             class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+                            hx-post="/updateFeature"
                             @click="text = tempText; showModal = false">Save
                     </button>
                 </div>

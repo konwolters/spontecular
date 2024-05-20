@@ -37,8 +37,8 @@ public class GptController {
         }
 
         model.addAttribute("gptResponseMessage", classes.toString());
+        model.addAttribute("feature", "classes");
         model.addAttribute("fieldTitle", "Classes:");
-        model.addAttribute("modalTitle", "Edit Classes:");
         model.addAttribute("endpointUrl", "/getHierarchy");
         model.addAttribute("targetElementId", "hierarchyDiv");
         session.setAttribute("classes", classes);
@@ -54,8 +54,8 @@ public class GptController {
         if (useDummyData) {
             hierarchy = new Hierarchy();
             hierarchy.setHierarchy(List.of(
-                    List.of("Component", "Chassis"),
-                    List.of("Component", "Rail"),
+                    List.of("Framework", "Chassis"),
+                    List.of("Sidewall", "Rail"),
                     List.of("Component", "Framework"),
                     List.of("Component", "Sidewall"),
                     List.of("Component", "Circuit board"),
@@ -71,8 +71,8 @@ public class GptController {
         }
 
         model.addAttribute("gptResponseMessage", hierarchy.toString());
+        model.addAttribute("feature", "hierarchy");
         model.addAttribute("fieldTitle", "Hierarchy:");
-        model.addAttribute("modalTitle", "Edit Hierarchy:");
         model.addAttribute("endpointUrl", "/getRelations");
         model.addAttribute("targetElementId", "relationsDiv");
         session.setAttribute("hierarchy", hierarchy);
@@ -104,8 +104,8 @@ public class GptController {
         }
 
         model.addAttribute("gptResponseMessage", relations.toString());
+        model.addAttribute("feature", "relations");
         model.addAttribute("fieldTitle", "Non-taxonomic Relations:");
-        model.addAttribute("modalTitle", "Edit non-taxonomic Relations:");
         model.addAttribute("endpointUrl", "/getConstraints");
         model.addAttribute("targetElementId", "constraintsDiv");
         session.setAttribute("relations", relations);
@@ -138,8 +138,8 @@ public class GptController {
         }
 
         model.addAttribute("gptResponseMessage", constraints.toString());
+        model.addAttribute("feature", "constraints");
         model.addAttribute("fieldTitle", "Constraints:");
-        model.addAttribute("modalTitle", "Edit Constraints:");
         session.setAttribute("constraints", constraints);
 
         return "fragments :: featureFragment";
