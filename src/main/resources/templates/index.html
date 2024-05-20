@@ -15,7 +15,8 @@
             <div class="p-2 flex items-center justify-center h-full border border-gray-300 bg-gray-200 rounded-md focus:outline-none focus:border-indigo-500">
                 <div class="flex flex-col space-y-3 items-center">
                     <button class="bg-white w-64 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow flex items-center space-x-2 transform transition hover:bg-blue-200"
-                            type="button">
+                            type="button"
+                            onclick="document.getElementById('wordFileInput').click();">
                         <i class="bi bi-file-earmark-word text-blue-600 text-2xl"></i>
                         <span>Import from Word</span>
                     </button>
@@ -68,6 +69,12 @@
       hx-encoding="multipart/form-data"
       hx-trigger="change">
     <input type="file" id="pdfFileInput" name="pdfFile" style="display:none" accept="application/pdf"/>
+</form>
+<form hx-post="/loadSpecification?specification_type=word"
+      hx-target="#specificationDiv"
+      hx-encoding="multipart/form-data"
+      hx-trigger="change">
+    <input type="file" id="wordFileInput" name="wordFile" style="display:none" accept=".docx"/>
 </form>
 <th:block th:replace="~{fragments :: footer}"></th:block>
 </body>

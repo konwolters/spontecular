@@ -35,12 +35,13 @@ public class AppController {
     @PostMapping("/loadSpecification")
     public String loadSpecification(Model model,
                                     @RequestParam(name = "specification_type") String specificationType,
-                                    @RequestParam(required = false, name = "pdfFile") MultipartFile pdfFile) {
+                                    @RequestParam(required = false, name = "pdfFile") MultipartFile pdfFile,
+                                    @RequestParam(required = false, name = "wordFile") MultipartFile wordFile){
 
         String specification = switch (specificationType) {
             case "example" -> specificationService.loadExampleSpecification();
             case "pdf" -> specificationService.loadPdfSpecification(pdfFile);
-            case "word" -> specificationService.loadWordSpecification();
+            case "word" -> specificationService.loadWordSpecification(wordFile);
             default -> "";
         };
 

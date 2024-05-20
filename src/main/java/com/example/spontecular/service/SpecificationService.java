@@ -5,15 +5,18 @@ import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
+import org.apache.poi.xwpf.usermodel.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +39,6 @@ public class SpecificationService {
     public String loadPdfSpecification(MultipartFile pdfFile) {
         String text;
 
-        System.out.println("loadPdfSpecification called");
         try (InputStream inputStream = pdfFile.getInputStream()) {
             byte[] pdfBytes = toByteArray(inputStream);
             try (PDDocument document = Loader.loadPDF(pdfBytes)) {
@@ -61,7 +63,32 @@ public class SpecificationService {
         }
     }
 
-    public String loadWordSpecification() {
-        return "Word specification";
+    public String loadWordSpecification(MultipartFile wordFile) {
+        StringBuilder sb = new StringBuilder();
+
+        try (InputStream inputStream = wordFile.getInputStream()) {
+            XWPFDocument document = new XWPFDocument(inputStream);
+
+            // Extract text from paragraphs
+            List<XWPFParagraph> paragraphs = document.getParagraphs();
+            for (XWPFParagraph para : paragraphs) {
+                sb.append(para.getText()).append("\n");
+            }
+
+            // Extract text from tables
+            List<XWPFTable> tables = document.getTables();
+            for (XWPFTable table : tables) {
+                for (XWPFTableRow row : table.getRows()) {
+                    for (XWPFTableCell cell : row.getTableCells()) {
+                        sb.append(cell.getText()).append("\t");
+                    }
+                    sb.append("\n");
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to read Word file", e);
+        }
+
+        return sb.toString();
     }
 }
