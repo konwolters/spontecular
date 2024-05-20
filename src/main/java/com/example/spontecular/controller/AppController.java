@@ -5,44 +5,49 @@ import com.example.spontecular.dto.Constraints;
 import com.example.spontecular.dto.Hierarchy;
 import com.example.spontecular.dto.Relations;
 import com.example.spontecular.service.JenaService;
+import com.example.spontecular.service.SpecificationService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.springframework.ai.chat.ChatClient;
-import org.springframework.ai.chat.messages.SystemMessage;
-import org.springframework.ai.chat.messages.UserMessage;
-import org.springframework.ai.chat.prompt.Prompt;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
 public class AppController {
     private final JenaService jenaService;
+    private final SpecificationService specificationService;
 
-    //Import sample Specification
-    @Value("classpath:/specification/satellite.txt")
-    private Resource specification;
+
 
     @GetMapping("/")
     public String index(Model model) {
-        try {
-            String content = specification.getContentAsString(StandardCharsets.UTF_8);
-            model.addAttribute("specification", content);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         return "index";
+    }
+
+    @PostMapping("/loadSpecification")
+    public String loadSpecification(Model model,
+                                    @RequestParam(name = "specification_type") String specificationType,
+                                    @RequestParam(required = false, name = "pdfFile") MultipartFile pdfFile,
+                                    @RequestParam(required = false, name = "wordFile") MultipartFile wordFile){
+
+        String specification = switch (specificationType) {
+            case "example" -> specificationService.loadExampleSpecification();
+            case "pdf" -> specificationService.loadPdfSpecification(pdfFile);
+            case "word" -> specificationService.loadWordSpecification(wordFile);
+            default -> "";
+        };
+
+        model.addAttribute("specification", specification);
+
+        return "fragments :: specificationFragment";
     }
 
     @PostMapping("/export")
