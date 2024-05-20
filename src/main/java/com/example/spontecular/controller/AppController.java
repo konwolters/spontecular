@@ -9,6 +9,7 @@ import com.example.spontecular.service.SpecificationService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -50,12 +51,25 @@ public class AppController {
         return "fragments :: specificationFragment";
     }
 
+    @PostMapping("/updateFeature")
+    public ResponseEntity<String> parseSpecification(@RequestParam String inputText) {
+        System.out.println("Received featureId: " + inputText);
+        System.out.println();
+        return ResponseEntity.ok("success");
+    }
+
     @PostMapping("/export")
-    public String export(Model model, HttpSession session) {
-        Classes classes = (Classes) session.getAttribute("classes");
-        Hierarchy hierarchy = (Hierarchy) session.getAttribute("hierarchy");
-        Relations relations = (Relations) session.getAttribute("relations");
-        Constraints constraints = (Constraints) session.getAttribute("constraints");
+    public String export(Model model, HttpSession session,
+                         @RequestParam String classesText,
+                         @RequestParam String hierarchyText,
+                         @RequestParam(required = false) String relationsText,
+                         @RequestParam(required = false) String constraintsText) {
+        Classes classes = new Classes(classesText);
+
+        System.out.println("Hierarchy: " + hierarchyText);
+        Hierarchy hierarchy = hierarchyText != null ? new Hierarchy(hierarchyText) : null;
+        Relations relations = relationsText != null ? new Relations(relationsText) : null;
+        Constraints constraints = constraintsText != null ? new Constraints(constraintsText) : null;
 
         JenaService.Response response = jenaService.createOntology(classes, hierarchy, relations, constraints);
         String content = response.getModelAsString();

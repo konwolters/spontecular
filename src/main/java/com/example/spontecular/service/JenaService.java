@@ -48,9 +48,15 @@ public class JenaService {
         OntModel model = ModelFactory.createOntologyModel();
 
         createOntologyClasses(classes, model, errorMessages);
-        createClassHierarchy(hierarchy, model, errorMessages);
-        createRelationships(relations, model, errorMessages);
-        applyCardinalityConstraints(constraints, model, errorMessages);
+
+        if(hierarchy != null)
+            createClassHierarchy(hierarchy, model, errorMessages);
+
+        if(relations != null)
+            createRelationships(relations, model, errorMessages);
+
+        if(constraints != null)
+            applyCardinalityConstraints(constraints, model, errorMessages);
 
         return new Response(modelToString(model), errorMessages);
     }
