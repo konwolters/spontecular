@@ -8,12 +8,14 @@ import com.example.spontecular.service.GptService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -36,11 +38,7 @@ public class GptController {
             classes = gptService.getClasses(inputText);
         }
 
-        model.addAttribute("gptResponseMessage", classes.toString());
-        model.addAttribute("feature", "classes");
-        model.addAttribute("fieldTitle", "Classes:");
-        model.addAttribute("endpointUrl", "/getHierarchy");
-        model.addAttribute("targetElementId", "hierarchyDiv");
+        model.addAllAttributes(getFeatureResponse(inputText, "classes", null, null));
         session.setAttribute("classes", classes);
 
         return "fragments :: featureFragment";
@@ -70,11 +68,7 @@ public class GptController {
             hierarchy = gptService.getHierarchy(inputText, classes.toString());
         }
 
-        model.addAttribute("gptResponseMessage", hierarchy.toString());
-        model.addAttribute("feature", "hierarchy");
-        model.addAttribute("fieldTitle", "Hierarchy:");
-        model.addAttribute("endpointUrl", "/getRelations");
-        model.addAttribute("targetElementId", "relationsDiv");
+        model.addAllAttributes(getFeatureResponse(inputText, "hierarchy", classes.toString(), null));
         session.setAttribute("hierarchy", hierarchy);
 
         return "fragments :: featureFragment";
@@ -103,11 +97,7 @@ public class GptController {
             relations = gptService.getRelations(inputText, classes.toString());
         }
 
-        model.addAttribute("gptResponseMessage", relations.toString());
-        model.addAttribute("feature", "relations");
-        model.addAttribute("fieldTitle", "Non-taxonomic Relations:");
-        model.addAttribute("endpointUrl", "/getConstraints");
-        model.addAttribute("targetElementId", "constraintsDiv");
+        model.addAllAttributes(getFeatureResponse(inputText, "relations", classes.toString(), null));
         session.setAttribute("relations", relations);
 
         return "fragments :: featureFragment";
@@ -137,12 +127,54 @@ public class GptController {
             constraints = gptService.getConstraints(inputText, relations.toString());
         }
 
-        model.addAttribute("gptResponseMessage", constraints.toString());
-        model.addAttribute("feature", "constraints");
-        model.addAttribute("fieldTitle", "Constraints:");
+        model.addAllAttributes(getFeatureResponse(inputText, "constraints", null, relations.toString()));
         session.setAttribute("constraints", constraints);
 
         return "fragments :: featureFragment";
+    }
+
+    @PostMapping("/reloadFeature")
+    public String reloadFeature(Model model,
+                                @RequestParam String inputText,
+                                @RequestParam String feature,
+                                @RequestParam(required = false) String classesText,
+                                @RequestParam(required = false) String relationsText) {
+
+        model.addAllAttributes(getFeatureResponse(inputText, feature, classesText, relationsText));
+        model.addAttribute("showContinueButton", false);
+
+        return "fragments :: featureFragment";
+    }
+
+    private Map<String, String> getFeatureResponse(String inputText, String feature, String classesText, String relationsText) {
+        Map<String, String> response;
+
+        switch (feature) {
+            case "classes" -> response = Map.of(
+                    "gptResponseMessage", gptService.getClasses(inputText).toString(),
+                    "feature", "classes",
+                    "fieldTitle", "Classes:",
+                    "endpointUrl", "/getHierarchy",
+                    "targetElementId", "hierarchyDiv");
+            case "hierarchy" -> response = Map.of(
+                    "gptResponseMessage", gptService.getHierarchy(inputText, classesText).toString(),
+                    "feature", "hierarchy",
+                    "fieldTitle", "Hierarchy:",
+                    "endpointUrl", "/getRelations",
+                    "targetElementId", "relationsDiv");
+            case "relations" -> response = Map.of(
+                    "gptResponseMessage", gptService.getRelations(inputText, classesText).toString(),
+                    "feature", "relations",
+                    "fieldTitle", "Non-taxonomic Relations:",
+                    "endpointUrl", "/getConstraints",
+                    "targetElementId", "constraintsDiv");
+            case "constraints" -> response = Map.of(
+                    "gptResponseMessage", gptService.getConstraints(inputText, relationsText).toString(),
+                    "feature", "constraints",
+                    "fieldTitle", "Constraints:");
+            default -> response = Map.of();
+        }
+        return response;
     }
 }
 
