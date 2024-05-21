@@ -8,7 +8,6 @@ import com.example.spontecular.service.JenaService;
 import com.example.spontecular.service.SpecificationService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,18 +41,11 @@ public class AppController {
             case "word" -> specificationService.loadWordSpecification(wordFile);
             default -> "";
         };
-
         model.addAttribute("specification", specification);
 
         return "fragments :: specificationFragment";
     }
 
-    @PostMapping("/updateFeature")
-    public ResponseEntity<String> parseSpecification(@RequestParam String inputText) {
-        System.out.println("Received featureId: " + inputText);
-        System.out.println();
-        return ResponseEntity.ok("success");
-    }
 
     @PostMapping("/export")
     public String export(Model model,

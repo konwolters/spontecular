@@ -7,11 +7,10 @@ document.body.addEventListener('htmx:beforeSwap', function() {
 });
 
 document.body.addEventListener('htmx:afterSettle', function(event) {
-    // Check if the affected area is the constraintsDiv
     if (event.detail.elt.id === 'constraintsDiv') {
         var continueButton = document.querySelector('#constraintsDiv .continueButton');
         if (continueButton) {
-            continueButton.style.display = 'none';  // This hides the button
+            continueButton.style.display = 'none';
         }
     }
 });

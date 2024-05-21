@@ -37,15 +37,23 @@
         ></textarea>
 
         <button type="button" @click="tempText = text; showModal = true"
-                class="mx-6 my-4 px-1 bg-slate-100 text-black border rounded hover:bg-slate-50
-                focus:outline-none mt-2 absolute top-0 right-0">
-            <i class="bi bi-box-arrow-up-right"></i>
+                class="mx-6 mt-1 px-1 bg-slate-100 text-black border rounded hover:bg-slate-50
+                focus:outline-none absolute top-0 right-0">
+            <i class="bi bi-box-arrow-up-right" title="Edit"></i>
+        </button>
+        <button type="button"
+                class="mx-6 mt-0.5 px-1 bg-slate-100 text-black border rounded hover:bg-slate-50
+                focus:outline-none absolute top-8 right-0"
+                th:hx-post="@{|${'/reloadFeature?feature=' + feature }|}"
+                th:hx-target="|#${feature}Div|"
+        >
+            <i class="bi bi-arrow-clockwise" title="Reload" ></i>
         </button>
     </div>
     <button
             class="px-6 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded shadow-md continueButton"
-            th:hx-post="@{|${endpointUrl}|}"
-            th:attr="hx-target=@{|#${targetElementId}|}"
+            th:hx-post="@{${endpointUrl}}"
+            th:hx-target="|#${targetElementId}|"
             type="submit">
         Continue
     </button>
