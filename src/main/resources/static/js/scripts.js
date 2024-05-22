@@ -1,27 +1,40 @@
+
+// Manage the visibility of the loading indicator
 document.body.addEventListener('htmx:beforeRequest', function() {
     document.getElementById('loadingIndicator').classList.remove('hidden');
 });
 
-// document.body.addEventListener('htmx:beforeSwap', function() {
-//     document.querySelectorAll('.continueButton').forEach(button => { button.remove()});
-// });
-
-document.body.addEventListener('htmx:afterSettle', function(event) {
-    if (event.detail.elt.id === 'constraintsDiv') {
-        var continueButton = document.querySelector('#constraintsDiv .continueButton');
-        if (continueButton) {
-            continueButton.style.display = 'none';
-        }
-    }
+document.body.addEventListener('htmx:afterRequest', function() {
+    document.getElementById('loadingIndicator').classList.add('hidden');
 });
 
-document.addEventListener("htmx:afterSettle", function(evt) {
-    console.log(evt.detail.target)
+
+// Manage the visibility of the continue button
+document.addEventListener("htmx:afterSwap", function(evt) {
+    console.log('target: ' + evt.detail.target)
     var currentDiv = evt.detail.target;
+    var previousDiv = currentDiv.previousElementSibling;
     var nextDiv = currentDiv.nextElementSibling;
+    var continueButton;
+
+    if(currentDiv.id === "constraintsDiv") {
+        continueButton = currentDiv.querySelector(".continueButton");
+
+        if (continueButton) {
+            continueButton.style.display = "none";
+        }
+    }
+
+    if (previousDiv) {
+        continueButton = previousDiv.querySelector(".continueButton");
+
+        if (continueButton) {
+            continueButton.style.display = "none";
+        }
+    }
 
     if (nextDiv) {
-        var continueButton = currentDiv.querySelector(".continueButton");
+        continueButton = currentDiv.querySelector(".continueButton");
 
         if (nextDiv.innerHTML.trim() !== "") {
             if (continueButton) {
@@ -31,6 +44,3 @@ document.addEventListener("htmx:afterSettle", function(evt) {
     }
 });
 
-document.body.addEventListener('htmx:afterRequest', function() {
-    document.getElementById('loadingIndicator').classList.add('hidden');
-});
