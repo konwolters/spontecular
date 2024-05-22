@@ -22,23 +22,11 @@ import java.util.Map;
 public class GptController {
     private final GptService gptService;
 
-    @Value("${USE_DUMMY_DATA}")
-    boolean useDummyData; // for development purposes to avoid API calls
-
     @PostMapping("/getClasses")
     public String getClasses(@RequestParam String inputText, Model model, HttpSession session) {
-        Classes classes;
+        Classes classes = gptService.getClasses(inputText);
 
-        if (useDummyData) {
-            classes = new Classes();
-            classes.setClasses(List.of("Satellite", "Chassis", "Framework", "Rail", "Sidewall",
-                    "Circuit board", "Solar cell", "Sensor wire", "Magnetic coil", "Groove",
-                    "Attitude Determination and Control System", "Connector", "Module", "Bus connector", "Cable"));
-        } else {
-            classes = gptService.getClasses(inputText);
-        }
-
-        model.addAllAttributes(getFeatureResponse(inputText, "classes", null, null));
+        model.addAllAttributes(getFeatureResponse("classes", classes.toString()));
         session.setAttribute("classes", classes);
 
         return "fragments :: featureFragment";
@@ -47,28 +35,9 @@ public class GptController {
     @PostMapping("/getHierarchy")
     public String getHierarchy(Model model, @RequestParam String inputText, HttpSession session) {
         Classes classes = (Classes) session.getAttribute("classes");
-        Hierarchy hierarchy;
+        Hierarchy hierarchy = gptService.getHierarchy(inputText, classes.toString());
 
-        if (useDummyData) {
-            hierarchy = new Hierarchy();
-            hierarchy.setHierarchy(List.of(
-                    List.of("Framework", "Chassis"),
-                    List.of("Sidewall", "Rail"),
-                    List.of("Component", "Framework"),
-                    List.of("Component", "Sidewall"),
-                    List.of("Component", "Circuit board"),
-                    List.of("Component", "Elastic blushing"),
-                    List.of("Circuit board", "Double-sided circuit board"),
-                    List.of("Circuit board", "FR-4"),
-                    List.of("Circuit board", "Printed Circuit Board"),
-                    List.of("Component", "Connector"),
-                    List.of("Connector", "Bus connector")
-            ));
-        } else {
-            hierarchy = gptService.getHierarchy(inputText, classes.toString());
-        }
-
-        model.addAllAttributes(getFeatureResponse(inputText, "hierarchy", classes.toString(), null));
+        model.addAllAttributes(getFeatureResponse("hierarchy", hierarchy.toString()));
         session.setAttribute("hierarchy", hierarchy);
 
         return "fragments :: featureFragment";
@@ -77,27 +46,9 @@ public class GptController {
     @PostMapping("/getRelations")
     public String getRelations(Model model, @RequestParam String inputText, HttpSession session) {
         Classes classes = (Classes) session.getAttribute("classes");
-        Relations relations;
+        Relations relations = gptService.getRelations(inputText, classes.toString());
 
-        if (useDummyData) {
-            relations = new Relations();
-            relations.setRelations(List.of(
-                    List.of("Chassis", "consistsOf", "Framework"),
-                    List.of("Sidewall", "isMadeFrom", "Circuit board"),
-                    List.of("Sidewall", "servesAs", "Circuit board"),
-                    List.of("Double-sided circuit board", "mayServeAs", "Circuit board"),
-                    List.of("Solar cell", "isMountedOn", "Printed circuit board"),
-                    List.of("Satellite", "needs", "Connector"),
-                    List.of("Internal module", "consistOf", "FR-4"),
-                    List.of("Internal module", "consistOf", "Circuit board"),
-                    List.of("Module", "isStackedInside", "Satellite"),
-                    List.of("Elastic bushing", "isPlacedIn", "Groove")
-            ));
-        } else {
-            relations = gptService.getRelations(inputText, classes.toString());
-        }
-
-        model.addAllAttributes(getFeatureResponse(inputText, "relations", classes.toString(), null));
+        model.addAllAttributes(getFeatureResponse("relations", relations.toString()));
         session.setAttribute("relations", relations);
 
         return "fragments :: featureFragment";
@@ -107,27 +58,9 @@ public class GptController {
     public String getConstraints(Model model, @RequestParam String inputText, HttpSession session) {
         Relations relations = (Relations) session.getAttribute("relations");
 
-        Constraints constraints;
+        Constraints constraints = gptService.getConstraints(inputText, relations.toString());
 
-        if (useDummyData) {
-            constraints = new Constraints();
-            constraints.setConstraints(List.of(
-                    List.of("Chassis", "consistsOf", "Framework", "1", "1"),
-                    List.of("Sidewall", "isMadeFrom", "Circuit board", "1", "1"),
-                    List.of("Sidewall", "servesAs", "Circuit board", "1", "1"),
-                    List.of("Double-sided circuit board", "mayServeAs", "Circuit board", "1", "1"),
-                    List.of("Solar cell", "isMountedOn", "Printed circuit board", "1", "1"),
-                    List.of("Satellite", "needs", "Connector", "1", "1"),
-                    List.of("Internal module", "consistOf", "FR-4", "1", "1"),
-                    List.of("Internal module", "consistOf", "Circuit board", "1", "1"),
-                    List.of("Module", "isStackedInside", "Satellite", "1", "1"),
-                    List.of("Elastic bushing", "isPlacedIn", "Groove", "1", "1")
-            ));
-        } else {
-            constraints = gptService.getConstraints(inputText, relations.toString());
-        }
-
-        model.addAllAttributes(getFeatureResponse(inputText, "constraints", null, relations.toString()));
+        model.addAllAttributes(getFeatureResponse("constraints", constraints.toString()));
         session.setAttribute("constraints", constraints);
 
         return "fragments :: featureFragment";
@@ -140,41 +73,54 @@ public class GptController {
                                 @RequestParam(required = false) String classesText,
                                 @RequestParam(required = false) String relationsText) {
 
-        model.addAllAttributes(getFeatureResponse(inputText, feature, classesText, relationsText));
+        switch (feature) {
+            case "classes" -> model.addAllAttributes(
+                    getFeatureResponse(feature, gptService.getClasses(inputText).toString())
+            );
+            case "hierarchy" -> model.addAllAttributes(
+                    getFeatureResponse(feature, gptService.getHierarchy(inputText, classesText).toString())
+            );
+            case "relations" -> model.addAllAttributes(
+                    getFeatureResponse(feature, gptService.getRelations(inputText, classesText).toString())
+            );
+            case "constraints" -> model.addAllAttributes(
+                    getFeatureResponse(feature, gptService.getConstraints(inputText, relationsText).toString())
+            );
+        }
         model.addAttribute("showContinueButton", false);
 
         return "fragments :: featureFragment";
     }
 
-    private Map<String, String> getFeatureResponse(String inputText, String feature, String classesText, String relationsText) {
-        Map<String, String> response;
+    private Map<String, String> getFeatureResponse(String feature, String response) {
+        Map<String, String> responseMap;
 
         switch (feature) {
-            case "classes" -> response = Map.of(
-                    "gptResponseMessage", gptService.getClasses(inputText).toString(),
+            case "classes" -> responseMap = Map.of(
+                    "gptResponseMessage", response,
                     "feature", "classes",
                     "fieldTitle", "Classes:",
                     "endpointUrl", "/getHierarchy",
                     "targetElementId", "hierarchyDiv");
-            case "hierarchy" -> response = Map.of(
-                    "gptResponseMessage", gptService.getHierarchy(inputText, classesText).toString(),
+            case "hierarchy" -> responseMap = Map.of(
+                    "gptResponseMessage", response,
                     "feature", "hierarchy",
                     "fieldTitle", "Hierarchy:",
                     "endpointUrl", "/getRelations",
                     "targetElementId", "relationsDiv");
-            case "relations" -> response = Map.of(
-                    "gptResponseMessage", gptService.getRelations(inputText, classesText).toString(),
+            case "relations" -> responseMap = Map.of(
+                    "gptResponseMessage", response,
                     "feature", "relations",
                     "fieldTitle", "Non-taxonomic Relations:",
                     "endpointUrl", "/getConstraints",
                     "targetElementId", "constraintsDiv");
-            case "constraints" -> response = Map.of(
-                    "gptResponseMessage", gptService.getConstraints(inputText, relationsText).toString(),
+            case "constraints" -> responseMap = Map.of(
+                    "gptResponseMessage", response,
                     "feature", "constraints",
                     "fieldTitle", "Constraints:");
-            default -> response = Map.of();
+            default -> responseMap = Map.of();
         }
-        return response;
+        return responseMap;
     }
 }
 
