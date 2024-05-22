@@ -14,12 +14,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class GptService {
     private final OpenAiChatClient chatClient;
+
+    @Value("${USE_DUMMY_DATA}")
+    boolean useDummyData; // for development purposes to avoid API calls
 
     @Value("classpath:/prompts/classes-prompt.st")
     private Resource classesPrompt;
@@ -33,55 +37,118 @@ public class GptService {
     @Value("classpath:/prompts/constraints-prompt.st")
     private Resource constraintsPrompt;
 
-    public Classes getClasses(String inputText){
-        OutputParser<Classes> outputParser = new BeanOutputParser<>(Classes.class);
+    public Classes getClasses(String inputText) {
+        Classes classes;
 
-        PromptTemplate promptTemplate = new PromptTemplate(
-                classesPrompt,
-                Map.of("inputText", inputText)
-        );
+        if (useDummyData) {
+            classes = new Classes();
+            classes.setClasses(List.of("Satellite", "Chassis", "Framework", "Rail", "Sidewall",
+                    "Circuit board", "Solar cell", "Sensor wire", "Magnetic coil", "Groove",
+                    "Attitude Determination and Control System", "Connector", "Module", "Bus connector", "Cable"));
+        } else {
+            OutputParser<Classes> outputParser = new BeanOutputParser<>(Classes.class);
 
-        ChatResponse response = chatClient.call(promptTemplate.create());
-
-        return outputParser.parse(response.getResult().getOutput().getContent());
+            PromptTemplate promptTemplate = new PromptTemplate(
+                    classesPrompt,
+                    Map.of("inputText", inputText)
+            );
+            ChatResponse response = chatClient.call(promptTemplate.create());
+            classes = outputParser.parse(response.getResult().getOutput().getContent());
+        }
+        return classes;
     }
 
-    public Hierarchy getHierarchy(String inputText, String classes){
-        OutputParser<Hierarchy> outputParser = new BeanOutputParser<>(Hierarchy.class);
+    public Hierarchy getHierarchy(String inputText, String classes) {
+        Hierarchy hierarchy;
+        if (useDummyData) {
+            hierarchy = new Hierarchy();
+            hierarchy.setHierarchy(List.of(
+                    List.of("Framework", "Chassis"),
+                    List.of("Sidewall", "Rail"),
+                    List.of("Component", "Framework"),
+                    List.of("Component", "Sidewall"),
+                    List.of("Component", "Circuit board"),
+                    List.of("Component", "Elastic blushing"),
+                    List.of("Circuit board", "Double-sided circuit board"),
+                    List.of("Circuit board", "FR-4"),
+                    List.of("Circuit board", "Printed Circuit Board"),
+                    List.of("Component", "Connector"),
+                    List.of("Connector", "Bus connector")
+            ));
+        } else {
+            OutputParser<Hierarchy> outputParser = new BeanOutputParser<>(Hierarchy.class);
 
-        PromptTemplate promptTemplate = new PromptTemplate(
-                hierarchyPrompt,
-                Map.of("inputText", inputText, "classes", classes)
-        );
-
-        ChatResponse response = chatClient.call(promptTemplate.create());
-
-        return outputParser.parse(response.getResult().getOutput().getContent());
+            PromptTemplate promptTemplate = new PromptTemplate(
+                    hierarchyPrompt,
+                    Map.of("inputText", inputText, "classes", classes)
+            );
+            ChatResponse response = chatClient.call(promptTemplate.create());
+            hierarchy = outputParser.parse(response.getResult().getOutput().getContent());
+        }
+        return hierarchy;
     }
 
-    public Relations getRelations(String inputText, String classes){
-        OutputParser<Relations> outputParser = new BeanOutputParser<>(Relations.class);
+    public Relations getRelations(String inputText, String classes) {
+        Relations relations;
 
-        PromptTemplate promptTemplate = new PromptTemplate(
-                relationsPrompt,
-                Map.of("inputText", inputText, "classes", classes)
-        );
+        if (useDummyData) {
+            relations = new Relations();
+            relations.setRelations(List.of(
+                    List.of("Chassis", "consistsOf", "Framework"),
+                    List.of("Sidewall", "isMadeFrom", "Circuit board"),
+                    List.of("Sidewall", "servesAs", "Circuit board"),
+                    List.of("Double-sided circuit board", "mayServeAs", "Circuit board"),
+                    List.of("Solar cell", "isMountedOn", "Printed circuit board"),
+                    List.of("Satellite", "needs", "Connector"),
+                    List.of("Internal module", "consistOf", "FR-4"),
+                    List.of("Internal module", "consistOf", "Circuit board"),
+                    List.of("Module", "isStackedInside", "Satellite"),
+                    List.of("Elastic bushing", "isPlacedIn", "Groove")
+            ));
+        } else {
+            OutputParser<Relations> outputParser = new BeanOutputParser<>(Relations.class);
 
-        ChatResponse response = chatClient.call(promptTemplate.create());
+            PromptTemplate promptTemplate = new PromptTemplate(
+                    relationsPrompt,
+                    Map.of("inputText", inputText, "classes", classes)
+            );
 
-        return outputParser.parse(response.getResult().getOutput().getContent());
+            ChatResponse response = chatClient.call(promptTemplate.create());
+
+            relations = outputParser.parse(response.getResult().getOutput().getContent());
+        }
+        return relations;
     }
 
-    public Constraints getConstraints(String inputText, String relations){
-        OutputParser<Constraints> outputParser = new BeanOutputParser<>(Constraints.class);
+    public Constraints getConstraints(String inputText, String relations) {
+        Constraints constraints;
 
-        PromptTemplate promptTemplate = new PromptTemplate(
-                constraintsPrompt,
-                Map.of("inputText", inputText, "relations", relations)
-        );
+        if (useDummyData) {
+            constraints = new Constraints();
+            constraints.setConstraints(List.of(
+                    List.of("Chassis", "consistsOf", "Framework", "1", "1"),
+                    List.of("Sidewall", "isMadeFrom", "Circuit board", "1", "1"),
+                    List.of("Sidewall", "servesAs", "Circuit board", "1", "1"),
+                    List.of("Double-sided circuit board", "mayServeAs", "Circuit board", "1", "1"),
+                    List.of("Solar cell", "isMountedOn", "Printed circuit board", "1", "1"),
+                    List.of("Satellite", "needs", "Connector", "1", "1"),
+                    List.of("Internal module", "consistOf", "FR-4", "1", "1"),
+                    List.of("Internal module", "consistOf", "Circuit board", "1", "1"),
+                    List.of("Module", "isStackedInside", "Satellite", "1", "1"),
+                    List.of("Elastic bushing", "isPlacedIn", "Groove", "1", "1")
+            ));
+        } else {
+            OutputParser<Constraints> outputParser = new BeanOutputParser<>(Constraints.class);
 
-        ChatResponse response = chatClient.call(promptTemplate.create());
+            PromptTemplate promptTemplate = new PromptTemplate(
+                    constraintsPrompt,
+                    Map.of("inputText", inputText, "relations", relations)
+            );
 
-        return outputParser.parse(response.getResult().getOutput().getContent());
+            ChatResponse response = chatClient.call(promptTemplate.create());
+
+            constraints = outputParser.parse(response.getResult().getOutput().getContent());
+        }
+        return constraints;
     }
 }
