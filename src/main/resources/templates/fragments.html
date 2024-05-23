@@ -68,9 +68,9 @@
          x-transition:leave-end="opacity-0">
 
         <div class="container mx-auto h-full flex justify-center items-start">
-            <div class="bg-white mt-10 rounded shadow-lg w-4/5" @click.away="showModal = false">
-                <div class="border-b px-4 py-2 flex justify-between items-center">
-                    <h3 class="font-semibold text-lg" th:text="${'Edit'  + modalTitle}"></h3>
+            <div class="bg-white mt-10 rounded shadow-lg w-4/5 overflow-hidden" @click.away="showModal = false">
+                <div class="px-4 py-4 flex justify-between items-center">
+                    <h2 class="text-2xl" th:text="${'Edit '  + #strings.capitalize(feature) + ':'}"></h2>
                     <button type="button"
                             class="text-black"
                             @click="showModal = false">&times;
@@ -83,13 +83,13 @@
                               style="overflow-y: auto;">
                     </textarea>
                 </div>
-                <div class="flex justify-end items-center w-100 border-t p-3">
+                <div class="flex justify-end items-center w-100 bg-gray-100 p-3">
                     <button type="button"
-                            class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700 mr-2"
+                            class="text-gray-600 font-bold mr-6 hover:underline hover:underline-offset-8 hover:decoration-2"
                             @click="showModal = false">Cancel
                     </button>
                     <button type="button"
-                            class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+                            class="px-4 py-2 mr-6 bg-blue-500 text-white rounded hover:bg-blue-700"
                             hx-post="/updateFeature"
                             @click="text = tempText; showModal = false">Save
                     </button>
