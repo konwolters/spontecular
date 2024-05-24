@@ -1,115 +1,145 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:x-transition="http://www.w3.org/1999/xhtml">
-<body>
-
 <!--Header Fragment-->
-<th:block th:fragment="headers">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link href="/css/output.css" rel="stylesheet">
-</th:block>
+<th:bock th:fragment="headers">
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+  />
+  <link href="/css/output.css" rel="stylesheet" />
+</th:bock>
 
 <!--Footer Fragment-->
 <th:block th:fragment="footer">
-    <!-- Loading Indicator - Hidden by default -->
-    <div id="loadingIndicator"
-         class="fixed inset-0 z-50 flex items-center justify-center bg-white bg-opacity-75 hidden">
-        <div class="border-4 border-blue-500 border-opacity-50 border-t-transparent rounded-full w-16 h-16 animate-spin"></div>
-    </div>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script type="text/javascript" th:src="@{/js/scripts.js}"></script>
-    <script type="text/javascript" th:src="@{/webjars/alpinejs/dist/cdn.min.js}"></script>
-    <script type="text/javascript" th:src="@{/webjars/htmx.org/dist/htmx.min.js}"></script>
+  <!-- Loading Indicator - Hidden by default -->
+  <div
+    id="loadingIndicator"
+    class="fixed inset-0 z-50 flex hidden items-center justify-center bg-white bg-opacity-75"
+  >
+    <div
+      class="h-16 w-16 animate-spin rounded-full border-4 border-blue-500 border-t-transparent border-opacity-50"
+    ></div>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script type="text/javascript" th:src="@{/js/scripts.js}"></script>
+  <script
+    type="text/javascript"
+    th:src="@{/webjars/alpinejs/dist/cdn.min.js}"
+  ></script>
+  <script
+    type="text/javascript"
+    th:src="@{/webjars/htmx.org/dist/htmx.min.js}"
+  ></script>
 </th:block>
 
 <!--Feature Fragment-->
-<div th:fragment="featureFragment"
-     x-data="{ showModal: false, text: '', tempText: '' }"
-     th:x-init="|text = '${#strings.escapeJavaScript(gptResponseMessage)}'|"
-     class="py-1">
+<div
+  th:fragment="featureFragment"
+  x-data="{ showModal: false, text: '', tempText: '' }"
+  th:x-init="|text = '${#strings.escapeJavaScript(gptResponseMessage)}'|"
+  class="py-1"
+>
+  <h5 th:text="${fieldTitle}"></h5>
+  <div class="relative">
+    <textarea
+      type="text"
+      x-model="text"
+      placeholder="Enter text here"
+      th:name="${ feature + 'Text'}"
+      class="input w-full rounded border px-2 py-1 leading-tight text-gray-700 focus:border-indigo-500 focus:outline-none"
+      rows="6"
+      style="overflow-y: auto"
+    ></textarea>
 
-    <h5 th:text="${fieldTitle}"></h5>
-    <div class="relative">
-        <textarea type="text" x-model="text" placeholder="Enter text here"
-                  th:name="${ feature + 'Text'}"
-                  class="input border rounded w-full px-2 py-1 text-gray-700 leading-tight focus:outline-none focus:border-indigo-500"
-                  rows="6"
-                  style="overflow-y: auto;"
-        ></textarea>
-
-        <button type="button" @click="tempText = text; showModal = true"
-                class="mx-6 mt-1 px-1 bg-slate-100 text-black border rounded hover:bg-slate-50
-                focus:outline-none absolute top-0 right-0">
-            <i class="bi bi-box-arrow-up-right" title="Edit"></i>
-        </button>
-        <button type="button"
-                class="mx-6 mt-0.5 px-1 bg-slate-100 text-black border rounded hover:bg-slate-50
-                focus:outline-none absolute top-8 right-0"
-                th:hx-post="@{|${'/reloadFeature?feature=' + feature }|}"
-                th:hx-target="|#${feature}Div|"
-        >
-            <i class="bi bi-arrow-clockwise" title="Reload" ></i>
-        </button>
-    </div>
     <button
-            class="px-6 py-1 bg-gray-500 hover:bg-gray-600 text-white rounded shadow-md continueButton"
-            th:hx-post="@{${endpointUrl}}"
-            th:hx-target="|#${targetElementId}|"
-            type="submit">
-        Continue
+      type="button"
+      @click="tempText = text; showModal = true"
+      class="absolute right-0 top-0 mx-6 mt-1 rounded border bg-slate-100 px-1 text-black hover:bg-slate-50 focus:outline-none"
+    >
+      <i class="bi bi-box-arrow-up-right" title="Edit"></i>
     </button>
+    <button
+      type="button"
+      class="absolute right-0 top-8 mx-6 mt-0.5 rounded border bg-slate-100 px-1 text-black hover:bg-slate-50 focus:outline-none"
+      th:hx-post="@{|${'/reloadFeature?feature=' + feature }|}"
+      th:hx-target="|#${feature}Div|"
+    >
+      <i class="bi bi-arrow-clockwise" title="Reload"></i>
+    </button>
+  </div>
+  <button
+    class="continueButton rounded bg-gray-500 px-6 py-1 text-white shadow-md hover:bg-gray-600"
+    th:hx-post="@{${endpointUrl}}"
+    th:hx-target="|#${targetElementId}|"
+    type="submit"
+  >
+    Continue
+  </button>
 
-    <!-- Overlay -->
-    <div x-show="showModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
-         x-transition:enter="transition ease-out duration-300"
-         x-transition:enter-start="opacity-0"
-         x-transition:enter-end="opacity-100"
-         x-transition:leave="transition ease-in duration-300"
-         x-transition:leave-start="opacity-100"
-         x-transition:leave-end="opacity-0">
-
-        <div class="container mx-auto h-full flex justify-center items-start">
-            <div class="bg-white mt-10 rounded shadow-lg w-4/5 overflow-hidden" @click.away="showModal = false">
-                <div class="px-4 py-4 flex justify-between items-center">
-                    <h2 class="text-2xl" th:text="${'Edit '  + #strings.capitalize(feature) + ':'}"></h2>
-                    <button type="button"
-                            class="text-black"
-                            @click="showModal = false">&times;
-                    </button>
-                </div>
-                <div class="p-3">
-                    <textarea x-model="tempText"
-                              rows="35"
-                              class="input border rounded w-full px-2 py-1 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                              style="overflow-y: auto;">
-                    </textarea>
-                </div>
-                <div class="flex justify-end items-center w-100 bg-gray-100 p-3">
-                    <button type="button"
-                            class="text-gray-600 font-bold mr-6 hover:underline hover:underline-offset-8 hover:decoration-2"
-                            @click="showModal = false">Cancel
-                    </button>
-                    <button type="button"
-                            class="px-4 py-2 mr-6 bg-blue-500 text-white rounded hover:bg-blue-700"
-                            hx-post="/updateFeature"
-                            @click="text = tempText; showModal = false">Save
-                    </button>
-                </div>
-            </div>
+  <!-- Overlay -->
+  <div
+    x-show="showModal"
+    class="fixed inset-0 z-50 h-full w-full overflow-y-auto bg-gray-600 bg-opacity-50"
+    x-transition:enter="transition ease-out duration-300"
+    x-transition:enter-start="opacity-0"
+    x-transition:enter-end="opacity-100"
+    x-transition:leave="transition ease-in duration-300"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+  >
+    <div class="container mx-auto flex h-full items-start justify-center">
+      <div
+        class="mt-10 w-4/5 overflow-hidden rounded bg-white shadow-lg"
+        @click.away="showModal = false"
+      >
+        <div class="flex items-center justify-between px-4 py-4">
+          <h2
+            class="text-2xl"
+            th:text="${'Edit '  + #strings.capitalize(feature) + ':'}"
+          ></h2>
+          <button type="button" class="text-black" @click="showModal = false">
+            &times;
+          </button>
         </div>
+        <div class="p-3">
+          <textarea
+            x-model="tempText"
+            rows="35"
+            class="input focus:shadow-outline w-full rounded border px-2 py-1 leading-tight text-gray-700 focus:outline-none"
+            style="overflow-y: auto"
+          >
+          </textarea>
+        </div>
+        <div class="w-100 flex items-center justify-end bg-gray-100 p-3">
+          <button
+            type="button"
+            class="mr-6 font-bold text-gray-600 hover:underline hover:decoration-2 hover:underline-offset-8"
+            @click="showModal = false"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            class="mr-6 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-700"
+            hx-post="/updateFeature"
+            @click="text = tempText; showModal = false"
+          >
+            Save
+          </button>
+        </div>
+      </div>
     </div>
+  </div>
 </div>
 
 <!--Specification Fragment-->
 <th:block th:fragment="specificationFragment">
-    <div class="w-full h-full">
-            <textarea
-                    class="form-textarea text-sm p-2 block w-full h-full border border-gray-200 rounded-md focus:outline-none focus:border-indigo-500"
-                    placeholder="Enter text here" name="inputText"
-                    th:x-init="|inputText = '${#strings.escapeJavaScript(specification)}'|"
-                    x-model="inputText"
-                    style="overflow-y: auto; resize: none;"></textarea>
-    </div>
+  <div class="h-full w-full">
+    <textarea
+      class="form-textarea block h-full w-full rounded-md border border-gray-200 p-2 text-sm focus:border-indigo-500 focus:outline-none"
+      placeholder="Enter text here"
+      name="inputText"
+      th:x-init="|inputText = '${#strings.escapeJavaScript(specification)}'|"
+      x-model="inputText"
+      style="overflow-y: auto; resize: none"
+    ></textarea>
+  </div>
 </th:block>
-
-</body>
-</html>
