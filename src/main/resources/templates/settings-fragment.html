@@ -1,23 +1,33 @@
-<div th:fragment="settingItem(title, placeholder)">
-    <div class="w-full py-5 px-5 flex text-gray-700">
-        <div class="w-1/4">
-            <p class="font-bold" th:text="${title + ':'}"></p>
-        </div>
-        <div class="w-3/4 text-sm">
-            <p>Definition: </p>
-            <textarea
-                    class="input border w-full rounded px-2 py-1 text-gray-700 focus:outline-none focus:border-indigo-500"
-                    style="overflow-y: auto;" th:placeholder="${placeholder}" th:name="${title + 'DefinitionSetting'}"></textarea>
+<div
+  th:fragment="settingItem(title, placeholder)"
+  class="flex w-full px-5 py-5 text-gray-700"
+>
+  <div class="w-1/4">
+    <p class="font-bold" th:text="${title + ':'}"></p>
+  </div>
+  <div class="w-3/4 text-sm">
+    <p>Definition:</p>
+    <textarea
+      class="input w-full rounded border px-2 py-1 text-gray-700 focus:border-indigo-500 focus:outline-none"
+      style="overflow-y: auto"
+      th:placeholder="${placeholder}"
+      th:name="${title + 'DefinitionSetting'}"
+    ></textarea>
 
-            <p class="mt-2">Examples: </p>
-            <textarea
-                    class="input border w-full rounded px-2 py-1 text-gray-700 focus:outline-none focus:border-indigo-500"
-                    style="overflow-y: auto;" th:placeholder="${placeholder}" th:name="${title + 'ExamplesSetting'}"></textarea>
+    <p class="mt-2">Examples:</p>
+    <textarea
+      class="input w-full rounded border px-2 py-1 text-gray-700 focus:border-indigo-500 focus:outline-none"
+      style="overflow-y: auto"
+      th:placeholder="${placeholder}"
+      th:name="${title + 'ExamplesSetting'}"
+    ></textarea>
 
-            <p class="mt-2">Blacklist: </p>
-            <textarea
-                    class="input border w-full rounded px-2 py-1 text-gray-700 focus:outline-none focus:border-indigo-500"
-                    style="overflow-y: auto;" th:placeholder="${placeholder}" th:name="${title + 'BlacklistSetting'}"></textarea>
-        </div>
-    </div>
+    <p class="mt-2">Blacklist:</p>
+    <textarea
+      class="input w-full rounded border px-2 py-1 text-gray-700 focus:border-indigo-500 focus:outline-none"
+      style="overflow-y: auto"
+      th:placeholder="${placeholder}"
+      th:name="${title + 'BlacklistSetting'}"
+    ></textarea>
+  </div>
 </div>
