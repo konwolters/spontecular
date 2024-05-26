@@ -87,7 +87,6 @@ public class GptController {
                     getFeatureResponse(feature, gptService.getConstraints(inputText, relationsText).toString())
             );
         }
-        model.addAttribute("showContinueButton", false);
 
         return "fragments :: featureFragment";
     }
