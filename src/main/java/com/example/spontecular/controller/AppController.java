@@ -46,7 +46,6 @@ public class AppController {
         return "fragments :: specificationFragment";
     }
 
-
     @PostMapping("/export")
     public String export(Model model,
                          @RequestParam String classesText,
@@ -55,7 +54,6 @@ public class AppController {
                          @RequestParam(required = false) String constraintsText) {
         Classes classes = new Classes(classesText);
 
-        System.out.println("Hierarchy: " + hierarchyText);
         Hierarchy hierarchy = hierarchyText != null ? new Hierarchy(hierarchyText) : null;
         Relations relations = relationsText != null ? new Relations(relationsText) : null;
         Constraints constraints = constraintsText != null ? new Constraints(constraintsText) : null;
