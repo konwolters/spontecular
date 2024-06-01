@@ -18,24 +18,27 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-@RequiredArgsConstructor
 public class GptService {
     private final OpenAiChatClient chatClient;
+    private final Resource classesPrompt;
+    private final Resource hierarchyPrompt;
+    private final Resource relationsPrompt;
+    private final Resource constraintsPrompt;
+
+    public GptService(OpenAiChatClient chatClient,
+                      @Value("classpath:/prompts/classes-prompt.st") Resource classesPrompt,
+                      @Value("classpath:/prompts/hierarchy-prompt.st") Resource hierarchyPrompt,
+                      @Value("classpath:/prompts/relations-prompt.st") Resource relationsPrompt,
+                      @Value("classpath:/prompts/constraints-prompt.st") Resource constraintsPrompt) {
+        this.chatClient = chatClient;
+        this.classesPrompt = classesPrompt;
+        this.hierarchyPrompt = hierarchyPrompt;
+        this.relationsPrompt = relationsPrompt;
+        this.constraintsPrompt = constraintsPrompt;
+    }
 
     @Value("${USE_DUMMY_DATA}")
     boolean useDummyData; // for development purposes to avoid API calls
-
-    @Value("classpath:/prompts/classes-prompt.st")
-    private Resource classesPrompt;
-
-    @Value("classpath:/prompts/hierarchy-prompt.st")
-    private Resource hierarchyPrompt;
-
-    @Value("classpath:/prompts/relations-prompt.st")
-    private Resource relationsPrompt;
-
-    @Value("classpath:/prompts/constraints-prompt.st")
-    private Resource constraintsPrompt;
 
     public Classes getClasses(String inputText) {
         Classes classes;
