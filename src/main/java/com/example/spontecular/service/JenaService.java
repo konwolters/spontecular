@@ -105,6 +105,7 @@ public class JenaService {
 
             OntClass subjectClass = model.getOntClass(NAMESPACE + subjectName);
             OntClass objectClass = model.getOntClass(NAMESPACE + objectName);
+
             if (subjectClass == null || objectClass == null) {
                 errorMessages.add("One or more classes in the relation (" + relation + ") do not exist.");
                 continue;
@@ -143,8 +144,13 @@ public class JenaService {
             OntClass objectClass = model.getOntClass(NAMESPACE + objectName);
             ObjectProperty property = model.getObjectProperty(NAMESPACE + predicateName);
 
-            if (subjectClass == null || objectClass == null || property == null) {
-                errorMessages.add("Invalid class or property in the constraint: " + constraint);
+            if (subjectClass == null || objectClass == null) {
+                errorMessages.add("Invalid class in the constraint: " + constraint);
+                continue;
+            }
+
+            if(property == null){
+                errorMessages.add("Property does not exist: " + predicateName);
                 continue;
             }
 
