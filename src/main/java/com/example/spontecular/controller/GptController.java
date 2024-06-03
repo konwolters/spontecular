@@ -4,6 +4,7 @@ import com.example.spontecular.dto.Classes;
 import com.example.spontecular.dto.Constraints;
 import com.example.spontecular.dto.Hierarchy;
 import com.example.spontecular.dto.Relations;
+import com.example.spontecular.model.Feature;
 import com.example.spontecular.service.GptService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -88,35 +89,10 @@ public class GptController {
         return "fragments :: featureFragment";
     }
 
-    private Map<String, String> getFeatureResponse(String feature, String response) {
-        Map<String, String> responseMap;
+    private Map<String, String> getFeatureResponse(String featureString, String response) {
+        Feature feature = Feature.valueOf(featureString.toUpperCase());
 
-        switch (feature) {
-            case "classes" -> responseMap = Map.of(
-                    "gptResponseMessage", response,
-                    "feature", "classes",
-                    "fieldTitle", "Classes:",
-                    "endpointUrl", "/getHierarchy",
-                    "targetElementId", "hierarchyDiv");
-            case "hierarchy" -> responseMap = Map.of(
-                    "gptResponseMessage", response,
-                    "feature", "hierarchy",
-                    "fieldTitle", "Hierarchy:",
-                    "endpointUrl", "/getRelations",
-                    "targetElementId", "relationsDiv");
-            case "relations" -> responseMap = Map.of(
-                    "gptResponseMessage", response,
-                    "feature", "relations",
-                    "fieldTitle", "Non-taxonomic Relations:",
-                    "endpointUrl", "/getConstraints",
-                    "targetElementId", "constraintsDiv");
-            case "constraints" -> responseMap = Map.of(
-                    "gptResponseMessage", response,
-                    "feature", "constraints",
-                    "fieldTitle", "Constraints:");
-            default -> responseMap = Map.of();
-        }
-        return responseMap;
+        return feature.getResponseMap(response);
     }
 }
 
