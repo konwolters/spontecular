@@ -4,6 +4,7 @@ import com.example.spontecular.dto.Classes;
 import com.example.spontecular.dto.Constraints;
 import com.example.spontecular.dto.Hierarchy;
 import com.example.spontecular.dto.Relations;
+import com.example.spontecular.service.utility.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

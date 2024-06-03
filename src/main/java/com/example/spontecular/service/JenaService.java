@@ -4,6 +4,7 @@ import com.example.spontecular.dto.Classes;
 import com.example.spontecular.dto.Constraints;
 import com.example.spontecular.dto.Hierarchy;
 import com.example.spontecular.dto.Relations;
+import com.example.spontecular.service.utility.StringUtils;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.jena.ontology.ObjectProperty;
