@@ -7,9 +7,10 @@
     <header th:replace="~{fragments :: headers}"></header>
   </head>
   <body class="bg-gray-100">
+    <th:block th:replace="~{navbar-fragment :: navbar}"></th:block>
     <form th:action="@{/export}" method="post">
       <div
-        class="container relative mx-auto my-10 flex flex-wrap items-stretch rounded-md border bg-white p-2 shadow-lg"
+        class="container relative mx-auto my-3 flex flex-wrap items-stretch rounded-md border bg-white p-2 shadow-lg"
         x-data="{showButtons: false, inputText: '', showModal: false}"
       >
         <div class="h-[800px] w-full lg:w-1/2" id="specificationDiv">

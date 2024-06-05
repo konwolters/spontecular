@@ -1,46 +1,55 @@
 <!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Export</title>
     <th:block th:replace="~{fragments :: headers}"></th:block>
-</head>
-<body class="bg-gray-100">
+  </head>
+  <body class="bg-gray-100">
+    <th:block th:replace="~{navbar-fragment :: navbar}"></th:block>
+    <form action="@{/getExport}" method="post">
+      <div class="container mx-auto my-3 rounded-md bg-white p-5 shadow-lg">
+        <div class="mb-2 w-full">
+          <h1 class="mb-2 text-2xl font-bold">Export:</h1>
+          <textarea
+            class="form-textarea block h-full w-full resize-none overflow-auto rounded-md border border-gray-200 p-2 focus:border-indigo-500 focus:outline-none"
+            style="box-sizing: border-box"
+            th:text="${content}"
+            name="inputText"
+            rows="30"
+          >
+          </textarea>
 
-<form action="@{/getExport}" method="post">
-    <div class="container mx-auto my-3 bg-white p-5 rounded-md shadow-lg">
-        <div class="w-full mb-2">
-            <h1 class="font-bold text-2xl mb-2">Export:</h1>
-            <textarea
-                    class="form-textarea p-2 block w-full h-full border border-gray-200 rounded-md focus:outline-none
-                    focus:border-indigo-500 overflow-auto resize-none"
-                    style="box-sizing: border-box;"
-                    th:text="${content}"
-                    name="inputText"
-                    rows="30">
-            </textarea>
-
-            <div x-data="{ open: false }" th:if="${#lists.size(errorMessages)}">
-                <button type="button" @click="open = !open"
-                        class="py-2 mt-4 bg-gray-200 border border-gray-300 text-black w-full rounded-md">Error log
-                </button>
-                <div x-show="open" x-transition>
-            <textarea
-                    class="form-textarea p-2 block w-full border border-gray-200 rounded-md focus:outline-none
-                focus:border-indigo-500 overflow-auto resize-none"
-                    style="box-sizing: border-box;"
-                    rows="10"
-                    readonly><th:block th:each="errorMessage : ${errorMessages}" th:text="|${errorMessage}&#10;|"></th:block>
-            </textarea>
-                </div>
+          <div x-data="{ open: false }" th:if="${#lists.size(errorMessages)}">
+            <button
+              type="button"
+              @click="open = !open"
+              class="mt-4 w-full rounded-md border border-gray-300 bg-gray-200 py-2 text-black"
+            >
+              Error log
+            </button>
+            <div x-show="open" x-transition>
+              <textarea
+                class="form-textarea block w-full resize-none overflow-auto rounded-md border border-gray-200 p-2 focus:border-indigo-500 focus:outline-none"
+                style="box-sizing: border-box"
+                rows="10"
+                readonly
+              >
+<th:block th:each="errorMessage : ${errorMessages}" th:text="|${errorMessage}&#10;|"></th:block>
+            </textarea
+              >
             </div>
+          </div>
         </div>
-        <button type="button" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded shadow-md">
-            Download
+        <button
+          type="button"
+          class="rounded bg-blue-500 px-4 py-2 text-white shadow-md hover:bg-blue-600"
+        >
+          Download
         </button>
-    </div>
-</form>
-<th:block th:replace="~{fragments :: footer}"></th:block>
-</body>
+      </div>
+    </form>
+    <th:block th:replace="~{fragments :: footer}"></th:block>
+  </body>
 </html>
