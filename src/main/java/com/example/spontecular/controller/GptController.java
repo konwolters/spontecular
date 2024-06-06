@@ -1,9 +1,6 @@
 package com.example.spontecular.controller;
 
-import com.example.spontecular.dto.Classes;
-import com.example.spontecular.dto.Constraints;
-import com.example.spontecular.dto.Hierarchy;
-import com.example.spontecular.dto.Relations;
+import com.example.spontecular.dto.*;
 import com.example.spontecular.model.Feature;
 import com.example.spontecular.service.GptService;
 import jakarta.servlet.http.HttpSession;
@@ -22,7 +19,8 @@ public class GptController {
 
     @PostMapping("/getClasses")
     public String getClasses(@RequestParam String inputText, Model model, HttpSession session) {
-        Classes classes = gptService.getClasses(inputText);
+        SettingsForm settings = (SettingsForm) session.getAttribute("settings");
+        Classes classes = gptService.getClasses(inputText, settings);
 
         model.addAllAttributes(getFeatureResponse("classes", classes.toString()));
         session.setAttribute("classes", classes);
@@ -32,8 +30,9 @@ public class GptController {
 
     @PostMapping("/getHierarchy")
     public String getHierarchy(Model model, @RequestParam String inputText, HttpSession session) {
+        SettingsForm settings = (SettingsForm) session.getAttribute("settings");
         Classes classes = (Classes) session.getAttribute("classes");
-        Hierarchy hierarchy = gptService.getHierarchy(inputText, classes.toString());
+        Hierarchy hierarchy = gptService.getHierarchy(inputText, classes.toString(), settings);
 
         model.addAllAttributes(getFeatureResponse("hierarchy", hierarchy.toString()));
         session.setAttribute("hierarchy", hierarchy);
@@ -43,8 +42,9 @@ public class GptController {
 
     @PostMapping("/getRelations")
     public String getRelations(Model model, @RequestParam String inputText, HttpSession session) {
+        SettingsForm settings = (SettingsForm) session.getAttribute("settings");
         Classes classes = (Classes) session.getAttribute("classes");
-        Relations relations = gptService.getRelations(inputText, classes.toString());
+        Relations relations = gptService.getRelations(inputText, classes.toString(), settings);
 
         model.addAllAttributes(getFeatureResponse("relations", relations.toString()));
         session.setAttribute("relations", relations);
@@ -54,9 +54,10 @@ public class GptController {
 
     @PostMapping("/getConstraints")
     public String getConstraints(Model model, @RequestParam String inputText, HttpSession session) {
+        SettingsForm settings = (SettingsForm) session.getAttribute("settings");
         Relations relations = (Relations) session.getAttribute("relations");
 
-        Constraints constraints = gptService.getConstraints(inputText, relations.toString());
+        Constraints constraints = gptService.getConstraints(inputText, relations.toString(), settings);
 
         model.addAllAttributes(getFeatureResponse("constraints", constraints.toString()));
         session.setAttribute("constraints", constraints);
@@ -69,20 +70,22 @@ public class GptController {
                                 @RequestParam String inputText,
                                 @RequestParam String feature,
                                 @RequestParam(required = false) String classesText,
-                                @RequestParam(required = false) String relationsText) {
+                                @RequestParam(required = false) String relationsText,
+                                HttpSession session) {
+        SettingsForm settings = (SettingsForm) session.getAttribute("settings");
 
         switch (feature) {
             case "classes" -> model.addAllAttributes(
-                    getFeatureResponse(feature, gptService.getClasses(inputText).toString())
+                    getFeatureResponse(feature, gptService.getClasses(inputText, settings).toString())
             );
             case "hierarchy" -> model.addAllAttributes(
-                    getFeatureResponse(feature, gptService.getHierarchy(inputText, classesText).toString())
+                    getFeatureResponse(feature, gptService.getHierarchy(inputText, classesText, settings).toString())
             );
             case "relations" -> model.addAllAttributes(
-                    getFeatureResponse(feature, gptService.getRelations(inputText, classesText).toString())
+                    getFeatureResponse(feature, gptService.getRelations(inputText, classesText, settings).toString())
             );
             case "constraints" -> model.addAllAttributes(
-                    getFeatureResponse(feature, gptService.getConstraints(inputText, relationsText).toString())
+                    getFeatureResponse(feature, gptService.getConstraints(inputText, relationsText, settings).toString())
             );
         }
 

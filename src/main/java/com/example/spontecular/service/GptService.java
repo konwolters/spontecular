@@ -1,9 +1,7 @@
 package com.example.spontecular.service;
 
-import com.example.spontecular.dto.Classes;
-import com.example.spontecular.dto.Constraints;
-import com.example.spontecular.dto.Hierarchy;
-import com.example.spontecular.dto.Relations;
+import com.example.spontecular.dto.*;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.openai.OpenAiChatClient;
@@ -39,7 +37,7 @@ public class GptService {
     @Value("${USE_DUMMY_DATA}")
     boolean useDummyData; // for development purposes to avoid API calls
 
-    public Classes getClasses(String inputText) {
+    public Classes getClasses(String inputText, SettingsForm settings) {
         Classes classes;
 
         if (useDummyData) {
@@ -52,7 +50,12 @@ public class GptService {
 
             PromptTemplate promptTemplate = new PromptTemplate(
                     classesPrompt,
-                    Map.of("inputText", inputText)
+                    Map.of(
+                            "inputText", inputText,
+                            "definition", settings.getClassesDefinition(),
+                            "examples", settings.getClassesExamples(),
+                            "blacklist", settings.getClassesBlacklist()
+                    )
             );
             ChatResponse response = chatClient.call(promptTemplate.create());
             classes = outputParser.parse(response.getResult().getOutput().getContent());
@@ -60,8 +63,9 @@ public class GptService {
         return classes;
     }
 
-    public Hierarchy getHierarchy(String inputText, String classes) {
+    public Hierarchy getHierarchy(String inputText, String classes, SettingsForm settings) {
         Hierarchy hierarchy;
+
         if (useDummyData) {
             hierarchy = new Hierarchy();
             hierarchy.setHierarchy(List.of(
@@ -82,7 +86,13 @@ public class GptService {
 
             PromptTemplate promptTemplate = new PromptTemplate(
                     hierarchyPrompt,
-                    Map.of("inputText", inputText, "classes", classes)
+                    Map.of(
+                            "inputText", inputText,
+                            "classes", classes,
+                            "definition", settings.getHierarchyDefinition(),
+                            "examples", settings.getHierarchyExamples(),
+                            "blacklist", settings.getHierarchyBlacklist()
+                    )
             );
             ChatResponse response = chatClient.call(promptTemplate.create());
             hierarchy = outputParser.parse(response.getResult().getOutput().getContent());
@@ -90,7 +100,7 @@ public class GptService {
         return hierarchy;
     }
 
-    public Relations getRelations(String inputText, String classes) {
+    public Relations getRelations(String inputText, String classes, SettingsForm settings) {
         Relations relations;
 
         if (useDummyData) {
@@ -112,17 +122,22 @@ public class GptService {
 
             PromptTemplate promptTemplate = new PromptTemplate(
                     relationsPrompt,
-                    Map.of("inputText", inputText, "classes", classes)
+                    Map.of(
+                            "inputText", inputText,
+                            "classes", classes,
+                            "definition", settings.getRelationsDefinition(),
+                            "examples", settings.getRelationsExamples(),
+                            "blacklist", settings.getRelationsBlacklist()
+                    )
             );
 
             ChatResponse response = chatClient.call(promptTemplate.create());
-
             relations = outputParser.parse(response.getResult().getOutput().getContent());
         }
         return relations;
     }
 
-    public Constraints getConstraints(String inputText, String relations) {
+    public Constraints getConstraints(String inputText, String relations, SettingsForm settings) {
         Constraints constraints;
 
         if (useDummyData) {
@@ -144,7 +159,13 @@ public class GptService {
 
             PromptTemplate promptTemplate = new PromptTemplate(
                     constraintsPrompt,
-                    Map.of("inputText", inputText, "relations", relations)
+                    Map.of(
+                            "inputText", inputText,
+                            "relations", relations,
+                            "definition", settings.getConstraintsDefinition(),
+                            "examples", settings.getConstraintsExamples(),
+                            "blacklist", settings.getConstraintsBlacklist()
+                    )
             );
 
             ChatResponse response = chatClient.call(promptTemplate.create());

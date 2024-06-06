@@ -1111,8 +1111,18 @@ video {
   transition-duration: 150ms;
 }
 
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
 .duration-300 {
   transition-duration: 300ms;
+}
+
+.duration-75 {
+  transition-duration: 75ms;
 }
 
 .ease-in {
@@ -1163,10 +1173,6 @@ video {
   background-color: rgb(248 250 252 / var(--tw-bg-opacity));
 }
 
-.hover\:font-bold:hover {
-  font-weight: 700;
-}
-
 .hover\:underline:hover {
   text-decoration-line: underline;
 }
@@ -1187,6 +1193,10 @@ video {
 .focus\:outline-none:focus {
   outline: 2px solid transparent;
   outline-offset: 2px;
+}
+
+.group:hover .group-hover\:font-extrabold {
+  font-weight: 800;
 }
 
 @media (min-width: 1024px) {

@@ -1,9 +1,6 @@
 package com.example.spontecular.service;
 
-import com.example.spontecular.dto.Classes;
-import com.example.spontecular.dto.Constraints;
-import com.example.spontecular.dto.Hierarchy;
-import com.example.spontecular.dto.Relations;
+import com.example.spontecular.dto.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -48,6 +45,21 @@ class GptServiceTest {
     private GptService gptService;
 
     ObjectMapper objectMapper = new ObjectMapper();
+
+    SettingsForm settings = SettingsForm.builder()
+            .classesDefinition("testString")
+            .classesExamples("testString")
+            .classesBlacklist("testString")
+            .hierarchyDefinition("testString")
+            .hierarchyExamples("testString")
+            .hierarchyBlacklist("testString")
+            .relationsDefinition("testString")
+            .relationsExamples("testString")
+            .relationsBlacklist("testString")
+            .constraintsDefinition("testString")
+            .constraintsExamples("testString")
+            .constraintsBlacklist("testString")
+            .build();
 
     private final List<String> testClasses = List.of("Satellite", "Chassis", "Framework", "Rail", "Sidewall",
             "Circuit board", "Solar cell", "Sensor wire", "Magnetic coil", "Groove",
@@ -96,7 +108,7 @@ class GptServiceTest {
     public void shouldReturnDummyClasses() {
         gptService.useDummyData = true;
 
-        Classes result = gptService.getClasses("testString");
+        Classes result = gptService.getClasses("testString", settings);
 
         assertThat(result.getClasses()).containsExactlyInAnyOrderElementsOf(testClasses);
     }
@@ -111,7 +123,7 @@ class GptServiceTest {
         Classes expectedClasses = new Classes();
         expectedClasses.setClasses(testClasses);
 
-        Classes result = gptService.getClasses("testString");
+        Classes result = gptService.getClasses("testString", settings);
 
         assertThat(result.getClasses()).containsExactlyElementsOf(expectedClasses.getClasses());
     }
@@ -120,7 +132,7 @@ class GptServiceTest {
     public void shouldReturnDummyHierarchy() {
         gptService.useDummyData = true;
 
-        Hierarchy result = gptService.getHierarchy("testString", "testString2");
+        Hierarchy result = gptService.getHierarchy("testString", "testString2", settings);
 
         assertThat(result.getHierarchy()).containsExactlyInAnyOrderElementsOf(testHierarchy);
     }
@@ -135,7 +147,7 @@ class GptServiceTest {
         Hierarchy expectedHierarchy = new Hierarchy();
         expectedHierarchy.setHierarchy(testHierarchy);
 
-        Hierarchy result = gptService.getHierarchy("testString", "testString2");
+        Hierarchy result = gptService.getHierarchy("testString", "testString2", settings);
 
         assertThat(result.getHierarchy()).containsExactlyElementsOf(expectedHierarchy.getHierarchy());
     }
@@ -144,7 +156,7 @@ class GptServiceTest {
     public void shouldReturnDummyRelations() {
         gptService.useDummyData = true;
 
-        Relations result = gptService.getRelations("testString", "testString2");
+        Relations result = gptService.getRelations("testString", "testString2", settings);
 
         assertThat(result.getRelations()).containsExactlyInAnyOrderElementsOf(testRelations);
     }
@@ -159,7 +171,7 @@ class GptServiceTest {
         Relations expectedRelations = new Relations();
         expectedRelations.setRelations(testRelations);
 
-        Relations result = gptService.getRelations("testString", "testString2");
+        Relations result = gptService.getRelations("testString", "testString2", settings);
 
         assertThat(result.getRelations()).containsExactlyElementsOf(expectedRelations.getRelations());
     }
@@ -168,7 +180,7 @@ class GptServiceTest {
     public void shouldReturnDummyConstraints() {
         gptService.useDummyData = true;
 
-        Constraints result = gptService.getConstraints("testString", "testString2");
+        Constraints result = gptService.getConstraints("testString", "testString2", settings);
 
         assertThat(result.getConstraints()).containsExactlyInAnyOrderElementsOf(testConstraints);
     }
@@ -183,7 +195,7 @@ class GptServiceTest {
         Constraints expectedConstraints = new Constraints();
         expectedConstraints.setConstraints(testConstraints);
 
-        Constraints result = gptService.getConstraints("testString", "testString2");
+        Constraints result = gptService.getConstraints("testString", "testString2", settings);
 
         assertThat(result.getConstraints()).containsExactlyElementsOf(expectedConstraints.getConstraints());
     }
