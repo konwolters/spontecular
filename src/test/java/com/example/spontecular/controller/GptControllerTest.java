@@ -1,9 +1,6 @@
 package com.example.spontecular.controller;
 
-import com.example.spontecular.dto.Classes;
-import com.example.spontecular.dto.Constraints;
-import com.example.spontecular.dto.Hierarchy;
-import com.example.spontecular.dto.Relations;
+import com.example.spontecular.dto.*;
 import com.example.spontecular.service.GptService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +13,7 @@ import org.springframework.web.servlet.ModelAndView;
 import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -30,14 +28,17 @@ class GptControllerTest {
     @MockBean
     GptService gptService;
 
+    SettingsForm settings = SettingsForm.builder().build();
+
     @Test
     void shouldGetClassesAndReturnFragment() throws Exception {
         Classes mockClasses = new Classes("test classes data");
 
-        when(gptService.getClasses(anyString())).thenReturn(mockClasses);
+        when(gptService.getClasses(anyString(), any(SettingsForm.class))).thenReturn(mockClasses);
 
         MvcResult result = mockMvc.perform(post("/getClasses")
-                        .param("inputText", "input data"))
+                        .param("inputText", "input data")
+                        .sessionAttr("settings", settings))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -59,12 +60,13 @@ class GptControllerTest {
         Classes mockClasses = new Classes("class1,class2,class3");
         Hierarchy mockHierarchy = new Hierarchy("test hierarchy data");
 
-        when(gptService.getClasses(anyString())).thenReturn(mockClasses);
-        when(gptService.getHierarchy(anyString(), anyString())).thenReturn(mockHierarchy);
+        when(gptService.getClasses(anyString(), any(SettingsForm.class))).thenReturn(mockClasses);
+        when(gptService.getHierarchy(anyString(), anyString(), any(SettingsForm.class))).thenReturn(mockHierarchy);
 
         MvcResult result = mockMvc.perform(post("/getHierarchy")
                         .param("inputText", "input data")
-                        .sessionAttr("classes", mockClasses))
+                        .sessionAttr("classes", mockClasses)
+                        .sessionAttr("settings", settings))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -86,12 +88,13 @@ class GptControllerTest {
         Classes mockClasses = new Classes("class1,class2,class3");
         Relations mockRelations = new Relations("test relation data");
 
-        when(gptService.getClasses(anyString())).thenReturn(mockClasses);
-        when(gptService.getRelations(anyString(), anyString())).thenReturn(mockRelations);
+        when(gptService.getClasses(anyString(), any(SettingsForm.class))).thenReturn(mockClasses);
+        when(gptService.getRelations(anyString(), anyString(), any(SettingsForm.class))).thenReturn(mockRelations);
 
         MvcResult result = mockMvc.perform(post("/getRelations")
                         .param("inputText", "input data")
-                        .sessionAttr("classes", mockClasses))
+                        .sessionAttr("classes", mockClasses)
+                        .sessionAttr("settings", settings))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -113,11 +116,12 @@ class GptControllerTest {
         Relations mockRelations = new Relations("test relation data");
         Constraints mockConstraints = new Constraints("test constraint data");
 
-        when(gptService.getConstraints(anyString(), anyString())).thenReturn(mockConstraints);
+        when(gptService.getConstraints(anyString(), anyString(), any(SettingsForm.class))).thenReturn(mockConstraints);
 
         MvcResult result = mockMvc.perform(post("/getConstraints")
                         .param("inputText", "input data")
-                        .sessionAttr("relations", mockRelations))
+                        .sessionAttr("relations", mockRelations)
+                        .sessionAttr("settings", settings))
                 .andExpect(status().isOk())
                 .andReturn();
 

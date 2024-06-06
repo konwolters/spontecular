@@ -1,16 +1,17 @@
 package com.example.spontecular.controller;
 
-import com.example.spontecular.dto.Classes;
-import com.example.spontecular.dto.Constraints;
-import com.example.spontecular.dto.Hierarchy;
-import com.example.spontecular.dto.Relations;
+import com.example.spontecular.dto.*;
 import com.example.spontecular.service.JenaService;
 import com.example.spontecular.service.SpecificationService;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,10 +24,41 @@ public class AppController {
     private final JenaService jenaService;
     private final SpecificationService specificationService;
 
+    @Value("${default.definition.classes}")
+    private String defaultClassesDefinition;
+
+    @Value("${default.definition.hierarchy}")
+    private String defaultHierarchyDefinition;
+
+    @Value("${default.definition.relations}")
+    private String defaultRelationsDefinition;
+
+    @Value("${default.definition.constraints}")
+    private String defaultConstraintsDefinition;
 
     @GetMapping({"/", "/restart"})
-    public String index() {
+    public String index(Model model, HttpSession session) {
+        SettingsForm settings;
+
+        if (session.getAttribute("settings") != null ) {
+            settings = (SettingsForm) session.getAttribute("settings");
+        } else {
+            settings = SettingsForm.builder()
+                    .classesDefinition(defaultClassesDefinition)
+                    .hierarchyDefinition(defaultHierarchyDefinition)
+                    .relationsDefinition(defaultRelationsDefinition)
+                    .constraintsDefinition(defaultConstraintsDefinition)
+                    .build();
+        }
+
+        model.addAttribute("settings", settings);
         return "index";
+    }
+
+    @PostMapping("/updateSettings")
+    public ResponseEntity<Void> updateSetting (@ModelAttribute SettingsForm settings, HttpSession session) {
+        session.setAttribute("settings", settings);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/loadSpecification")

@@ -1,0 +1,98 @@
+<!--Textareas-->
+<div
+  th:fragment="settingItem(title)"
+  class="flex w-full px-5 py-5 text-gray-700"
+>
+  <div class="w-1/4">
+    <p class="font-bold" th:text="${title + ':'}"></p>
+  </div>
+  <div class="w-3/4 text-sm">
+    <p>Definition:</p>
+    <textarea
+      class="input w-full rounded border px-2 py-1 text-gray-700 focus:border-indigo-500 focus:outline-none"
+      style="overflow-y: auto"
+      th:field="*{__${title}__Definition}"
+      th:name="'${title}DefinitionSetting'"
+    ></textarea>
+
+    <p class="mt-2">Examples:</p>
+    <textarea
+      class="input w-full rounded border px-2 py-1 text-gray-700 focus:border-indigo-500 focus:outline-none"
+      style="overflow-y: auto"
+      th:field="*{__${title}__Examples}"
+      th:name="'${title}ExamplesSetting'"
+    ></textarea>
+
+    <p class="mt-2">Blacklist:</p>
+    <textarea
+      class="input w-full rounded border px-2 py-1 text-gray-700 focus:border-indigo-500 focus:outline-none"
+      style="overflow-y: auto"
+      th:field="*{__${title}__Blacklist}"
+      th:name="'${title}BlacklistSetting'"
+    ></textarea>
+  </div>
+</div>
+
+<!--Modal-->
+<div
+  th:fragment="modal"
+  x-show="showModal"
+  class="fixed inset-0 z-50 h-full w-full overflow-y-auto bg-gray-600 bg-opacity-50"
+  x-transition:enter="transition ease-out duration-300"
+  x-transition:enter-start="opacity-0"
+  x-transition:enter-end="opacity-100"
+  x-transition:leave="transition ease-in duration-300"
+  x-transition:leave-start="opacity-100"
+  x-transition:leave-end="opacity-0"
+>
+  <form th:object="${settings}">
+    <div class="container mx-auto flex w-1/2 items-start justify-center">
+      <div
+        class="mt-10 w-full overflow-hidden rounded bg-white shadow-lg"
+        @click.away="showModal = false"
+      >
+        <div class="flex items-center justify-between px-5 py-4">
+          <h2 class="text-xl">Settings</h2>
+          <button type="button" class="text-black" @click="showModal = false">
+            &times;
+          </button>
+        </div>
+        <div class="h-[600px] overflow-y-auto">
+          <div class="divide-y divide-solid">
+            <div
+              th:replace="~{settings-fragments :: settingItem('classes')}"
+            ></div>
+            <div
+              th:replace="~{settings-fragments :: settingItem('hierarchy')}"
+            ></div>
+            <div
+              th:replace="~{settings-fragments :: settingItem('relations')}"
+            ></div>
+            <div
+              th:replace="~{settings-fragments :: settingItem('constraints')}"
+            ></div>
+          </div>
+        </div>
+
+        <div class="w-100 flex items-center justify-end bg-gray-100 p-3">
+          <button
+            type="button"
+            class="mr-6 font-bold text-gray-600 hover:underline hover:decoration-2 hover:underline-offset-8"
+            @click="showModal = false"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            class="mr-6 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-700"
+            hx-post="/updateSettings"
+            hx-swap="none"
+            @click="showModal = false"
+          >
+            Save
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
