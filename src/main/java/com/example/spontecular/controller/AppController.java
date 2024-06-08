@@ -49,6 +49,7 @@ public class AppController {
                     .relationsDefinition(defaultRelationsDefinition)
                     .constraintsDefinition(defaultConstraintsDefinition)
                     .build();
+            session.setAttribute("settings", settings);
         }
 
         model.addAttribute("settings", settings);

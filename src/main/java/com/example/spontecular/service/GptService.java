@@ -1,7 +1,6 @@
 package com.example.spontecular.service;
 
 import com.example.spontecular.dto.*;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.openai.OpenAiChatClient;
@@ -11,8 +10,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class GptService {
@@ -50,13 +49,14 @@ public class GptService {
 
             PromptTemplate promptTemplate = new PromptTemplate(
                     classesPrompt,
-                    Map.of(
-                            "inputText", inputText,
-                            "definition", settings.getClassesDefinition(),
-                            "examples", settings.getClassesExamples(),
-                            "blacklist", settings.getClassesBlacklist()
-                    )
+                    new HashMap<String, Object>() {{
+                        put("inputText", inputText);
+                        put("definition", settings.getClassesDefinition());
+                        put("examples", settings.getClassesExamples());
+                        put("blacklist", settings.getClassesBlacklist());
+                    }}
             );
+
             ChatResponse response = chatClient.call(promptTemplate.create());
             classes = outputParser.parse(response.getResult().getOutput().getContent());
         }
@@ -86,14 +86,15 @@ public class GptService {
 
             PromptTemplate promptTemplate = new PromptTemplate(
                     hierarchyPrompt,
-                    Map.of(
-                            "inputText", inputText,
-                            "classes", classes,
-                            "definition", settings.getHierarchyDefinition(),
-                            "examples", settings.getHierarchyExamples(),
-                            "blacklist", settings.getHierarchyBlacklist()
-                    )
+                    new HashMap<String, Object>() {{
+                            put("inputText", inputText);
+                            put("classes", classes);
+                            put("definition", settings.getHierarchyDefinition());
+                            put("examples", settings.getHierarchyExamples());
+                            put("blacklist", settings.getHierarchyBlacklist());
+                    }}
             );
+
             ChatResponse response = chatClient.call(promptTemplate.create());
             hierarchy = outputParser.parse(response.getResult().getOutput().getContent());
         }
@@ -122,13 +123,14 @@ public class GptService {
 
             PromptTemplate promptTemplate = new PromptTemplate(
                     relationsPrompt,
-                    Map.of(
-                            "inputText", inputText,
-                            "classes", classes,
-                            "definition", settings.getRelationsDefinition(),
-                            "examples", settings.getRelationsExamples(),
-                            "blacklist", settings.getRelationsBlacklist()
-                    )
+                    new HashMap<String, Object>() {
+                        {
+                            put("inputText", inputText);
+                            put("classes", classes);
+                            put("definition", settings.getRelationsDefinition());
+                            put("examples", settings.getRelationsExamples());
+                            put("blacklist", settings.getRelationsBlacklist());
+                        }}
             );
 
             ChatResponse response = chatClient.call(promptTemplate.create());
@@ -159,17 +161,16 @@ public class GptService {
 
             PromptTemplate promptTemplate = new PromptTemplate(
                     constraintsPrompt,
-                    Map.of(
-                            "inputText", inputText,
-                            "relations", relations,
-                            "definition", settings.getConstraintsDefinition(),
-                            "examples", settings.getConstraintsExamples(),
-                            "blacklist", settings.getConstraintsBlacklist()
-                    )
+                    new HashMap<String, Object>() {{
+                            put("inputText", inputText);
+                            put("relations", relations);
+                            put("definition", settings.getConstraintsDefinition());
+                            put("examples", settings.getConstraintsExamples());
+                            put("blacklist", settings.getConstraintsBlacklist());
+                    }}
             );
 
             ChatResponse response = chatClient.call(promptTemplate.create());
-
             constraints = outputParser.parse(response.getResult().getOutput().getContent());
         }
         return constraints;
