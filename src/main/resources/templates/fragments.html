@@ -1,14 +1,14 @@
 <!--Header Fragment-->
-<th:block th:fragment="headers">
+<div th:fragment="headers" th:remove="tag">
   <link
     rel="stylesheet"
     href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
   />
   <link href="/css/output.css" rel="stylesheet" />
-</th:block>
+</div>
 
 <!--Footer Fragment-->
-<th:block th:fragment="footer">
+<div th:fragment="footer" th:remove="tag">
   <!-- Loading Indicator - Hidden by default -->
   <div
     id="loadingIndicator"
@@ -28,7 +28,7 @@
     type="text/javascript"
     th:src="@{/webjars/htmx.org/dist/htmx.min.js}"
   ></script>
-</th:block>
+</div>
 
 <!--Feature Fragment-->
 <div
@@ -131,7 +131,7 @@
 </div>
 
 <!--Specification Fragment-->
-<th:block th:fragment="specificationFragment">
+<div th:fragment="specificationFragment" th:remove="tag">
   <div class="h-full w-full">
     <textarea
       class="form-textarea block h-full w-full rounded-md border border-gray-200 p-2 text-sm focus:border-indigo-500 focus:outline-none"
@@ -142,4 +142,4 @@
       style="overflow-y: auto; resize: none"
     ></textarea>
   </div>
-</th:block>
+</div>
