@@ -1,0 +1,113 @@
+<div th:fragment="relationsItem(relation, index)" th:remove="tag">
+  <tr
+    th:x-data="|{ 
+    editingField: null,
+    fields: { 
+        field1: '${relation.subject}',
+        field2: '${relation.predicate}', 
+        field3: '${relation.object}', 
+        field4: '${relation.minCardinality}', 
+        field5: '${relation.maxCardinality}' 
+    },
+    originalFields: {},
+    startEditing(field) { this.editingField = field; this.originalFields[field] = this.fields[field] },
+    save() { this.editingField = null; },
+    cancel() { this.fields[this.editingField] = this.originalFields[this.editingField]; this.editingField = null; } 
+  }|"
+  >
+    <td class="table-data">
+      <span
+        x-show="editingField !== 'field1'"
+        @click="startEditing('field1')"
+        class="cursor-pointer"
+        x-text="fields.field1"
+      ></span>
+      <input
+        x-show="editingField === 'field1'"
+        x-model="fields.field1"
+        th:name="'relations[' + ${index} + '].subject'"
+        @keydown.enter.prevent="save()"
+        @blur="cancel()"
+        type="text"
+        class="border border-gray-400 px-2 py-1 text-sm text-gray-900"
+      />
+    </td>
+    <td class="table-data">
+      <span
+        x-show="editingField !== 'field2'"
+        @click="startEditing('field2')"
+        class="cursor-pointer"
+        x-text="fields.field2"
+      ></span>
+      <input
+        x-show="editingField === 'field2'"
+        x-model="fields.field2"
+        th:name="'relations[' + ${index} + '].predicate'"
+        @keydown.enter.prevent="save()"
+        @blur="cancel()"
+        type="text"
+        class="border border-gray-400 px-2 py-1 text-sm text-gray-900"
+      />
+    </td>
+    <td class="table-data">
+      <span
+        x-show="editingField !== 'field3'"
+        @click="startEditing('field3')"
+        class="cursor-pointer"
+        x-text="fields.field3"
+      ></span>
+      <input
+        x-show="editingField === 'field3'"
+        x-model="fields.field3"
+        th:name="'relations[' + ${index} + '].object'"
+        @keydown.enter.prevent="save()"
+        @blur="cancel()"
+        type="text"
+        class="border border-gray-400 px-2 py-1 text-sm text-gray-900"
+      />
+    </td>
+    <td class="table-data">
+      <span
+        x-show="editingField !== 'field4'"
+        @click="startEditing('field4')"
+        class="cursor-pointer"
+        x-text="fields.field4"
+      ></span>
+      <input
+        x-show="editingField === 'field4'"
+        x-model="fields.field4"
+        th:name="'relations[' + ${index} + '].minCardinality'"
+        @keydown.enter.prevent="save()"
+        @blur="cancel()"
+        type="text"
+        class="border border-gray-400 px-2 py-1 text-sm text-gray-900"
+      />
+    </td>
+    <td class="table-data">
+      <span
+        x-show="editingField !== 'field5'"
+        @click="startEditing('field5')"
+        class="cursor-pointer"
+        x-text="fields.field5"
+      ></span>
+      <input
+        x-show="editingField === 'field5'"
+        x-model="fields.field5"
+        th:name="'relations[' + ${index} + '].maxCardinality'"
+        @keydown.enter.prevent="save()"
+        @blur="cancel()"
+        type="text"
+        class="border border-gray-400 px-2 py-1 text-sm text-gray-900"
+      />
+    </td>
+    <td class="table-data">
+      <a
+        href="#"
+        class="text-indigo-600 hover:text-indigo-900"
+        @click.prevent="$el.closest('tr').remove()"
+        >Delete</a
+      >
+      <a href="#" class="text-indigo-600 hover:text-indigo-900">Blacklist</a>
+    </td>
+  </tr>
+</div>
