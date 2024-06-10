@@ -1,13 +1,18 @@
-<!--Header Fragment-->
+<!--###########################-->
+<!-- #### HEADER FRAGMENT #### -->
+<!--###########################-->
 <div th:fragment="headers" th:remove="tag">
   <link
     rel="stylesheet"
     href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
   />
   <link href="/css/output.css" rel="stylesheet" />
+  <link href="/css/custom.css" rel="stylesheet" />
 </div>
 
-<!--Footer Fragment-->
+<!--##########################-->
+<!-- #### FOOTER FRAGMENT ####-->
+<!--##########################-->
 <div th:fragment="footer" th:remove="tag">
   <!-- Loading Indicator - Hidden by default -->
   <div
@@ -30,14 +35,16 @@
   ></script>
 </div>
 
-<!--Feature Fragment-->
+<!--############################-->
+<!-- #### FEATURE FRAGMENT #### -->
+<!--############################-->
 <div
-  th:fragment="featureFragment"
+  th:fragment="featureFragment2(nextFeature)"
   x-data="{ showModal: false, text: '', tempText: '' }"
   th:x-init="|text = '${#strings.escapeJavaScript(gptResponseMessage)}'|"
   class="py-1"
 >
-  <h5 th:text="${fieldTitle}"></h5>
+  <h5 th:text="${#strings.capitalize(feature) + ':'}"></h5>
   <div class="relative">
     <textarea
       type="text"
@@ -67,8 +74,8 @@
   </div>
   <button
     class="continueButton rounded bg-gray-500 px-6 py-1 text-white shadow-md hover:bg-gray-600"
-    th:hx-post="@{${endpointUrl}}"
-    th:hx-target="|#${targetElementId}|"
+    th:hx-post="@{${'/get' + nextFeature}}"
+    th:hx-target="|#${nextFeature}Div|"
     type="submit"
   >
     Continue
@@ -87,7 +94,7 @@
   >
     <div class="container mx-auto flex h-full items-start justify-center">
       <div
-        class="mt-10 w-4/5 overflow-hidden rounded bg-white shadow-lg"
+        class="mt-10 overflow-hidden rounded bg-white shadow-lg"
         @click.away="showModal = false"
       >
         <div class="flex items-center justify-between px-4 py-4">
@@ -99,15 +106,16 @@
             &times;
           </button>
         </div>
-        <div class="p-3">
-          <textarea
-            x-model="tempText"
-            rows="35"
-            class="input focus:shadow-outline w-full rounded border px-2 py-1 leading-tight text-gray-700 focus:outline-none"
-            style="overflow-y: auto"
+        <div class="flex justify-center px-3">
+          <div
+            class="custom-scrollbar h-[600px] w-full overflow-y-auto overflow-x-hidden"
           >
-          </textarea>
+            <div
+              th:replace="~{__${feature}__-fragments :: __${feature}__Fragment(${itemList})}"
+            ></div>
+          </div>
         </div>
+
         <div class="w-100 flex items-center justify-end bg-gray-100 p-3">
           <button
             type="button"
@@ -130,16 +138,18 @@
   </div>
 </div>
 
+<!--######################-->
 <!--Specification Fragment-->
+<!--######################-->
+
 <div th:fragment="specificationFragment" th:remove="tag">
   <div class="h-full w-full">
     <textarea
-      class="form-textarea block h-full w-full rounded-md border border-gray-200 p-2 text-sm focus:border-indigo-500 focus:outline-none"
+      class="form-textarea custom-scrollbar block h-full w-full overflow-y-auto rounded-md border border-gray-200 p-2 text-sm focus:border-indigo-500 focus:outline-none"
       placeholder="Enter text here"
       name="inputText"
       th:x-init="|inputText = '${#strings.escapeJavaScript(specification)}'|"
       x-model="inputText"
-      style="overflow-y: auto; resize: none"
     ></textarea>
   </div>
 </div>

@@ -1,0 +1,89 @@
+<div th:fragment="classesFragment(itemList)" th:remove="tag">
+  <form id="values-form" hx-post="/save" hx-trigger="submit" class="space-y-4">
+    <table class="divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th scope="col" class="table-header min-w-60">Class</th>
+          <th scope="col" class="table-header">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200 bg-white" id="value-container">
+        <div
+          th:each="value, iterStat : ${itemList}"
+          th:with="index=${iterStat.index}"
+          th:insert="~{class-fragments :: classesItem(value, index)}"
+          th:remove="tag"
+        ></div>
+      </tbody>
+    </table>
+    <!--        Needed for indexing of new items-->
+    <input
+      type="number"
+      class="hidden"
+      name="itemsCount"
+      th:value="${itemList.size()}"
+    />
+    <!--        End of comment -->
+    <div
+      x-data="{ newClass: '', resetInput() { this.newClass = ''; } }"
+      class="flex"
+    >
+      <input
+        type="text"
+        class="border px-4 py-2"
+        name="newClass"
+        placeholder="Enter new class"
+        x-model="newClass"
+        @keydown.enter.prevent="$refs.addButton.click()"
+      />
+      <button
+        type="button"
+        class="border-0 bg-gray-400 px-4 py-2 text-white hover:bg-gray-500"
+        @click="$nextTick(() => { resetInput() })"
+        hx-include="[name='newClass']"
+        hx-post="/addClass"
+        hx-target="#value-container"
+        hx-swap="beforeend"
+        x-ref="addButton"
+      >
+        Add
+      </button>
+    </div>
+    <button type="submit" class="bg-blue-500 px-4 py-2 text-white">Save</button>
+  </form>
+</div>
+
+<div th:fragment="classesItem(value, index)" th:remove="tag">
+  <tr
+    th:x-data="|{ isEditing: false, value: '${value}', originalValue: '',
+    save() { this.isEditing = false; this.originalValue = this.value },
+    cancel() { this.isEditing = false; this.value = this.originalValue } }|"
+  >
+    <td class="table-data">
+      <span
+        x-show="!isEditing"
+        @click="isEditing = true; originalValue = value"
+        class="cursor-pointer"
+        x-text="value"
+      ></span>
+      <input
+        x-show="isEditing"
+        x-model="value"
+        th:name="'classes[' + ${index} + ']'"
+        @keydown.enter.prevent="save()"
+        @blur="cancel()"
+        type="text"
+        class="border border-gray-400 px-2 py-1 text-sm text-gray-900"
+      />
+    </td>
+    <td class="table-data">
+      <a
+        href="#"
+        class="text-indigo-600 hover:text-indigo-900"
+        @click.prevent="$el.closest('tr').remove()"
+        >Delete</a
+      >
+      <a href="#" class="text-indigo-600 hover:text-indigo-900">Blacklist</a>
+    </td>
+  </tr>
+</div>
