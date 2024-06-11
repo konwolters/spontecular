@@ -6,12 +6,13 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Getter
 @Setter
-public class Hierarchy {
+public class Hierarchy implements Feature{
     private List<List<String>> hierarchy = new ArrayList<>();
 
     public Hierarchy() {
@@ -29,6 +30,15 @@ public class Hierarchy {
             List<String> items = Arrays.asList(extracted.split(",\\s+"));
             this.hierarchy.add(new ArrayList<>(items));
         }
+    }
+
+    @Override
+    public Map<String, Object> getResponseMap() {
+        return Map.of(
+                "featureType", "hierarchy",
+                "nextFeatureType", "relations",
+                "itemList", getHierarchy()
+        );
     }
 
     @Override
