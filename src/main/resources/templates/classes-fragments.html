@@ -7,11 +7,36 @@
           <th scope="col" class="table-header">Actions</th>
         </tr>
       </thead>
+      <div
+        x-data="{ newClass: '', resetInput() { this.newClass = ''; } }"
+        class="flex"
+      >
+        <input
+          type="text"
+          class="border px-4 py-1 text-sm"
+          name="newClass"
+          placeholder="Enter new class"
+          x-model="newClass"
+          @keydown.enter.prevent="$refs.addButton.click()"
+        />
+        <button
+          type="button"
+          class="border-0 bg-gray-400 px-2 py-1 text-sm text-white hover:bg-gray-500"
+          @click="$nextTick(() => { resetInput() })"
+          hx-include="[name='newClass']"
+          hx-post="/classes"
+          hx-target="#value-container"
+          hx-swap="beforeend"
+          x-ref="addButton"
+        >
+          Add
+        </button>
+      </div>
       <tbody class="divide-y divide-gray-200 bg-white" id="value-container">
         <div
           th:each="value, iterStat : ${itemList}"
           th:with="index=${iterStat.index}"
-          th:insert="~{class-fragments :: classesItem(value, index)}"
+          th:insert="~{classes-fragments :: classesItem(value, index)}"
           th:remove="tag"
         ></div>
       </tbody>
@@ -24,40 +49,22 @@
       th:value="${itemList.size()}"
     />
     <!--        End of comment -->
-    <div
-      x-data="{ newClass: '', resetInput() { this.newClass = ''; } }"
-      class="flex"
-    >
-      <input
-        type="text"
-        class="border px-4 py-2"
-        name="newClass"
-        placeholder="Enter new class"
-        x-model="newClass"
-        @keydown.enter.prevent="$refs.addButton.click()"
-      />
-      <button
-        type="button"
-        class="border-0 bg-gray-400 px-4 py-2 text-white hover:bg-gray-500"
-        @click="$nextTick(() => { resetInput() })"
-        hx-include="[name='newClass']"
-        hx-post="/addClass"
-        hx-target="#value-container"
-        hx-swap="beforeend"
-        x-ref="addButton"
-      >
-        Add
-      </button>
-    </div>
-    <button type="submit" class="bg-blue-500 px-4 py-2 text-white">Save</button>
   </form>
 </div>
 
 <div th:fragment="classesItem(value, index)" th:remove="tag">
   <tr
-    th:x-data="|{ isEditing: false, value: '${value}', originalValue: '',
+    th:x-data="|{
+    isEditing: false,
+    isBlacklisted: false,
+    value: '${value}',
+    originalValue: '',
+    index: ${index},
     save() { this.isEditing = false; this.originalValue = this.value },
-    cancel() { this.isEditing = false; this.value = this.originalValue } }|"
+    cancel() { this.isEditing = false; this.value = this.originalValue },
+    blacklist() { this.isBlacklisted = !this.isBlacklisted; this.updateNameAttribute() },
+    updateNameAttribute() { const inputElement = this.$refs.input; inputElement.name = this.isBlacklisted ? 'blacklist[' + this.index + ']' : 'classes[' + this.index + ']' } }|"
+    :class="{ 'bg-gray-50 text-gray-300': isBlacklisted, 'text-gray-900' :!isBlacklisted }"
   >
     <td class="table-data">
       <span
@@ -69,21 +76,28 @@
       <input
         x-show="isEditing"
         x-model="value"
-        th:name="'classes[' + ${index} + ']'"
         @keydown.enter.prevent="save()"
         @blur="cancel()"
         type="text"
-        class="border border-gray-400 px-2 py-1 text-sm text-gray-900"
+        class="border border-gray-400 px-2 py-1 text-sm"
+        x-ref="input"
+        th:name="'classes[' + ${index} + ']'"
       />
     </td>
     <td class="table-data">
-      <a
-        href="#"
+      <button
+        type="button"
         class="text-indigo-600 hover:text-indigo-900"
         @click.prevent="$el.closest('tr').remove()"
-        >Delete</a
       >
-      <a href="#" class="text-indigo-600 hover:text-indigo-900">Blacklist</a>
+        Delete
+      </button>
+      <button
+        type="button"
+        class="text-indigo-600 hover:text-indigo-900"
+        @click.prevent="blacklist()"
+        x-text="isBlacklisted ? 'De-Blacklist' : 'Blacklist'"
+      ></button>
     </td>
   </tr>
 </div>

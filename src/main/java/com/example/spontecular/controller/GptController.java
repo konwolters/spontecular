@@ -27,5 +27,12 @@ public class GptController {
 
         return "fragments :: featureFragment";
     }
+
+    @PostMapping("/classes")
+    public String addClass(@RequestParam String newClass, Model model) {
+        model.addAttribute("value", newClass);
+
+        return "classes-fragments :: classesItem";
+    }
 }
 
