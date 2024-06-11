@@ -79,17 +79,13 @@ public class AppController {
         return "fragments :: specificationFragment";
     }
 
-    @PostMapping("/export")
-    public String export(Model model,
-                         @RequestParam String classesText,
-                         @RequestParam String hierarchyText,
-                         @RequestParam(required = false) String relationsText,
-                         @RequestParam(required = false) String constraintsText) {
-        Classes classes = new Classes(classesText);
+    @GetMapping("/export")
+    public String export(Model model, HttpSession session) {
 
-        Hierarchy hierarchy = hierarchyText != null ? new Hierarchy(hierarchyText) : null;
-        Relations relations = relationsText != null ? new Relations(relationsText) : null;
-        Constraints constraints = constraintsText != null ? new Constraints(constraintsText) : null;
+        Classes classes = (Classes) session.getAttribute("classes");
+        Hierarchy hierarchy = (Hierarchy) session.getAttribute("hierarchy");
+        Relations relations = (Relations) session.getAttribute("relations");
+        Constraints constraints = (Constraints) session.getAttribute("constraints");
 
         JenaService.Response response = jenaService.createOntology(classes, hierarchy, relations, constraints);
         String content = response.getModelAsString();
