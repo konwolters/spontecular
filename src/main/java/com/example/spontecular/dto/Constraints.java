@@ -6,12 +6,13 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Getter
 @Setter
-public class Constraints {
+public class Constraints implements Feature {
     List<List<String>> constraints = new ArrayList<>();
 
     public Constraints() {
@@ -29,6 +30,15 @@ public class Constraints {
             List<String> items = Arrays.asList(extracted.split(",\\s+"));
             this.constraints.add(new ArrayList<>(items));
         }
+    }
+
+    @Override
+    public Map<String, Object> getResponseMap() {
+        return Map.of(
+                "featureType", "classes",
+                "nextFeatureType", "",
+                "itemList", getConstraints()
+        );
     }
 
     @Override
