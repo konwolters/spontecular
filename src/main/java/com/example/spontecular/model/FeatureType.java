@@ -6,7 +6,6 @@ public enum FeatureType {
     RELATIONS,
     CONSTRAINTS;
 
-
     public static FeatureType fromString(String feature) {
         return switch (feature.toLowerCase()) {
             case "classes" -> CLASSES;

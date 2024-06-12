@@ -9,10 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Relation {
-    private String subject;
-    private String predicate;
-    private String object;
-    private int minCardinality;
-    private int maxCardinality;
+public class ClassItem {
+    String value;
+    boolean blacklisted;
 }

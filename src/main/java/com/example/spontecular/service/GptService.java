@@ -41,7 +41,7 @@ public class GptService {
 
         if (useDummyData) {
             classes = new Classes();
-            classes.setClasses(List.of("Satellite", "Chassis", "Framework", "Rail", "Sidewall",
+            classes.setClassStrings(List.of("Satellite", "Chassis", "Framework", "Rail", "Sidewall",
                     "Circuit board", "Solar cell", "Sensor wire", "Magnetic coil", "Groove",
                     "Attitude Determination and Control System", "Connector", "Module", "Bus connector", "Cable"));
         } else {

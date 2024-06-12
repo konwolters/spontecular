@@ -1,34 +1,34 @@
 <!--Textareas-->
 <div
-  th:fragment="settingItem(title)"
+  th:fragment="settingItem(feature)"
   class="flex w-full px-5 py-5 text-gray-700"
 >
   <div class="w-1/4">
-    <p class="font-bold" th:text="${title + ':'}"></p>
+    <p class="font-bold" th:text="${#strings.capitalize(feature) + ':'}"></p>
   </div>
   <div class="w-3/4 text-sm">
     <p>Definition:</p>
     <textarea
       class="input w-full rounded border px-2 py-1 text-gray-700 focus:border-indigo-500 focus:outline-none"
       style="overflow-y: auto"
-      th:field="*{__${title}__Definition}"
-      th:name="'${title}DefinitionSetting'"
+      th:field="*{__${feature}__Definition}"
+      th:name="'${feature}DefinitionSetting'"
     ></textarea>
 
     <p class="mt-2">Examples:</p>
     <textarea
       class="input w-full rounded border px-2 py-1 text-gray-700 focus:border-indigo-500 focus:outline-none"
       style="overflow-y: auto"
-      th:field="*{__${title}__Examples}"
-      th:name="'${title}ExamplesSetting'"
+      th:field="*{__${feature}__Examples}"
+      th:name="'${feature}ExamplesSetting'"
     ></textarea>
 
     <p class="mt-2">Blacklist:</p>
     <textarea
       class="input w-full rounded border px-2 py-1 text-gray-700 focus:border-indigo-500 focus:outline-none"
       style="overflow-y: auto"
-      th:field="*{__${title}__Blacklist}"
-      th:name="'${title}BlacklistSetting'"
+      th:field="*{__${feature}__Blacklist}"
+      th:name="'${feature}BlacklistSetting'"
     ></textarea>
   </div>
 </div>
@@ -57,7 +57,7 @@
             &times;
           </button>
         </div>
-        <div class="h-[600px] overflow-y-auto">
+        <div class="custom-scrollbar h-[600px] overflow-y-auto">
           <div class="divide-y divide-solid">
             <div
               th:replace="~{settings-fragments :: settingItem('classes')}"

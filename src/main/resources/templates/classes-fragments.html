@@ -1,5 +1,13 @@
+<!--#########################-->
+<!-- classesFragment Fragment-->
+<!--#########################-->
 <div th:fragment="classesFragment(itemList)" th:remove="tag">
-  <form id="values-form" hx-post="/save" hx-trigger="submit" class="space-y-4">
+  <form
+    id="values-form"
+    hx-put="/feature"
+    hx-trigger="submit"
+    class="space-y-4"
+  >
     <table class="divide-y divide-gray-200">
       <thead class="bg-gray-50">
         <tr>
@@ -34,9 +42,9 @@
       </div>
       <tbody class="divide-y divide-gray-200 bg-white" id="value-container">
         <div
-          th:each="value, iterStat : ${itemList}"
+          th:each="classItem, iterStat : ${itemList}"
           th:with="index=${iterStat.index}"
-          th:insert="~{classes-fragments :: classesItem(value, index)}"
+          th:insert="~{classes-fragments :: classesItem(classItem, index)}"
           th:remove="tag"
         ></div>
       </tbody>
@@ -52,36 +60,72 @@
   </form>
 </div>
 
-<div th:fragment="classesItem(value, index)" th:remove="tag">
+<!--#####################-->
+<!-- classesItem Fragment-->
+<!--#####################-->
+
+<div th:fragment="classesItem(classItem, index)" th:remove="tag">
   <tr
     th:x-data="|{
-    isEditing: false,
-    isBlacklisted: false,
-    value: '${value}',
-    originalValue: '',
-    index: ${index},
-    save() { this.isEditing = false; this.originalValue = this.value },
-    cancel() { this.isEditing = false; this.value = this.originalValue },
-    blacklist() { this.isBlacklisted = !this.isBlacklisted; this.updateNameAttribute() },
-    updateNameAttribute() { const inputElement = this.$refs.input; inputElement.name = this.isBlacklisted ? 'blacklist[' + this.index + ']' : 'classes[' + this.index + ']' } }|"
-    :class="{ 'bg-gray-50 text-gray-300': isBlacklisted, 'text-gray-900' :!isBlacklisted }"
+      isEditing: false,
+      classItem: {
+        value: '${classItem.value}',
+        blacklisted: '${classItem.blacklisted}',
+      },
+      originalValue: '',
+      index: ${index},
+      init() {
+        this.setClass();
+        this.updateHiddenInput();
+      },
+      save() {
+        this.isEditing = false;
+        this.originalValue = this.classItem.value;
+        this.updateHiddenInput();
+      },
+      cancel() {
+        this.isEditing = false;
+        this.classItem.value = this.originalValue;
+        this.updateHiddenInput();
+      },
+      toggleBlacklist() {
+        this.classItem.blacklisted = (this.classItem.blacklisted === 'true') ? 'false' : 'true';
+        this.updateHiddenInput();
+        this.setClass();
+      },
+      setClass() {
+        const row = $el.closest('tr');
+        if (this.classItem.blacklisted === 'true') {
+          row.classList.add('bg-gray-50', 'text-gray-300');
+          row.classList.remove('text-gray-900');
+        } else {
+          row.classList.add('text-gray-900');
+          row.classList.remove('bg-gray-50', 'text-gray-300');
+        }
+      },
+      updateHiddenInput() {
+        $el.querySelector('input[type=hidden]').value = this.classItem.blacklisted;
+      }
+    }|"
+    x-init="init()"
+    :class="{ 'bg-gray-50 text-gray-300': classItem.blacklisted === 'true', 'text-gray-900': classItem.blacklisted === 'false' }"
   >
     <td class="table-data">
       <span
         x-show="!isEditing"
-        @click="isEditing = true; originalValue = value"
+        @click="isEditing = true; originalValue = classItem.value"
         class="cursor-pointer"
-        x-text="value"
+        x-text="classItem.value"
       ></span>
       <input
         x-show="isEditing"
-        x-model="value"
+        x-model="classItem.value"
         @keydown.enter.prevent="save()"
         @blur="cancel()"
         type="text"
         class="border border-gray-400 px-2 py-1 text-sm"
         x-ref="input"
-        th:name="'classes[' + ${index} + ']'"
+        th:name="'classes[' + ${index} + '].value'"
       />
     </td>
     <td class="table-data">
@@ -95,9 +139,15 @@
       <button
         type="button"
         class="text-indigo-600 hover:text-indigo-900"
-        @click.prevent="blacklist()"
-        x-text="isBlacklisted ? 'De-Blacklist' : 'Blacklist'"
+        @click.prevent="toggleBlacklist()"
+        x-text="classItem.blacklisted === 'true' ? 'De-Blacklist' : 'Blacklist'"
       ></button>
+      <input
+        type="hidden"
+        th:name="'classes[' + ${index} + '].blacklisted'"
+        value=""
+        x-init="$el.value = classItem.blacklisted"
+      />
     </td>
   </tr>
 </div>
