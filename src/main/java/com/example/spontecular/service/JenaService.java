@@ -63,7 +63,7 @@ public class JenaService {
     }
 
     private void createOntologyClasses(Classes classObj, OntModel model, List<String> errorMessages) {
-        for (String className : classObj.getClasses()) {
+        for (String className : classObj.getClassStrings()) {
             className = stringUtils.toUpperCamelCase(className);
             if (model.getOntClass(NAMESPACE + className) == null) {
                 OntClass ontClass = model.createClass(NAMESPACE + className);

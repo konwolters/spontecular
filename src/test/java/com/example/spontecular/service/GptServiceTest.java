@@ -110,7 +110,7 @@ class GptServiceTest {
 
         Classes result = gptService.getClasses("testString", settings);
 
-        assertThat(result.getClasses()).containsExactlyInAnyOrderElementsOf(testClasses);
+        assertThat(result.getClassStrings()).containsExactlyInAnyOrderElementsOf(testClasses);
     }
 
     @Test
@@ -121,11 +121,11 @@ class GptServiceTest {
         when(assistantMessage.getContent()).thenReturn(objectMapper.writeValueAsString(Map.of("classes", testClasses)));
 
         Classes expectedClasses = new Classes();
-        expectedClasses.setClasses(testClasses);
+        expectedClasses.setClassStrings(testClasses);
 
         Classes result = gptService.getClasses("testString", settings);
 
-        assertThat(result.getClasses()).containsExactlyElementsOf(expectedClasses.getClasses());
+        assertThat(result.getClassStrings()).containsExactlyElementsOf(expectedClasses.getClassStrings());
     }
 
     @Test

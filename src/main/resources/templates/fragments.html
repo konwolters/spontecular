@@ -39,26 +39,19 @@
 <!-- #### FEATURE FRAGMENT #### -->
 <!--############################-->
 <div
-  th:fragment="featureFragment2(nextFeature)"
-  x-data="{ showModal: false, text: '', tempText: '' }"
-  th:x-init="|text = '${#strings.escapeJavaScript(gptResponseMessage)}'|"
+  th:fragment="featureFragment(nextFeatureType)"
+  x-data="{ showModal: false }"
   class="py-1"
 >
-  <h5 th:text="${#strings.capitalize(feature) + ':'}"></h5>
+  <h5 th:text="${#strings.capitalize(featureType) + ':'}"></h5>
   <div class="relative">
-    <textarea
-      type="text"
-      x-model="text"
-      placeholder="Enter text here"
-      th:name="${ feature + 'Text'}"
-      class="input w-full rounded border px-2 py-1 text-sm leading-tight text-gray-700 focus:border-indigo-500 focus:outline-none"
-      rows="6"
-      style="overflow-y: auto"
-    ></textarea>
-
+    <p>
+      <span class="font-bold" th:text="${itemList.size()}"></span> items have
+      been extracted.
+    </p>
     <button
       type="button"
-      @click="tempText = text; showModal = true"
+      @click="showModal = true"
       class="absolute right-0 top-0 mx-6 mt-1 rounded border bg-slate-100 px-1 text-black hover:bg-slate-50 focus:outline-none"
     >
       <i class="bi bi-box-arrow-up-right" title="Edit"></i>
@@ -66,16 +59,18 @@
     <button
       type="button"
       class="absolute right-0 top-8 mx-6 mt-0.5 rounded border bg-slate-100 px-1 text-black hover:bg-slate-50 focus:outline-none"
-      th:hx-post="@{|${'/reloadFeature?feature=' + feature }|}"
-      th:hx-target="|#${feature}Div|"
+      hx-include="[name='inputText']"
+      th:hx-post="@{|${'/featureRequest?featureType=' + featureType }|}"
+      th:hx-target="|#${featureType}Div|"
     >
       <i class="bi bi-arrow-clockwise" title="Reload"></i>
     </button>
   </div>
   <button
     class="continueButton rounded bg-gray-500 px-6 py-1 text-white shadow-md hover:bg-gray-600"
-    th:hx-post="@{${'/get' + nextFeature}}"
-    th:hx-target="|#${nextFeature}Div|"
+    hx-include="[name='inputText']"
+    th:hx-post="@{|${'/featureRequest?featureType=' + nextFeatureType }|}"
+    th:hx-target="|#${nextFeatureType}Div|"
     type="submit"
   >
     Continue
@@ -93,47 +88,48 @@
     x-transition:leave-end="opacity-0"
   >
     <div class="container mx-auto flex h-full items-start justify-center">
-      <div
-        class="mt-10 overflow-hidden rounded bg-white shadow-lg"
-        @click.away="showModal = false"
-      >
-        <div class="flex items-center justify-between px-4 py-4">
-          <h2
-            class="text-2xl"
-            th:text="${'Edit '  + #strings.capitalize(feature) + ':'}"
-          ></h2>
-          <button type="button" class="text-black" @click="showModal = false">
-            &times;
-          </button>
-        </div>
-        <div class="flex justify-center px-3">
-          <div
-            class="custom-scrollbar h-[600px] w-full overflow-y-auto overflow-x-hidden"
-          >
+      <form hx-put="/feature" th:hx-target="|#${featureType}Div|">
+        <div
+          class="mt-10 overflow-hidden rounded bg-white shadow-lg"
+          @click.away="showModal = false"
+        >
+          <div class="flex items-center justify-between px-4 py-4">
+            <h2
+              class="text-2xl"
+              th:text="${'Edit '  + #strings.capitalize(featureType) + ':'}"
+            ></h2>
+            <button type="button" class="text-black" @click="showModal = false">
+              &times;
+            </button>
+          </div>
+          <div class="flex justify-center px-3">
             <div
-              th:replace="~{__${feature}__-fragments :: __${feature}__Fragment(${itemList})}"
-            ></div>
+              class="custom-scrollbar h-[600px] w-full overflow-y-auto overflow-x-hidden"
+            >
+              <div
+                th:replace="~{__${featureType}__-fragments :: __${featureType}__Fragment(${itemList})}"
+              ></div>
+            </div>
+          </div>
+
+          <div class="w-100 flex items-center justify-end bg-gray-100 p-3">
+            <button
+              type="button"
+              class="mr-6 font-bold text-gray-600 hover:underline hover:decoration-2 hover:underline-offset-8"
+              @click="showModal = false"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              class="mr-6 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-700"
+              @click="showModal = false"
+            >
+              Save
+            </button>
           </div>
         </div>
-
-        <div class="w-100 flex items-center justify-end bg-gray-100 p-3">
-          <button
-            type="button"
-            class="mr-6 font-bold text-gray-600 hover:underline hover:decoration-2 hover:underline-offset-8"
-            @click="showModal = false"
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
-            class="mr-6 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-700"
-            hx-post="/updateFeature"
-            @click="text = tempText; showModal = false"
-          >
-            Save
-          </button>
-        </div>
-      </div>
+      </form>
     </div>
   </div>
 </div>

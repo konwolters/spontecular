@@ -36,7 +36,7 @@ class JenaServiceTest {
     @BeforeEach
     void setUp() {
         classes = new Classes();
-        classes.setClasses(List.of("Class1", "Class2"));
+        classes.setClassStrings(List.of("Class1", "Class2"));
 
         hierarchy = new Hierarchy();
         hierarchy.setHierarchy(List.of(List.of("Class1", "Class2")));
