@@ -17,7 +17,7 @@
       </thead>
       <div
         x-data="{ newClass: '', resetInput() { this.newClass = ''; } }"
-        class="flex"
+        class="flex pb-3"
       >
         <input
           type="text"
@@ -116,6 +116,7 @@
         @click="isEditing = true; originalValue = classItem.value"
         class="cursor-pointer"
         x-text="classItem.value"
+        title="Edit"
       ></span>
       <input
         x-show="isEditing"

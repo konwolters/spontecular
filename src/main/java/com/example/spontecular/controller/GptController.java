@@ -34,7 +34,7 @@ public class GptController {
 
     @PostMapping("/classes")
     public String addClass(@RequestParam String newClass, Model model) {
-        model.addAttribute("value", newClass);
+        model.addAttribute("classItem", new ClassItem(newClass, false));
 
         return "classes-fragments :: classesItem";
     }
