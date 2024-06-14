@@ -4,6 +4,7 @@ import com.example.spontecular.dto.Classes;
 import com.example.spontecular.dto.Constraints;
 import com.example.spontecular.dto.Hierarchy;
 import com.example.spontecular.dto.Relations;
+import com.example.spontecular.dto.formDtos.ClassItem;
 import com.example.spontecular.service.utility.StringUtils;
 import lombok.Getter;
 import lombok.Setter;
@@ -63,8 +64,8 @@ public class JenaService {
     }
 
     private void createOntologyClasses(Classes classObj, OntModel model, List<String> errorMessages) {
-        for (String className : classObj.getClassStrings()) {
-            className = stringUtils.toUpperCamelCase(className);
+        for (ClassItem classItem : classObj.getClasses()) {
+            String className = stringUtils.toUpperCamelCase(classItem.getValue());
             if (model.getOntClass(NAMESPACE + className) == null) {
                 OntClass ontClass = model.createClass(NAMESPACE + className);
                 System.out.println("Created class: " + ontClass.getURI());

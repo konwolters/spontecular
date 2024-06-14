@@ -12,4 +12,4 @@ in the specification and represent specific hardware parts or software modules.
 
 {blacklist}
 
-Output your findings in JSON format, listing each identified class in singular form under the 'classes' field as a list of classes.”
+{format}
