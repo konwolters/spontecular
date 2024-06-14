@@ -1,6 +1,8 @@
 package com.example.spontecular.service;
 
 import com.example.spontecular.dto.*;
+import com.example.spontecular.dto.formDtos.ClassItem;
+import com.example.spontecular.service.utility.DummyUtil;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.openai.OpenAiChatClient;
@@ -10,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -41,9 +44,7 @@ public class GptService {
 
         if (useDummyData) {
             classes = new Classes();
-            classes.setClassStrings(List.of("Satellite", "Chassis", "Framework", "Rail", "Sidewall",
-                    "Circuit board", "Solar cell", "Sensor wire", "Magnetic coil", "Groove",
-                    "Attitude Determination and Control System", "Connector", "Module", "Bus connector", "Cable"));
+            classes.setClasses(DummyUtil.getClassesDummyData());
         } else {
             OutputParser<Classes> outputParser = new BeanOutputParser<>(Classes.class);
 
@@ -87,11 +88,11 @@ public class GptService {
             PromptTemplate promptTemplate = new PromptTemplate(
                     hierarchyPrompt,
                     new HashMap<String, Object>() {{
-                            put("inputText", inputText);
-                            put("classes", classes);
-                            put("definition", settings.getHierarchyDefinition());
-                            put("examples", settings.getHierarchyExamples());
-                            put("blacklist", settings.getHierarchyBlacklist());
+                        put("inputText", inputText);
+                        put("classes", classes);
+                        put("definition", settings.getHierarchyDefinition());
+                        put("examples", settings.getHierarchyExamples());
+                        put("blacklist", settings.getHierarchyBlacklist());
                     }}
             );
 
@@ -130,7 +131,8 @@ public class GptService {
                             put("definition", settings.getRelationsDefinition());
                             put("examples", settings.getRelationsExamples());
                             put("blacklist", settings.getRelationsBlacklist());
-                        }}
+                        }
+                    }
             );
 
             ChatResponse response = chatClient.call(promptTemplate.create());
@@ -162,11 +164,11 @@ public class GptService {
             PromptTemplate promptTemplate = new PromptTemplate(
                     constraintsPrompt,
                     new HashMap<String, Object>() {{
-                            put("inputText", inputText);
-                            put("relations", relations);
-                            put("definition", settings.getConstraintsDefinition());
-                            put("examples", settings.getConstraintsExamples());
-                            put("blacklist", settings.getConstraintsBlacklist());
+                        put("inputText", inputText);
+                        put("relations", relations);
+                        put("definition", settings.getConstraintsDefinition());
+                        put("examples", settings.getConstraintsExamples());
+                        put("blacklist", settings.getConstraintsBlacklist());
                     }}
             );
 
