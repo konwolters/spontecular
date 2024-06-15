@@ -3,6 +3,7 @@ package com.example.spontecular.service;
 import com.example.spontecular.dto.*;
 import com.example.spontecular.service.utility.DummyUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -62,20 +63,9 @@ class GptServiceTest {
             .constraintsBlacklist("testString")
             .build();
 
+    private Classes testClasses;
 
-    private final List<List<String>> testHierarchy = List.of(
-            List.of("Framework", "Chassis"),
-            List.of("Sidewall", "Rail"),
-            List.of("Component", "Framework"),
-            List.of("Component", "Sidewall"),
-            List.of("Component", "Circuit board"),
-            List.of("Component", "Elastic blushing"),
-            List.of("Circuit board", "Double-sided circuit board"),
-            List.of("Circuit board", "FR-4"),
-            List.of("Circuit board", "Printed Circuit Board"),
-            List.of("Component", "Connector"),
-            List.of("Connector", "Bus connector")
-    );
+    private final List<HierarchyItem> testHierarchy = DummyUtil.getHierarchyDummyData();
 
     private final List<List<String>> testRelations = List.of(
             List.of("Chassis", "consistsOf", "Framework"),
@@ -101,6 +91,10 @@ class GptServiceTest {
             List.of("Module", "isStackedInside", "Satellite", "1", "1"),
             List.of("Elastic bushing", "isPlacedIn", "Groove", "1", "1"));
 
+    @BeforeEach
+    void setup() {
+        testClasses.setClasses(DummyUtil.getClassesDummyData());
+    }
 
     @Test
     public void shouldReturnDummyClasses() {
@@ -118,19 +112,16 @@ class GptServiceTest {
         setupCommonMocks();
         when(assistantMessage.getContent()).thenReturn(objectMapper.writeValueAsString(Map.of("classes", DummyUtil.getClassesDummyData())));
 
-        Classes expectedClasses = new Classes();
-        expectedClasses.setClasses(DummyUtil.getClassesDummyData());
-
         Classes result = gptService.getClasses("testString", settings);
 
-        assertThat(result.getClasses()).containsExactlyElementsOf(expectedClasses.getClasses());
+        assertThat(result.getClasses()).containsExactlyElementsOf(testClasses.getClasses());
     }
 
     @Test
     public void shouldReturnDummyHierarchy() {
         gptService.useDummyData = true;
 
-        Hierarchy result = gptService.getHierarchy("testString", "testString2", settings);
+        Hierarchy result = gptService.getHierarchy("testString", testClasses, settings);
 
         assertThat(result.getHierarchy()).containsExactlyInAnyOrderElementsOf(testHierarchy);
     }
@@ -145,7 +136,7 @@ class GptServiceTest {
         Hierarchy expectedHierarchy = new Hierarchy();
         expectedHierarchy.setHierarchy(testHierarchy);
 
-        Hierarchy result = gptService.getHierarchy("testString", "testString2", settings);
+        Hierarchy result = gptService.getHierarchy("testString", testClasses, settings);
 
         assertThat(result.getHierarchy()).containsExactlyElementsOf(expectedHierarchy.getHierarchy());
     }

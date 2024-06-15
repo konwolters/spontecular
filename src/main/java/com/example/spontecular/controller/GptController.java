@@ -39,6 +39,21 @@ public class GptController {
         return "classes-fragments :: classesItem";
     }
 
+    @PostMapping("/hierarchy")
+    public String addHierarchy(@RequestParam String newParentClass,
+                               @RequestParam String newChildClass,
+                               Model model) {
+
+        System.out.println("newParentClass" + newParentClass);
+        System.out.println("newChildClass" + newChildClass);
+        model.addAttribute(
+                "hierarchyItem",
+                new HierarchyItem(newParentClass, newChildClass, false)
+        );
+
+        return "hierarchy-fragments :: hierarchyItem";
+    }
+
     @PutMapping("/feature")
     public String updateFeature(@ModelAttribute Classes classes, Model model, HttpSession session) {
 

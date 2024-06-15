@@ -40,7 +40,7 @@ class JenaServiceTest {
         classes.setClasses(DummyUtil.getClassesDummyData());
 
         hierarchy = new Hierarchy();
-        hierarchy.setHierarchy(List.of(List.of("Class1", "Class2")));
+        hierarchy.setHierarchy(DummyUtil.getHierarchyDummyData());
 
         relations = new Relations();
         relations.setRelations(List.of(List.of("Class1", "Relation1", "Class2")));
