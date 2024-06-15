@@ -55,6 +55,7 @@ public class GptService {
                         put("definition", settings.getClassesDefinition());
                         put("examples", settings.getClassesExamples());
                         put("blacklist", settings.getClassesBlacklist());
+                        put("format", outputParser.getFormat());
                     }}
             );
 
@@ -64,24 +65,12 @@ public class GptService {
         return classes;
     }
 
-    public Hierarchy getHierarchy(String inputText, String classes, SettingsForm settings) {
+    public Hierarchy getHierarchy(String inputText, Classes classes, SettingsForm settings) {
         Hierarchy hierarchy;
 
         if (useDummyData) {
             hierarchy = new Hierarchy();
-            hierarchy.setHierarchy(List.of(
-                    List.of("Framework", "Chassis"),
-                    List.of("Sidewall", "Rail"),
-                    List.of("Component", "Framework"),
-                    List.of("Component", "Sidewall"),
-                    List.of("Component", "Circuit board"),
-                    List.of("Component", "Elastic blushing"),
-                    List.of("Circuit board", "Double-sided circuit board"),
-                    List.of("Circuit board", "FR-4"),
-                    List.of("Circuit board", "Printed Circuit Board"),
-                    List.of("Component", "Connector"),
-                    List.of("Connector", "Bus connector")
-            ));
+            hierarchy.setHierarchy(DummyUtil.getHierarchyDummyData());
         } else {
             OutputParser<Hierarchy> outputParser = new BeanOutputParser<>(Hierarchy.class);
 
@@ -89,10 +78,11 @@ public class GptService {
                     hierarchyPrompt,
                     new HashMap<String, Object>() {{
                         put("inputText", inputText);
-                        put("classes", classes);
+                        put("classes", classes.toString());
                         put("definition", settings.getHierarchyDefinition());
                         put("examples", settings.getHierarchyExamples());
                         put("blacklist", settings.getHierarchyBlacklist());
+                        put("format", outputParser.getFormat());
                     }}
             );
 

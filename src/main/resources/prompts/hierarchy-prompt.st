@@ -13,5 +13,4 @@ Concentrate exclusively on the following classes: {classes}
 
 {blacklist}
 
-Output your findings in JSON format, listing each identified relationship as [“parent class”, “subclass”] under the
-'hierarchy’ field as a list.
+{format}

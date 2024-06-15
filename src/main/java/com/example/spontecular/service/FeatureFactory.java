@@ -14,7 +14,7 @@ public class FeatureFactory {
                 return classes;
             case HIERARCHY:
                 Classes existingClasses = (Classes) session.getAttribute("classes");
-                Hierarchy hierarchy = gptService.getHierarchy(inputText, existingClasses.toString(), settings);
+                Hierarchy hierarchy = gptService.getHierarchy(inputText, existingClasses, settings);
                 session.setAttribute("hierarchy", hierarchy);
                 return hierarchy;
             case RELATIONS:

@@ -13,24 +13,7 @@ import java.util.regex.Pattern;
 @Getter
 @Setter
 public class Hierarchy implements Feature{
-    private List<List<String>> hierarchy = new ArrayList<>();
-
-    public Hierarchy() {
-    }
-
-    public Hierarchy(String hierarchyString) {
-        // Create a pattern to match text within brackets
-        Pattern pattern = Pattern.compile("\\[(.*?)]");
-        Matcher matcher = pattern.matcher(hierarchyString);
-
-        while (matcher.find()) {
-            // Extracted string between brackets
-            String extracted = matcher.group(1).trim();
-            // Split the extracted string by comma and whitespace
-            List<String> items = Arrays.asList(extracted.split(",\\s+"));
-            this.hierarchy.add(new ArrayList<>(items));
-        }
-    }
+    private List<HierarchyItem> hierarchy = new ArrayList<>();
 
     @Override
     public Map<String, Object> getResponseMap() {
@@ -44,8 +27,8 @@ public class Hierarchy implements Feature{
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        for (List<String> hierarchyElement : hierarchy) {
-            sb.append(hierarchyElement.toString()).append(",\n");
+        for (HierarchyItem hierarchyItem : hierarchy) {
+            sb.append(hierarchyItem.toString()).append(",\n");
         }
         return sb.toString();
     }

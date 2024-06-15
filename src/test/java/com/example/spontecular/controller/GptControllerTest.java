@@ -2,6 +2,8 @@ package com.example.spontecular.controller;
 
 import com.example.spontecular.dto.*;
 import com.example.spontecular.service.GptService;
+import com.example.spontecular.service.utility.DummyUtil;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -28,16 +30,23 @@ class GptControllerTest {
     @MockBean
     GptService gptService;
 
-    SettingsForm settings = SettingsForm.builder().build();
+    SettingsForm settings;
+    Classes mockClasses;
+
+    @BeforeEach
+    void setUp() {
+        settings = SettingsForm.builder().build();
+        mockClasses = new Classes();
+        mockClasses.setClasses(DummyUtil.getClassesDummyData());
+    }
 
     @Test
     void shouldGetClassesAndReturnFragment() throws Exception {
-        Classes mockClasses = new Classes("test classes data");
-
         when(gptService.getClasses(anyString(), any(SettingsForm.class))).thenReturn(mockClasses);
 
-        MvcResult result = mockMvc.perform(post("/getClasses")
+        MvcResult result = mockMvc.perform(post("/featureRequest")
                         .param("inputText", "input data")
+                        .param("featureType", "classes")
                         .sessionAttr("settings", settings))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -47,92 +56,9 @@ class GptControllerTest {
         assertThat(modelAndView).isNotNull();
         Map<String, Object> model = modelAndView.getModel();
 
-        assertThat(model.get("feature")).isEqualTo("classes");
-        assertThat(model.get("targetElementId")).isEqualTo("hierarchyDiv");
-        assertThat(model.get("endpointUrl")).isEqualTo("/getHierarchy");
-        assertThat(model.get("gptResponseMessage")).isEqualTo(mockClasses.toString());
-        assertThat(model.get("fieldTitle")).isEqualTo("Classes:");
-        assertThat(modelAndView.getViewName()).isEqualTo("fragments :: featureFragment");
-    }
-
-    @Test
-    void shouldGetHierarchyAndReturnFragment() throws Exception {
-        Classes mockClasses = new Classes("class1,class2,class3");
-        Hierarchy mockHierarchy = new Hierarchy("test hierarchy data");
-
-        when(gptService.getClasses(anyString(), any(SettingsForm.class))).thenReturn(mockClasses);
-        when(gptService.getHierarchy(anyString(), anyString(), any(SettingsForm.class))).thenReturn(mockHierarchy);
-
-        MvcResult result = mockMvc.perform(post("/getHierarchy")
-                        .param("inputText", "input data")
-                        .sessionAttr("classes", mockClasses)
-                        .sessionAttr("settings", settings))
-                .andExpect(status().isOk())
-                .andReturn();
-
-        ModelAndView modelAndView = result.getModelAndView();
-
-        assertThat(modelAndView).isNotNull();
-        Map<String, Object> model = modelAndView.getModel();
-
-        assertThat(model.get("feature")).isEqualTo("hierarchy");
-        assertThat(model.get("targetElementId")).isEqualTo("relationsDiv");
-        assertThat(model.get("endpointUrl")).isEqualTo("/getRelations");
-        assertThat(model.get("gptResponseMessage")).isEqualTo(mockHierarchy.toString());
-        assertThat(model.get("fieldTitle")).isEqualTo("Hierarchy:");
-        assertThat(modelAndView.getViewName()).isEqualTo("fragments :: featureFragment");
-    }
-
-    @Test
-    void shouldGetRelationsAndReturnFragment() throws Exception {
-        Classes mockClasses = new Classes("class1,class2,class3");
-        Relations mockRelations = new Relations("test relation data");
-
-        when(gptService.getClasses(anyString(), any(SettingsForm.class))).thenReturn(mockClasses);
-        when(gptService.getRelations(anyString(), anyString(), any(SettingsForm.class))).thenReturn(mockRelations);
-
-        MvcResult result = mockMvc.perform(post("/getRelations")
-                        .param("inputText", "input data")
-                        .sessionAttr("classes", mockClasses)
-                        .sessionAttr("settings", settings))
-                .andExpect(status().isOk())
-                .andReturn();
-
-        ModelAndView modelAndView = result.getModelAndView();
-
-        assertThat(modelAndView).isNotNull();
-        Map<String, Object> model = modelAndView.getModel();
-
-        assertThat(model.get("feature")).isEqualTo("relations");
-        assertThat(model.get("targetElementId")).isEqualTo("constraintsDiv");
-        assertThat(model.get("endpointUrl")).isEqualTo("/getConstraints");
-        assertThat(model.get("gptResponseMessage")).isEqualTo(mockRelations.toString());
-        assertThat(model.get("fieldTitle")).isEqualTo("Non-taxonomic Relations:");
-        assertThat(modelAndView.getViewName()).isEqualTo("fragments :: featureFragment");
-    }
-
-    @Test
-    void shouldGetConstraintsAndReturnFragment() throws Exception {
-        Relations mockRelations = new Relations("test relation data");
-        Constraints mockConstraints = new Constraints("test constraint data");
-
-        when(gptService.getConstraints(anyString(), anyString(), any(SettingsForm.class))).thenReturn(mockConstraints);
-
-        MvcResult result = mockMvc.perform(post("/getConstraints")
-                        .param("inputText", "input data")
-                        .sessionAttr("relations", mockRelations)
-                        .sessionAttr("settings", settings))
-                .andExpect(status().isOk())
-                .andReturn();
-
-        ModelAndView modelAndView = result.getModelAndView();
-
-        assertThat(modelAndView).isNotNull();
-        Map<String, Object> model = modelAndView.getModel();
-
-        assertThat(model.get("feature")).isEqualTo("constraints");
-        assertThat(model.get("gptResponseMessage")).isEqualTo(mockConstraints.toString());
-        assertThat(model.get("fieldTitle")).isEqualTo("Constraints:");
+        assertThat(model.get("featureType")).isEqualTo("classes");
+        assertThat(model.get("nextFeatureType")).isEqualTo("hierarchy");
+        assertThat(model.get("itemList")).isEqualTo(mockClasses.getClasses());
         assertThat(modelAndView.getViewName()).isEqualTo("fragments :: featureFragment");
     }
 }

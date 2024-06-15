@@ -33,14 +33,14 @@
           @click="$nextTick(() => { resetInput() })"
           hx-include="[name='newClass']"
           hx-post="/classes"
-          hx-target="#value-container"
+          hx-target="#class-container"
           hx-swap="beforeend"
           x-ref="addButton"
         >
           Add
         </button>
       </div>
-      <tbody class="divide-y divide-gray-200 bg-white" id="value-container">
+      <tbody class="divide-y divide-gray-200 bg-white" id="class-container">
         <div
           th:each="classItem, iterStat : ${itemList}"
           th:with="index=${iterStat.index}"
@@ -108,7 +108,6 @@
       }
     }|"
     x-init="init()"
-    :class="{ 'bg-gray-50 text-gray-300': classItem.blacklisted === 'true', 'text-gray-900': classItem.blacklisted === 'false' }"
   >
     <td class="table-data">
       <span

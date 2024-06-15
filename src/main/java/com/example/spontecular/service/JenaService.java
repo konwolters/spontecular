@@ -1,9 +1,6 @@
 package com.example.spontecular.service;
 
-import com.example.spontecular.dto.Classes;
-import com.example.spontecular.dto.Constraints;
-import com.example.spontecular.dto.Hierarchy;
-import com.example.spontecular.dto.Relations;
+import com.example.spontecular.dto.*;
 import com.example.spontecular.dto.formDtos.ClassItem;
 import com.example.spontecular.service.utility.StringUtils;
 import lombok.Getter;
@@ -76,18 +73,14 @@ public class JenaService {
     }
 
     private void createClassHierarchy(Hierarchy hierarchy, OntModel model, List<String> errorMessages) {
-        for (List<String> hierarchyElement : hierarchy.getHierarchy()) {
-            if (hierarchyElement.size() < 2) {
-                errorMessages.add("Hierarchy element " + hierarchyElement + " does not contain enough information.");
-                continue;
-            }
-            String parentName = stringUtils.toUpperCamelCase(hierarchyElement.get(0));
-            String childName = stringUtils.toUpperCamelCase(hierarchyElement.get(1));
+        for (HierarchyItem hierarchyItem : hierarchy.getHierarchy()) {
+            String parentName = stringUtils.toUpperCamelCase(hierarchyItem.getParent());
+            String childName = stringUtils.toUpperCamelCase(hierarchyItem.getChild());
 
             OntClass parentClass = model.getOntClass(NAMESPACE + parentName);
             OntClass childClass = model.getOntClass(NAMESPACE + childName);
             if (parentClass == null || childClass == null) {
-                errorMessages.add("One or more classes in the hierarchy (" + hierarchyElement + ") do not exist.");
+                errorMessages.add("One or more classes in the hierarchy (" + hierarchyItem.toString() + ") do not exist.");
                 continue;
             }
             childClass.addSuperClass(parentClass);

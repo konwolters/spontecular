@@ -1,0 +1,189 @@
+<!--###########################-->
+<!-- hierarchyFragment Fragment-->
+<!--###########################-->
+<div th:fragment="hierarchyFragment(itemList)" th:remove="tag">
+  <form
+    id="values-form"
+    hx-put="/feature"
+    hx-trigger="submit"
+    class="space-y-4"
+  >
+    <table class="divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th scope="col" class="table-header min-w-60">Parent</th>
+          <th scope="col" class="table-header min-w-60">Child</th>
+          <th scope="col" class="table-header">Actions</th>
+        </tr>
+      </thead>
+      <div
+        x-data="{
+        newParentClass: '',
+        newChildClass: '',
+        resetInput() { this.newParentClass = ''; this.newChildClass = '';
+        } }"
+        class="flex pb-3"
+      >
+        <input
+          type="text"
+          class="border px-4 py-1 text-sm"
+          name="newParentClass"
+          placeholder="Enter new parent class"
+          x-model="newParentClass"
+          @keydown.enter.prevent="$refs.addButton.click()"
+        />
+        <input
+          type="text"
+          class="border px-4 py-1 text-sm"
+          name="newChildClass"
+          placeholder="Enter new child class"
+          x-model="newChildClass"
+          @keydown.enter.prevent="$refs.addButton.click()"
+        />
+        <button
+          type="button"
+          class="border-0 bg-gray-400 px-2 py-1 text-sm text-white hover:bg-gray-500"
+          @click="$nextTick(() => { resetInput() })"
+          hx-include="[name='newParentClass'], [name = 'newChildClass']"
+          hx-post="/hierarchy"
+          hx-target="#hierarchy-container"
+          hx-swap="beforeend"
+          x-ref="addButton"
+        >
+          Add
+        </button>
+      </div>
+      <tbody class="divide-y divide-gray-200 bg-white" id="hierarchy-container">
+        <div
+          th:each="hierarchyItem, iterStat : ${itemList}"
+          th:with="index=${iterStat.index}"
+          th:insert="~{hierarchy-fragments :: hierarchyItem(hierarchyItem, index)}"
+          th:remove="tag"
+        ></div>
+      </tbody>
+    </table>
+    <!--        Needed for indexing of new items-->
+    <input
+      type="number"
+      class="hidden"
+      name="itemsCount"
+      th:value="${itemList.size()}"
+    />
+    <!--        End of comment -->
+  </form>
+</div>
+
+<!--#######################-->
+<!-- HierarchyItem Fragment-->
+<!--#######################-->
+
+<div th:fragment="hierarchyItem(hierarchyItem, index)" th:remove="tag">
+  <tr
+    th:x-data="|{
+      isEditing: false,
+      hierarchyItem: {
+        parent: '${hierarchyItem.parent}',
+        child: '${hierarchyItem.child}',
+        blacklisted: '${hierarchyItem.blacklisted}',
+      },
+      originalParentValue: '',
+      originalChildValue: '',
+      index: ${index},
+      init() {
+        this.setHierarchy();
+        this.updateHiddenInput();
+      },
+      save() {
+        this.isEditing = false;
+        this.originalParentValue = this.hierarchyItem.parent;
+        this.originalChildValue = this.hierarchyItem.child;
+        this.updateHiddenInput();
+      },
+      cancel() {
+        this.isEditing = false;
+        this.hierarchyItem.parent = this.originalParentValue;
+        this.hierarchyItem.child = this.originalChildValue;
+        this.updateHiddenInput();
+      },
+      toggleBlacklist() {
+        this.hierarchyItem.blacklisted = (this.hierarchyItem.blacklisted === 'true') ? 'false' : 'true';
+        this.updateHiddenInput();
+        this.setHierarchy();
+      },
+      setHierarchy() {
+        const row = $el.closest('tr');
+        if (this.hierarchyItem.blacklisted === 'true') {
+          row.classList.add('bg-gray-50', 'text-gray-300');
+          row.classList.remove('text-gray-900');
+        } else {
+          row.classList.add('text-gray-900');
+          row.classList.remove('bg-gray-50', 'text-gray-300');
+        }
+      },
+      updateHiddenInput() {
+        $el.querySelector('input[type=hidden]').value = this.hierarchyItem.blacklisted;
+      }
+    }|"
+    x-init="init()"
+  >
+    <td class="table-data">
+      <span
+        x-show="!isEditing"
+        @click="isEditing = true; originalValue = hierarchyItem.parent"
+        class="cursor-pointer"
+        x-text="hierarchyItem.parent"
+        title="Edit"
+      ></span>
+      <input
+        x-show="isEditing"
+        x-model="hierarchyItem.parent"
+        @keydown.enter.prevent="save()"
+        @blur="cancel()"
+        type="text"
+        class="border border-gray-400 px-2 py-1 text-sm"
+        x-ref="input"
+        th:name="'hierarchy[' + ${index} + '].parent'"
+      />
+    </td>
+    <td class="table-data">
+      <span
+        x-show="!isEditing"
+        @click="isEditing = true; originalValue = hierarchyItem.child"
+        class="cursor-pointer"
+        x-text="hierarchyItem.child"
+        title="Edit"
+      ></span>
+      <input
+        x-show="isEditing"
+        x-model="hierarchyItem.child"
+        @keydown.enter.prevent="save()"
+        @blur="cancel()"
+        type="text"
+        class="border border-gray-400 px-2 py-1 text-sm"
+        x-ref="input"
+        th:name="'hierarchy[' + ${index} + '].child'"
+      />
+    </td>
+    <td class="table-data">
+      <button
+        type="button"
+        class="text-indigo-600 hover:text-indigo-900"
+        @click.prevent="$el.closest('tr').remove()"
+      >
+        Delete
+      </button>
+      <button
+        type="button"
+        class="text-indigo-600 hover:text-indigo-900"
+        @click.prevent="toggleBlacklist()"
+        x-text="hierarchyItem.blacklisted === 'true' ? 'De-Blacklist' : 'Blacklist'"
+      ></button>
+      <input
+        type="hidden"
+        th:name="'classes[' + ${index} + '].blacklisted'"
+        value=""
+        x-init="$el.value = hierarchyItem.blacklisted"
+      />
+    </td>
+  </tr>
+</div>

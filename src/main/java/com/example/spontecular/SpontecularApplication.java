@@ -7,6 +7,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class SpontecularApplication {
 
     public static void main(String[] args) {
-       SpringApplication.run(SpontecularApplication.class, args);
+        SpringApplication.run(SpontecularApplication.class, args);
     }
 }
