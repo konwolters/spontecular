@@ -1,6 +1,7 @@
 package com.example.spontecular.service;
 
 import com.example.spontecular.dto.*;
+import com.example.spontecular.service.utility.DummyUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -61,9 +62,6 @@ class GptServiceTest {
             .constraintsBlacklist("testString")
             .build();
 
-    private final List<String> testClasses = List.of("Satellite", "Chassis", "Framework", "Rail", "Sidewall",
-            "Circuit board", "Solar cell", "Sensor wire", "Magnetic coil", "Groove",
-            "Attitude Determination and Control System", "Connector", "Module", "Bus connector", "Cable");
 
     private final List<List<String>> testHierarchy = List.of(
             List.of("Framework", "Chassis"),
@@ -110,7 +108,7 @@ class GptServiceTest {
 
         Classes result = gptService.getClasses("testString", settings);
 
-        assertThat(result.getClassStrings()).containsExactlyInAnyOrderElementsOf(testClasses);
+        assertThat(result.getClasses()).containsExactlyInAnyOrderElementsOf(DummyUtil.getClassesDummyData());
     }
 
     @Test
@@ -118,14 +116,14 @@ class GptServiceTest {
         gptService.useDummyData = false;
 
         setupCommonMocks();
-        when(assistantMessage.getContent()).thenReturn(objectMapper.writeValueAsString(Map.of("classes", testClasses)));
+        when(assistantMessage.getContent()).thenReturn(objectMapper.writeValueAsString(Map.of("classes", DummyUtil.getClassesDummyData())));
 
         Classes expectedClasses = new Classes();
-        expectedClasses.setClassStrings(testClasses);
+        expectedClasses.setClasses(DummyUtil.getClassesDummyData());
 
         Classes result = gptService.getClasses("testString", settings);
 
-        assertThat(result.getClassStrings()).containsExactlyElementsOf(expectedClasses.getClassStrings());
+        assertThat(result.getClasses()).containsExactlyElementsOf(expectedClasses.getClasses());
     }
 
     @Test
