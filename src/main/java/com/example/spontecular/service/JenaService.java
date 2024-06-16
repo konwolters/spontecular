@@ -1,7 +1,6 @@
 package com.example.spontecular.service;
 
 import com.example.spontecular.dto.*;
-import com.example.spontecular.dto.formDtos.ClassItem;
 import com.example.spontecular.service.utility.StringUtils;
 import lombok.Getter;
 import lombok.Setter;
@@ -89,20 +88,17 @@ public class JenaService {
     }
 
     private void createRelationships(Relations relations, OntModel model, List<String> errorMessages) {
-        for (List<String> relation : relations.getRelations()) {
-            if (relation.size() != 3) {
-                errorMessages.add("Relation element " + relation + " does not contain correct information format.");
-                continue;
-            }
-            String subjectName = stringUtils.toUpperCamelCase(relation.get(0));
-            String predicateName = stringUtils.toLowerCamelCase(relation.get(1));
-            String objectName = stringUtils.toUpperCamelCase(relation.get(2));
+        for (RelationItem relationItem : relations.getRelations()) {
+
+            String subjectName = stringUtils.toUpperCamelCase(relationItem.getSubject());
+            String predicateName = stringUtils.toLowerCamelCase(relationItem.getPredicate());
+            String objectName = stringUtils.toUpperCamelCase(relationItem.getObject());
 
             OntClass subjectClass = model.getOntClass(NAMESPACE + subjectName);
             OntClass objectClass = model.getOntClass(NAMESPACE + objectName);
 
             if (subjectClass == null || objectClass == null) {
-                errorMessages.add("One or more classes in the relation (" + relation + ") do not exist.");
+                errorMessages.add("One or more classes in the relation (" + relationItem.toString() + ") do not exist.");
                 continue;
             }
 

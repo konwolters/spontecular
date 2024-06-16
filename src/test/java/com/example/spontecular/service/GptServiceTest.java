@@ -67,17 +67,7 @@ class GptServiceTest {
 
     private final List<HierarchyItem> testHierarchy = DummyUtil.getHierarchyDummyData();
 
-    private final List<List<String>> testRelations = List.of(
-            List.of("Chassis", "consistsOf", "Framework"),
-            List.of("Sidewall", "isMadeFrom", "Circuit board"),
-            List.of("Sidewall", "servesAs", "Circuit board"),
-            List.of("Double-sided circuit board", "mayServeAs", "Circuit board"),
-            List.of("Solar cell", "isMountedOn", "Printed circuit board"),
-            List.of("Satellite", "needs", "Connector"),
-            List.of("Internal module", "consistOf", "FR-4"),
-            List.of("Internal module", "consistOf", "Circuit board"),
-            List.of("Module", "isStackedInside", "Satellite"),
-            List.of("Elastic bushing", "isPlacedIn", "Groove"));
+    private final List<RelationItem> testRelations = DummyUtil.getRelationsDummyData();
 
     private final List<List<String>> testConstraints = List.of(
             List.of("Chassis", "consistsOf", "Framework", "1", "1"),
@@ -145,7 +135,7 @@ class GptServiceTest {
     public void shouldReturnDummyRelations() {
         gptService.useDummyData = true;
 
-        Relations result = gptService.getRelations("testString", "testString2", settings);
+        Relations result = gptService.getRelations("testString", testClasses, settings);
 
         assertThat(result.getRelations()).containsExactlyInAnyOrderElementsOf(testRelations);
     }
@@ -160,7 +150,7 @@ class GptServiceTest {
         Relations expectedRelations = new Relations();
         expectedRelations.setRelations(testRelations);
 
-        Relations result = gptService.getRelations("testString", "testString2", settings);
+        Relations result = gptService.getRelations("testString", testClasses, settings);
 
         assertThat(result.getRelations()).containsExactlyElementsOf(expectedRelations.getRelations());
     }

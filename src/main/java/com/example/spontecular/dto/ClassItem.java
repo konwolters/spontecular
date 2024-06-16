@@ -1,4 +1,4 @@
-package com.example.spontecular.dto.formDtos;
+package com.example.spontecular.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

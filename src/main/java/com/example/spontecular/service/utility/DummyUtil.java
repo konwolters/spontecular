@@ -1,7 +1,8 @@
 package com.example.spontecular.service.utility;
 
+import com.example.spontecular.dto.ClassItem;
 import com.example.spontecular.dto.HierarchyItem;
-import com.example.spontecular.dto.formDtos.ClassItem;
+import com.example.spontecular.dto.RelationItem;
 
 import java.util.Arrays;
 import java.util.List;
@@ -41,6 +42,21 @@ public class DummyUtil {
                 new HierarchyItem("Circuit board", "Printed Circuit Board", false),
                 new HierarchyItem("Component", "Connector", false),
                 new HierarchyItem("Connector", "Bus connector", false)
+        );
+    }
+
+    public static List<RelationItem> getRelationsDummyData() {
+        return Arrays.asList(
+                new RelationItem("Chassis", "consistsOf", "Framework", false),
+                new RelationItem("Sidewall", "isMadeFrom", "Circuit board", false),
+                new RelationItem("Sidewall", "servesAs", "Circuit board", false),
+                new RelationItem("Double-sided circuit board", "mayServeAs", "Circuit board", false),
+                new RelationItem("Solar cell", "isMountedOn", "Printed circuit board", false),
+                new RelationItem("Satellite", "needs", "Connector", false),
+                new RelationItem("Internal module", "consistOf", "FR-4", false),
+                new RelationItem("Internal module", "consistOf", "Circuit board", false),
+                new RelationItem("Module", "isStackedInside", "Satellite", false),
+                new RelationItem("Elastic bushing", "isPlacedIn", "Groove", false)
         );
     }
 }

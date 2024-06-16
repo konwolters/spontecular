@@ -19,7 +19,7 @@ public class FeatureFactory {
                 return hierarchy;
             case RELATIONS:
                 existingClasses = (Classes) session.getAttribute("classes");
-                Relations relations = gptService.getRelations(inputText, existingClasses.toString(), settings);
+                Relations relations = gptService.getRelations(inputText, existingClasses, settings);
                 session.setAttribute("relations", relations);
                 return relations;
             case CONSTRAINTS:
