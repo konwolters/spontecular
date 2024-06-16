@@ -7,18 +7,12 @@ import com.example.spontecular.dto.Relations;
 import com.example.spontecular.service.utility.DummyUtil;
 import com.example.spontecular.service.utility.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class JenaServiceTest {
@@ -43,10 +37,10 @@ class JenaServiceTest {
         hierarchy.setHierarchy(DummyUtil.getHierarchyDummyData());
 
         relations = new Relations();
-        relations.setRelations(List.of(List.of("Class1", "Relation1", "Class2")));
+        relations.setRelations(DummyUtil.getRelationsDummyData());
 
         constraints = new Constraints();
-        constraints.setConstraints(List.of(List.of("Class1", "Relation1", "Class2", "1", "1")));
+        constraints.setConstraints(DummyUtil.getConstraintsDummyData());
     }
 
 //    @Test

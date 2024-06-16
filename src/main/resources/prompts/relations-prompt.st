@@ -10,6 +10,4 @@ Concentrate exclusively on the following classes: {classes}
 
 {blacklist}
 
-Output your findings in JSON format, listing each identified non-taxonomic relationship as [Subject, Predicate, Object]
-under the ’relations’ field as a list.”Output your findings in JSON format, listing each identified non-taxonomic
-relationship as [Subject, Predicate, Object] under the ’relations’ field as a list
+{format}

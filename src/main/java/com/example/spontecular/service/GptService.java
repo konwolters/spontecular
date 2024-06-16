@@ -1,7 +1,6 @@
 package com.example.spontecular.service;
 
 import com.example.spontecular.dto.*;
-import com.example.spontecular.dto.formDtos.ClassItem;
 import com.example.spontecular.service.utility.DummyUtil;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.prompt.PromptTemplate;
@@ -12,7 +11,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -92,23 +90,12 @@ public class GptService {
         return hierarchy;
     }
 
-    public Relations getRelations(String inputText, String classes, SettingsForm settings) {
+    public Relations getRelations(String inputText, Classes classes, SettingsForm settings) {
         Relations relations;
 
         if (useDummyData) {
             relations = new Relations();
-            relations.setRelations(List.of(
-                    List.of("Chassis", "consistsOf", "Framework"),
-                    List.of("Sidewall", "isMadeFrom", "Circuit board"),
-                    List.of("Sidewall", "servesAs", "Circuit board"),
-                    List.of("Double-sided circuit board", "mayServeAs", "Circuit board"),
-                    List.of("Solar cell", "isMountedOn", "Printed circuit board"),
-                    List.of("Satellite", "needs", "Connector"),
-                    List.of("Internal module", "consistOf", "FR-4"),
-                    List.of("Internal module", "consistOf", "Circuit board"),
-                    List.of("Module", "isStackedInside", "Satellite"),
-                    List.of("Elastic bushing", "isPlacedIn", "Groove")
-            ));
+            relations.setRelations(DummyUtil.getRelationsDummyData());
         } else {
             OutputParser<Relations> outputParser = new BeanOutputParser<>(Relations.class);
 
@@ -117,10 +104,11 @@ public class GptService {
                     new HashMap<String, Object>() {
                         {
                             put("inputText", inputText);
-                            put("classes", classes);
+                            put("classes", classes.toString());
                             put("definition", settings.getRelationsDefinition());
                             put("examples", settings.getRelationsExamples());
                             put("blacklist", settings.getRelationsBlacklist());
+                            put("format", outputParser.getFormat());
                         }
                     }
             );
@@ -131,23 +119,12 @@ public class GptService {
         return relations;
     }
 
-    public Constraints getConstraints(String inputText, String relations, SettingsForm settings) {
+    public Constraints getConstraints(String inputText, Relations relations, SettingsForm settings) {
         Constraints constraints;
 
         if (useDummyData) {
             constraints = new Constraints();
-            constraints.setConstraints(List.of(
-                    List.of("Chassis", "consistsOf", "Framework", "1", "1"),
-                    List.of("Sidewall", "isMadeFrom", "Circuit board", "1", "1"),
-                    List.of("Sidewall", "servesAs", "Circuit board", "1", "1"),
-                    List.of("Double-sided circuit board", "mayServeAs", "Circuit board", "1", "1"),
-                    List.of("Solar cell", "isMountedOn", "Printed circuit board", "1", "1"),
-                    List.of("Satellite", "needs", "Connector", "1", "1"),
-                    List.of("Internal module", "consistOf", "FR-4", "1", "1"),
-                    List.of("Internal module", "consistOf", "Circuit board", "1", "1"),
-                    List.of("Module", "isStackedInside", "Satellite", "1", "1"),
-                    List.of("Elastic bushing", "isPlacedIn", "Groove", "1", "1")
-            ));
+            constraints.setConstraints(DummyUtil.getConstraintsDummyData());
         } else {
             OutputParser<Constraints> outputParser = new BeanOutputParser<>(Constraints.class);
 
@@ -159,6 +136,7 @@ public class GptService {
                         put("definition", settings.getConstraintsDefinition());
                         put("examples", settings.getConstraintsExamples());
                         put("blacklist", settings.getConstraintsBlacklist());
+                        put("format", outputParser.getFormat());
                     }}
             );
 

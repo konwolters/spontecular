@@ -13,6 +13,6 @@ Concentrate exclusively on the following relationships: {relations}
 
 {blacklist}
 
-Output your findings in JSON format, listing each identified cardinality constraint as [Subject, Predicate,
-Object, Min. Cardinality, Max. Cardinality] under the ’constraints’ field as a list.
-Example: "constraints": [ ["User", "has", "Role", 1, 1], ["Role", "has", "Permission", 1, 1] ]
+{format}
+
+For undefined max. cardinality choose "N".

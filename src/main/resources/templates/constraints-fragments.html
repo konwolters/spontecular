@@ -1,0 +1,285 @@
+<!--###########################-->
+<!-- constraintsFragment Fragment-->
+<!--###########################-->
+<div th:fragment="constraintsFragment(itemList)" th:remove="tag">
+  <div
+    x-data="{
+        newSubject: '',
+        newPredicate: '',
+        newObject: '',
+        minCardinality: '',
+        maxCardinality: '',
+        resetInput() {
+        this.newSubject = '';
+        this.newPredicate = '';
+        this.newObject = '';
+        this.minCardinality = '';
+        this.maxCardinality = ''
+        }}"
+    class="flex pb-3"
+  >
+    <input
+      type="text"
+      class="border px-4 py-1 text-sm"
+      name="newSubject"
+      placeholder="Enter subject class"
+      x-model="newSubject"
+      @keydown.enter.prevent="$refs.addButton.click()"
+    />
+    <input
+      type="text"
+      class="border px-4 py-1 text-sm"
+      name="newPredicate"
+      placeholder="Enter predicate"
+      x-model="newPredicate"
+      @keydown.enter.prevent="$refs.addButton.click()"
+    />
+    <input
+      type="text"
+      class="border px-4 py-1 text-sm"
+      name="newObject"
+      placeholder="Enter object class"
+      x-model="newObject"
+      @keydown.enter.prevent="$refs.addButton.click()"
+    />
+    <input
+      type="text"
+      class="w-40 border px-4 py-1 text-sm"
+      name="minCardinality"
+      placeholder="Min. Card."
+      x-model="minCardinality"
+      @keydown.enter.prevent="$refs.addButton.click()"
+    />
+    <input
+      type="text"
+      class="w-40 border px-4 py-1 text-sm"
+      name="maxCardinality"
+      placeholder="Max. Card."
+      x-model="maxCardinality"
+      @keydown.enter.prevent="$refs.addButton.click()"
+    />
+    <button
+      type="button"
+      class="border-0 bg-gray-400 px-2 py-1 text-sm text-white hover:bg-gray-500"
+      @click="$nextTick(() => { resetInput() })"
+      hx-include="[name='newSubject'], [name = 'newPredicate'], [name = 'newObject'], [name = 'minCardinality'], [name = 'maxCardinality']"
+      hx-post="/constraints"
+      hx-target="#constraints-container"
+      hx-swap="beforeend"
+      x-ref="addButton"
+    >
+      Add
+    </button>
+  </div>
+  <table class="divide-y divide-gray-200">
+    <thead class="bg-gray-50">
+      <tr>
+        <th scope="col" class="table-header min-w-60">Subject</th>
+        <th scope="col" class="table-header min-w-60">Predicate</th>
+        <th scope="col" class="table-header min-w-60">Object</th>
+        <th scope="col" class="table-header">Min.Cardinality</th>
+        <th scope="col" class="table-header">Max.Cardinality</th>
+        <th scope="col" class="table-header">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-200 bg-white" id="constraints-container">
+      <div
+        th:each="constraintsItem, iterStat : ${itemList}"
+        th:with="index=${iterStat.index}"
+        th:insert="~{constraints-fragments :: constraintsItem(constraintsItem, index)}"
+        th:remove="tag"
+      ></div>
+    </tbody>
+  </table>
+  <!--        Needed for indexing of new items-->
+  <input
+    type="number"
+    class="hidden"
+    name="itemsCount"
+    th:value="${itemList.size()}"
+  />
+  <!--        End of comment -->
+</div>
+
+<!--#######################-->
+<!-- constraintsItem Fragment-->
+<!--#######################-->
+<div th:fragment="constraintsItem(constraintsItem, index)" th:remove="tag">
+  <tr
+    th:x-data="|{
+      isEditing: {
+        subject: false,
+        predicate: false,
+        object: false,
+        minCardinality: false,
+        maxCardinality: false
+      },
+      constraintsItem: {
+        subject: '${constraintsItem.subject}',
+        predicate: '${constraintsItem.predicate}',
+        object: '${constraintsItem.object}',
+        minCardinality: '${constraintsItem.minCardinality}',
+        maxCardinality: '${constraintsItem.maxCardinality}',
+        blacklisted: '${constraintsItem.blacklisted}',
+      },
+      originalValues: {
+        subject: '${constraintsItem.subject}',
+        predicate: '${constraintsItem.predicate}',
+        object: '${constraintsItem.object}',
+        minCardinality: '${constraintsItem.minCardinality}',
+        maxCardinality: '${constraintsItem.maxCardinality}',
+      },
+      index: ${index},
+      init() {
+        this.setconstraints();
+        this.updateHiddenInput();
+      },
+      save(field) {
+        this.isEditing[field] = false;
+        this.originalValues[field] = this.constraintsItem[field];
+        this.updateHiddenInput();
+      },
+      cancel(field) {
+        this.isEditing[field] = false;
+        this.constraintsItem[field] = this.originalValues[field];
+        this.updateHiddenInput();
+      },
+      toggleBlacklist() {
+        this.constraintsItem.blacklisted = (this.constraintsItem.blacklisted === 'true') ? 'false' : 'true';
+        this.updateHiddenInput();
+        this.setconstraints();
+      },
+      setconstraints() {
+        const row = $el.closest('tr');
+        if (this.constraintsItem.blacklisted === 'true') {
+          row.classList.add('bg-gray-50', 'text-gray-300');
+          row.classList.remove('text-gray-900');
+        } else {
+          row.classList.add('text-gray-900');
+          row.classList.remove('bg-gray-50', 'text-gray-300');
+        }
+      },
+      updateHiddenInput() {
+        $el.querySelector('input[type=hidden]').value = this.constraintsItem.blacklisted;
+      }
+    }|"
+    x-init="init()"
+  >
+    <td class="table-data">
+      <span
+        x-show="!isEditing.subject"
+        @click="isEditing.subject = true"
+        class="cursor-pointer"
+        x-text="constraintsItem.subject"
+        title="Edit"
+      ></span>
+      <input
+        x-show="isEditing.subject"
+        x-model="constraintsItem.subject"
+        @keydown.enter.prevent="save('subject')"
+        @blur="cancel('subject')"
+        type="text"
+        class="border border-gray-400 px-2 py-1 text-xs"
+        x-ref="input"
+        th:name="'constraints[' + ${index} + '].subject'"
+      />
+    </td>
+    <td class="table-data">
+      <span
+        x-show="!isEditing.predicate"
+        @click="isEditing.predicate = true"
+        class="cursor-pointer"
+        x-text="constraintsItem.predicate"
+        title="Edit"
+      ></span>
+      <input
+        x-show="isEditing.predicate"
+        x-model="constraintsItem.predicate"
+        @keydown.enter.prevent="save('predicate')"
+        @blur="cancel('predicate')"
+        type="text"
+        class="border border-gray-400 px-2 py-1 text-xs"
+        x-ref="input"
+        th:name="'constraints[' + ${index} + '].predicate'"
+      />
+    </td>
+    <td class="table-data">
+      <span
+        x-show="!isEditing.object"
+        @click="isEditing.object = true"
+        class="cursor-pointer"
+        x-text="constraintsItem.object"
+        title="Edit"
+      ></span>
+      <input
+        x-show="isEditing.object"
+        x-model="constraintsItem.object"
+        @keydown.enter.prevent="save('object')"
+        @blur="cancel('object')"
+        type="text"
+        class="border border-gray-400 px-2 py-1 text-xs"
+        x-ref="input"
+        th:name="'constraints[' + ${index} + '].object'"
+      />
+    </td>
+    <td class="table-data">
+      <span
+        x-show="!isEditing.minCardinality"
+        @click="isEditing.minCardinality = true"
+        class="cursor-pointer"
+        x-text="constraintsItem.minCardinality"
+        title="Edit"
+      ></span>
+      <input
+        x-show="isEditing.minCardinality"
+        x-model="constraintsItem.minCardinality"
+        @keydown.enter.prevent="save('minCardinality')"
+        @blur="cancel('minCardinality')"
+        type="text"
+        class="border border-gray-400 px-2 py-1 text-xs"
+        x-ref="input"
+        th:name="'constraints[' + ${index} + '].minCardinality'"
+      />
+    </td>
+    <td class="table-data">
+      <span
+        x-show="!isEditing.maxCardinality"
+        @click="isEditing.maxCardinality = true"
+        class="cursor-pointer"
+        x-text="constraintsItem.maxCardinality"
+        title="Edit"
+      ></span>
+      <input
+        x-show="isEditing.maxCardinality"
+        x-model="constraintsItem.maxCardinality"
+        @keydown.enter.prevent="save('maxCardinality')"
+        @blur="cancel('maxCardinality')"
+        type="text"
+        class="border border-gray-400 px-2 py-1 text-xs"
+        x-ref="input"
+        th:name="'constraints[' + ${index} + '].maxCardinality'"
+      />
+    </td>
+    <td class="table-data">
+      <button
+        type="button"
+        class="text-indigo-600 hover:text-indigo-900"
+        @click.prevent="$el.closest('tr').remove()"
+      >
+        Delete
+      </button>
+      <button
+        type="button"
+        class="text-indigo-600 hover:text-indigo-900"
+        @click.prevent="toggleBlacklist()"
+        x-text="constraintsItem.blacklisted === 'true' ? 'De-Blacklist' : 'Blacklist'"
+      ></button>
+      <input
+        type="hidden"
+        th:name="'constraints[' + ${index} + '].blacklisted'"
+        value=""
+        x-init="$el.value = constraintsItem.blacklisted"
+      />
+    </td>
+  </tr>
+</div>
