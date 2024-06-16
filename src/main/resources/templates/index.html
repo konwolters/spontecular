@@ -10,7 +10,7 @@
     class="bg-gray-100"
     x-data="{showButtons: false, inputText: '', showModal: false}"
   >
-    <th:block th:replace="~{navbar-fragment :: navbar}"></th:block>
+    <div th:replace="~{navbar-fragment :: navbar}" th:remove="tag"></div>
     <div
       class="container relative mx-auto my-3 flex flex-wrap items-stretch rounded-md border bg-white p-2 shadow-lg"
     >
@@ -119,7 +119,7 @@
         accept=".docx"
       />
     </form>
-    <div th:replace="~{settings-fragments :: modal}"></div>
+    <div th:replace="~{settings-fragments :: settingFragment}"></div>
     <th:block th:replace="~{fragments :: footer}"></th:block>
   </body>
 </html>

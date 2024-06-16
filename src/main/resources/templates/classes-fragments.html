@@ -2,62 +2,55 @@
 <!-- classesFragment Fragment-->
 <!--#########################-->
 <div th:fragment="classesFragment(itemList)" th:remove="tag">
-  <form
-    id="values-form"
-    hx-put="/feature"
-    hx-trigger="submit"
-    class="space-y-4"
-  >
-    <table class="divide-y divide-gray-200">
-      <thead class="bg-gray-50">
-        <tr>
-          <th scope="col" class="table-header min-w-60">Class</th>
-          <th scope="col" class="table-header">Actions</th>
-        </tr>
-      </thead>
-      <div
-        x-data="{ newClass: '', resetInput() { this.newClass = ''; } }"
-        class="flex pb-3"
+  <table class="divide-y divide-gray-200">
+    <thead class="bg-gray-50">
+      <tr>
+        <th scope="col" class="table-header min-w-60">Class</th>
+        <th scope="col" class="table-header">Actions</th>
+      </tr>
+    </thead>
+    <div
+      x-data="{ newClass: '', resetInput() { this.newClass = ''; } }"
+      class="flex pb-3"
+    >
+      <input
+        type="text"
+        class="border px-4 py-1 text-sm"
+        name="newClass"
+        placeholder="Enter new class"
+        x-model="newClass"
+        @keydown.enter.prevent="$refs.addButton.click()"
+      />
+      <button
+        type="button"
+        class="border-0 bg-gray-400 px-2 py-1 text-sm text-white hover:bg-gray-500"
+        @click="$nextTick(() => { resetInput() })"
+        hx-include="[name='newClass']"
+        hx-post="/classes"
+        hx-target="#class-container"
+        hx-swap="beforeend"
+        x-ref="addButton"
       >
-        <input
-          type="text"
-          class="border px-4 py-1 text-sm"
-          name="newClass"
-          placeholder="Enter new class"
-          x-model="newClass"
-          @keydown.enter.prevent="$refs.addButton.click()"
-        />
-        <button
-          type="button"
-          class="border-0 bg-gray-400 px-2 py-1 text-sm text-white hover:bg-gray-500"
-          @click="$nextTick(() => { resetInput() })"
-          hx-include="[name='newClass']"
-          hx-post="/classes"
-          hx-target="#class-container"
-          hx-swap="beforeend"
-          x-ref="addButton"
-        >
-          Add
-        </button>
-      </div>
-      <tbody class="divide-y divide-gray-200 bg-white" id="class-container">
-        <div
-          th:each="classItem, iterStat : ${itemList}"
-          th:with="index=${iterStat.index}"
-          th:insert="~{classes-fragments :: classesItem(classItem, index)}"
-          th:remove="tag"
-        ></div>
-      </tbody>
-    </table>
-    <!--        Needed for indexing of new items-->
-    <input
-      type="number"
-      class="hidden"
-      name="itemsCount"
-      th:value="${itemList.size()}"
-    />
-    <!--        End of comment -->
-  </form>
+        Add
+      </button>
+    </div>
+    <tbody class="divide-y divide-gray-200 bg-white" id="class-container">
+      <div
+        th:each="classItem, iterStat : ${itemList}"
+        th:with="index=${iterStat.index}"
+        th:insert="~{classes-fragments :: classesItem(classItem, index)}"
+        th:remove="tag"
+      ></div>
+    </tbody>
+  </table>
+  <!--        Needed for indexing of new items-->
+  <input
+    type="number"
+    class="hidden"
+    name="itemsCount"
+    th:value="${itemList.size()}"
+  />
+  <!--        End of comment -->
 </div>
 
 <!--#####################-->
@@ -115,7 +108,7 @@
         @click="isEditing = true; originalValue = classItem.value"
         class="cursor-pointer"
         x-text="classItem.value"
-        title="Edit"
+        title="Click to Edit"
       ></span>
       <input
         x-show="isEditing"
@@ -123,7 +116,7 @@
         @keydown.enter.prevent="save()"
         @blur="cancel()"
         type="text"
-        class="border border-gray-400 px-2 py-1 text-sm"
+        class="border border-gray-400 px-2 py-1 text-xs"
         x-ref="input"
         th:name="'classes[' + ${index} + '].value'"
       />

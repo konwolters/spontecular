@@ -17,6 +17,12 @@ public class Hierarchy implements Feature{
 
     @Override
     public Map<String, Object> getResponseMap() {
+
+        //Only show non blacklisted items
+        hierarchy = hierarchy.stream()
+                .filter(item -> !item.isBlacklisted())
+                .toList();
+
         return Map.of(
                 "featureType", "hierarchy",
                 "nextFeatureType", "relations",

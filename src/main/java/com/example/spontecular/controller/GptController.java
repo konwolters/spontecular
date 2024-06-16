@@ -44,8 +44,6 @@ public class GptController {
                                @RequestParam String newChildClass,
                                Model model) {
 
-        System.out.println("newParentClass" + newParentClass);
-        System.out.println("newChildClass" + newChildClass);
         model.addAttribute(
                 "hierarchyItem",
                 new HierarchyItem(newParentClass, newChildClass, false)
@@ -54,17 +52,33 @@ public class GptController {
         return "hierarchy-fragments :: hierarchyItem";
     }
 
-    @PutMapping("/feature")
-    public String updateFeature(@ModelAttribute Classes classes, Model model, HttpSession session) {
+    @PutMapping("/classes")
+    public String updateClasses(@ModelAttribute Classes classes, Model model, HttpSession session) {
 
-        List<ClassItem> itemList = classes.getClasses().stream()
-                .filter(classItem -> classItem.getValue() != null)
-                .toList();
+        //Remove all deleted classes
+        classes.setClasses(
+                classes.getClasses().stream()
+                        .filter(classItem -> classItem.getValue() != null)
+                        .toList()
+        );
+
         session.setAttribute("classes", classes);
+        model.addAllAttributes(classes.getResponseMap());
+        return "fragments :: featureFragment";
+    }
 
-        model.addAttribute("featureType", "classes");
-        model.addAttribute("nextFeatureType", "hierarchy");
-        model.addAttribute("itemList", itemList);
+    @PutMapping("/hierarchy")
+    public String updateHierarchy(@ModelAttribute Hierarchy hierarchy, Model model, HttpSession session) {
+
+        //Remove all deleted hierarchy elements
+        hierarchy.setHierarchy(
+                hierarchy.getHierarchy().stream()
+                        .filter(hierarchyItem -> hierarchyItem.getParent() != null)
+                        .toList()
+        );
+
+        session.setAttribute("hierarchy", hierarchy);
+        model.addAllAttributes(hierarchy.getResponseMap());
         return "fragments :: featureFragment";
     }
 }

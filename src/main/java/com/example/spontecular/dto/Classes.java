@@ -16,6 +16,12 @@ public class Classes implements Feature {
 
     @Override
     public Map<String, Object> getResponseMap() {
+
+        //Only show non blacklisted items
+        classes = classes.stream()
+                .filter(item -> !item.isBlacklisted())
+                .toList();
+
         return Map.of(
                 "featureType", "classes",
                 "nextFeatureType", "hierarchy",
