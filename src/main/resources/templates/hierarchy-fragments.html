@@ -2,107 +2,102 @@
 <!-- hierarchyFragment Fragment-->
 <!--###########################-->
 <div th:fragment="hierarchyFragment(itemList)" th:remove="tag">
-  <form
-    id="values-form"
-    hx-put="/feature"
-    hx-trigger="submit"
-    class="space-y-4"
-  >
-    <table class="divide-y divide-gray-200">
-      <thead class="bg-gray-50">
-        <tr>
-          <th scope="col" class="table-header min-w-60">Parent</th>
-          <th scope="col" class="table-header min-w-60">Child</th>
-          <th scope="col" class="table-header">Actions</th>
-        </tr>
-      </thead>
-      <div
-        x-data="{
+  <table class="divide-y divide-gray-200">
+    <thead class="bg-gray-50">
+      <tr>
+        <th scope="col" class="table-header min-w-60">Parent</th>
+        <th scope="col" class="table-header min-w-60">Child</th>
+        <th scope="col" class="table-header">Actions</th>
+      </tr>
+    </thead>
+    <div
+      x-data="{
         newParentClass: '',
         newChildClass: '',
         resetInput() { this.newParentClass = ''; this.newChildClass = '';
         } }"
-        class="flex pb-3"
+      class="flex pb-3"
+    >
+      <input
+        type="text"
+        class="border px-4 py-1 text-sm"
+        name="newParentClass"
+        placeholder="Enter new parent class"
+        x-model="newParentClass"
+        @keydown.enter.prevent="$refs.addButton.click()"
+      />
+      <input
+        type="text"
+        class="border px-4 py-1 text-sm"
+        name="newChildClass"
+        placeholder="Enter new child class"
+        x-model="newChildClass"
+        @keydown.enter.prevent="$refs.addButton.click()"
+      />
+      <button
+        type="button"
+        class="border-0 bg-gray-400 px-2 py-1 text-sm text-white hover:bg-gray-500"
+        @click="$nextTick(() => { resetInput() })"
+        hx-include="[name='newParentClass'], [name = 'newChildClass']"
+        hx-post="/hierarchy"
+        hx-target="#hierarchy-container"
+        hx-swap="beforeend"
+        x-ref="addButton"
       >
-        <input
-          type="text"
-          class="border px-4 py-1 text-sm"
-          name="newParentClass"
-          placeholder="Enter new parent class"
-          x-model="newParentClass"
-          @keydown.enter.prevent="$refs.addButton.click()"
-        />
-        <input
-          type="text"
-          class="border px-4 py-1 text-sm"
-          name="newChildClass"
-          placeholder="Enter new child class"
-          x-model="newChildClass"
-          @keydown.enter.prevent="$refs.addButton.click()"
-        />
-        <button
-          type="button"
-          class="border-0 bg-gray-400 px-2 py-1 text-sm text-white hover:bg-gray-500"
-          @click="$nextTick(() => { resetInput() })"
-          hx-include="[name='newParentClass'], [name = 'newChildClass']"
-          hx-post="/hierarchy"
-          hx-target="#hierarchy-container"
-          hx-swap="beforeend"
-          x-ref="addButton"
-        >
-          Add
-        </button>
-      </div>
-      <tbody class="divide-y divide-gray-200 bg-white" id="hierarchy-container">
-        <div
-          th:each="hierarchyItem, iterStat : ${itemList}"
-          th:with="index=${iterStat.index}"
-          th:insert="~{hierarchy-fragments :: hierarchyItem(hierarchyItem, index)}"
-          th:remove="tag"
-        ></div>
-      </tbody>
-    </table>
-    <!--        Needed for indexing of new items-->
-    <input
-      type="number"
-      class="hidden"
-      name="itemsCount"
-      th:value="${itemList.size()}"
-    />
-    <!--        End of comment -->
-  </form>
+        Add
+      </button>
+    </div>
+    <tbody class="divide-y divide-gray-200 bg-white" id="hierarchy-container">
+      <div
+        th:each="hierarchyItem, iterStat : ${itemList}"
+        th:with="index=${iterStat.index}"
+        th:insert="~{hierarchy-fragments :: hierarchyItem(hierarchyItem, index)}"
+        th:remove="tag"
+      ></div>
+    </tbody>
+  </table>
+  <!--        Needed for indexing of new items-->
+  <input
+    type="number"
+    class="hidden"
+    name="itemsCount"
+    th:value="${itemList.size()}"
+  />
+  <!--        End of comment -->
 </div>
 
 <!--#######################-->
 <!-- HierarchyItem Fragment-->
 <!--#######################-->
-
 <div th:fragment="hierarchyItem(hierarchyItem, index)" th:remove="tag">
   <tr
     th:x-data="|{
-      isEditing: false,
+      isEditing: {
+        parent: false,
+        child: false
+      },
       hierarchyItem: {
         parent: '${hierarchyItem.parent}',
         child: '${hierarchyItem.child}',
         blacklisted: '${hierarchyItem.blacklisted}',
       },
-      originalParentValue: '',
-      originalChildValue: '',
+      originalValues: {
+        parent: '${hierarchyItem.parent}',
+        child: '${hierarchyItem.child}',
+      },
       index: ${index},
       init() {
         this.setHierarchy();
         this.updateHiddenInput();
       },
-      save() {
-        this.isEditing = false;
-        this.originalParentValue = this.hierarchyItem.parent;
-        this.originalChildValue = this.hierarchyItem.child;
+      save(field) {
+        this.isEditing[field] = false;
+        this.originalValues[field] = this.hierarchyItem[field];
         this.updateHiddenInput();
       },
-      cancel() {
-        this.isEditing = false;
-        this.hierarchyItem.parent = this.originalParentValue;
-        this.hierarchyItem.child = this.originalChildValue;
+      cancel(field) {
+        this.isEditing[field] = false;
+        this.hierarchyItem[field] = this.originalValues[field];
         this.updateHiddenInput();
       },
       toggleBlacklist() {
@@ -128,38 +123,38 @@
   >
     <td class="table-data">
       <span
-        x-show="!isEditing"
-        @click="isEditing = true; originalValue = hierarchyItem.parent"
+        x-show="!isEditing.parent"
+        @click="isEditing.parent = true"
         class="cursor-pointer"
         x-text="hierarchyItem.parent"
         title="Edit"
       ></span>
       <input
-        x-show="isEditing"
+        x-show="isEditing.parent"
         x-model="hierarchyItem.parent"
-        @keydown.enter.prevent="save()"
-        @blur="cancel()"
+        @keydown.enter.prevent="save('parent')"
+        @blur="cancel('parent')"
         type="text"
-        class="border border-gray-400 px-2 py-1 text-sm"
+        class="border border-gray-400 px-2 py-1 text-xs"
         x-ref="input"
         th:name="'hierarchy[' + ${index} + '].parent'"
       />
     </td>
     <td class="table-data">
       <span
-        x-show="!isEditing"
-        @click="isEditing = true; originalValue = hierarchyItem.child"
+        x-show="!isEditing.child"
+        @click="isEditing.child = true"
         class="cursor-pointer"
         x-text="hierarchyItem.child"
         title="Edit"
       ></span>
       <input
-        x-show="isEditing"
+        x-show="isEditing.child"
         x-model="hierarchyItem.child"
-        @keydown.enter.prevent="save()"
-        @blur="cancel()"
+        @keydown.enter.prevent="save('child')"
+        @blur="cancel('child')"
         type="text"
-        class="border border-gray-400 px-2 py-1 text-sm"
+        class="border border-gray-400 px-2 py-1 text-xs"
         x-ref="input"
         th:name="'hierarchy[' + ${index} + '].child'"
       />
@@ -180,7 +175,7 @@
       ></button>
       <input
         type="hidden"
-        th:name="'classes[' + ${index} + '].blacklisted'"
+        th:name="'hierarchy[' + ${index} + '].blacklisted'"
         value=""
         x-init="$el.value = hierarchyItem.blacklisted"
       />
