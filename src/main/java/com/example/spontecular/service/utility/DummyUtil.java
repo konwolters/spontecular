@@ -1,6 +1,7 @@
 package com.example.spontecular.service.utility;
 
 import com.example.spontecular.dto.ClassItem;
+import com.example.spontecular.dto.ConstraintsItem;
 import com.example.spontecular.dto.HierarchyItem;
 import com.example.spontecular.dto.RelationItem;
 
@@ -57,6 +58,21 @@ public class DummyUtil {
                 new RelationItem("Internal module", "consistOf", "Circuit board", false),
                 new RelationItem("Module", "isStackedInside", "Satellite", false),
                 new RelationItem("Elastic bushing", "isPlacedIn", "Groove", false)
+        );
+    }
+
+    public static List<ConstraintsItem> getConstraintsDummyData() {
+        return Arrays.asList(
+                new ConstraintsItem("Chassis", "consistsOf", "Framework", "1", "1", false),
+                new ConstraintsItem("Sidewall", "isMadeFrom", "Circuit board", "1", "1", false),
+                new ConstraintsItem("Sidewall", "servesAs", "Circuit board", "1", "1", false),
+                new ConstraintsItem("Double-sided circuit board", "mayServeAs", "Circuit board", "1", "1", false),
+                new ConstraintsItem("Solar cell", "isMountedOn", "Printed circuit board", "1", "1", false),
+                new ConstraintsItem("Satellite", "needs", "Connector", "1", "1", false),
+                new ConstraintsItem("Internal module", "consistOf", "FR-4", "1", "1", false),
+                new ConstraintsItem("Internal module", "consistOf", "Circuit board", "1", "1", false),
+                new ConstraintsItem("Module", "isStackedInside", "Satellite", "1", "1", false),
+                new ConstraintsItem("Elastic bushing", "isPlacedIn", "Groove", "1", "1", false)
         );
     }
 }

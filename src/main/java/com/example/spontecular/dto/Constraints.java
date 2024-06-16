@@ -13,29 +13,18 @@ import java.util.regex.Pattern;
 @Getter
 @Setter
 public class Constraints implements Feature {
-    List<List<String>> constraints = new ArrayList<>();
-
-    public Constraints() {
-    }
-
-    public Constraints(String constraintsString) {
-        // Create a pattern to match text within brackets
-        Pattern pattern = Pattern.compile("\\[(.*?)]");
-        Matcher matcher = pattern.matcher(constraintsString);
-
-        while (matcher.find()) {
-            // Extracted string between brackets
-            String extracted = matcher.group(1).trim();
-            // Split the extracted string by comma and whitespace
-            List<String> items = Arrays.asList(extracted.split(",\\s+"));
-            this.constraints.add(new ArrayList<>(items));
-        }
-    }
+    List<ConstraintsItem> constraints = new ArrayList<>();
 
     @Override
     public Map<String, Object> getResponseMap() {
+
+        //Only show non blacklisted items
+        constraints = constraints.stream()
+                .filter(item -> !item.isBlacklisted())
+                .toList();
+
         return Map.of(
-                "featureType", "classes",
+                "featureType", "constraints",
                 "nextFeatureType", "",
                 "itemList", getConstraints()
         );
@@ -44,8 +33,8 @@ public class Constraints implements Feature {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        for (List<String> constraintsElement : constraints) {
-            sb.append(constraintsElement.toString()).append(",\n");
+        for (ConstraintsItem constraintsItem : constraints) {
+            sb.append(constraintsItem.toString()).append(",\n");
         }
         return sb.toString();
     }

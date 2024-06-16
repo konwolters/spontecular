@@ -109,20 +109,17 @@ public class JenaService {
     }
 
     private void applyCardinalityConstraints(Constraints constraints, OntModel model, List<String> errorMessages) {
-        for (List<String> constraint : constraints.getConstraints()) {
-            if (constraint.size() != 5) {
-                errorMessages.add("Constraint element " + constraint + " does not contain correct information format.");
-                continue;
-            }
-            String subjectName = stringUtils.toUpperCamelCase(constraint.get(0));
-            String predicateName = stringUtils.toLowerCamelCase(constraint.get(1));
-            String objectName = stringUtils.toUpperCamelCase(constraint.get(2));
+        for (ConstraintsItem constraint : constraints.getConstraints()) {
+
+            String subjectName = stringUtils.toUpperCamelCase(constraint.getSubject());
+            String predicateName = stringUtils.toLowerCamelCase(constraint.getPredicate());
+            String objectName = stringUtils.toUpperCamelCase(constraint.getObject());
             int minCardinality;
             Integer maxCardinality = null;
 
             try {
-                minCardinality = Integer.parseInt(constraint.get(3));
-                String maxCard = constraint.get(4);
+                minCardinality = Integer.parseInt(constraint.getMinCardinality());
+                String maxCard = constraint.getMaxCardinality();
                 if (!"N".equals(maxCard)) {
                     maxCardinality = Integer.parseInt(maxCard);
                 }

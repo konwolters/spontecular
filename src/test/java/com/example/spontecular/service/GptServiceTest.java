@@ -64,26 +64,17 @@ class GptServiceTest {
             .build();
 
     private Classes testClasses;
-
-    private final List<HierarchyItem> testHierarchy = DummyUtil.getHierarchyDummyData();
-
-    private final List<RelationItem> testRelations = DummyUtil.getRelationsDummyData();
-
-    private final List<List<String>> testConstraints = List.of(
-            List.of("Chassis", "consistsOf", "Framework", "1", "1"),
-            List.of("Sidewall", "isMadeFrom", "Circuit board", "1", "1"),
-            List.of("Sidewall", "servesAs", "Circuit board", "1", "1"),
-            List.of("Double-sided circuit board", "mayServeAs", "Circuit board", "1", "1"),
-            List.of("Solar cell", "isMountedOn", "Printed circuit board", "1", "1"),
-            List.of("Satellite", "needs", "Connector", "1", "1"),
-            List.of("Internal module", "consistOf", "FR-4", "1", "1"),
-            List.of("Internal module", "consistOf", "Circuit board", "1", "1"),
-            List.of("Module", "isStackedInside", "Satellite", "1", "1"),
-            List.of("Elastic bushing", "isPlacedIn", "Groove", "1", "1"));
+    private Hierarchy testHierarchy;
+    private Relations testRelations;
+    private Constraints testConstraints;
 
     @BeforeEach
     void setup() {
+
         testClasses.setClasses(DummyUtil.getClassesDummyData());
+        testHierarchy.setHierarchy(DummyUtil.getHierarchyDummyData());
+        testRelations.setRelations(DummyUtil.getRelationsDummyData());
+        testConstraints.setConstraints(DummyUtil.getConstraintsDummyData());
     }
 
     @Test
@@ -113,7 +104,7 @@ class GptServiceTest {
 
         Hierarchy result = gptService.getHierarchy("testString", testClasses, settings);
 
-        assertThat(result.getHierarchy()).containsExactlyInAnyOrderElementsOf(testHierarchy);
+        assertThat(result.getHierarchy()).containsExactlyInAnyOrderElementsOf(testHierarchy.getHierarchy());
     }
 
     @Test
@@ -124,7 +115,7 @@ class GptServiceTest {
         when(assistantMessage.getContent()).thenReturn(objectMapper.writeValueAsString(Map.of("hierarchy", testHierarchy)));
 
         Hierarchy expectedHierarchy = new Hierarchy();
-        expectedHierarchy.setHierarchy(testHierarchy);
+        expectedHierarchy.setHierarchy(testHierarchy.getHierarchy());
 
         Hierarchy result = gptService.getHierarchy("testString", testClasses, settings);
 
@@ -137,7 +128,7 @@ class GptServiceTest {
 
         Relations result = gptService.getRelations("testString", testClasses, settings);
 
-        assertThat(result.getRelations()).containsExactlyInAnyOrderElementsOf(testRelations);
+        assertThat(result.getRelations()).containsExactlyInAnyOrderElementsOf(testRelations.getRelations());
     }
 
     @Test
@@ -148,7 +139,7 @@ class GptServiceTest {
         when(assistantMessage.getContent()).thenReturn(objectMapper.writeValueAsString(Map.of("relations", testRelations)));
 
         Relations expectedRelations = new Relations();
-        expectedRelations.setRelations(testRelations);
+        expectedRelations.setRelations(testRelations.getRelations());
 
         Relations result = gptService.getRelations("testString", testClasses, settings);
 
@@ -159,9 +150,9 @@ class GptServiceTest {
     public void shouldReturnDummyConstraints() {
         gptService.useDummyData = true;
 
-        Constraints result = gptService.getConstraints("testString", "testString2", settings);
+        Constraints result = gptService.getConstraints("testString", testRelations, settings);
 
-        assertThat(result.getConstraints()).containsExactlyInAnyOrderElementsOf(testConstraints);
+        assertThat(result.getConstraints()).containsExactlyInAnyOrderElementsOf(testConstraints.getConstraints());
     }
 
     @Test
@@ -172,9 +163,9 @@ class GptServiceTest {
         when(assistantMessage.getContent()).thenReturn(objectMapper.writeValueAsString(Map.of("constraints", testConstraints)));
 
         Constraints expectedConstraints = new Constraints();
-        expectedConstraints.setConstraints(testConstraints);
+        expectedConstraints.setConstraints(testConstraints.getConstraints());
 
-        Constraints result = gptService.getConstraints("testString", "testString2", settings);
+        Constraints result = gptService.getConstraints("testString", testRelations, settings);
 
         assertThat(result.getConstraints()).containsExactlyElementsOf(expectedConstraints.getConstraints());
     }

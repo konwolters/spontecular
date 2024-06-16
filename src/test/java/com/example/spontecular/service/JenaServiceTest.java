@@ -40,7 +40,7 @@ class JenaServiceTest {
         relations.setRelations(DummyUtil.getRelationsDummyData());
 
         constraints = new Constraints();
-        constraints.setConstraints(List.of(List.of("Class1", "Relation1", "Class2", "1", "1")));
+        constraints.setConstraints(DummyUtil.getConstraintsDummyData());
     }
 
 //    @Test

@@ -96,7 +96,7 @@ public class GptController {
     }
 
     @PutMapping("/relations")
-    public String updateRelation(@ModelAttribute Relations relations, Model model, HttpSession session) {
+    public String updateRelations(@ModelAttribute Relations relations, Model model, HttpSession session) {
 
         //Remove all deleted relations elements
         relations.setRelations(
@@ -107,6 +107,39 @@ public class GptController {
 
         session.setAttribute("relations", relations);
         model.addAllAttributes(relations.getResponseMap());
+        return "fragments :: featureFragment";
+    }
+
+
+
+    @PostMapping("/constraints")
+    public String addConstraint(@RequestParam String newSubject,
+                              @RequestParam String newPredicate,
+                              @RequestParam String newObject,
+                              @RequestParam String minCardinality,
+                              @RequestParam String maxCardinality,
+                              Model model) {
+
+        model.addAttribute(
+                "constraintsItem",
+                new ConstraintsItem(newSubject, newPredicate, newObject, minCardinality, maxCardinality, false)
+        );
+
+        return "constraints-fragments :: constraintsItem";
+    }
+
+    @PutMapping("/constraints")
+    public String updateConstraints(@ModelAttribute Constraints constraints, Model model, HttpSession session) {
+
+        //Remove all deleted constraints elements
+        constraints.setConstraints(
+                constraints.getConstraints().stream()
+                        .filter(hierarchyItem -> hierarchyItem.getSubject() != null)
+                        .toList()
+        );
+
+        session.setAttribute("constraints", constraints);
+        model.addAllAttributes(constraints.getResponseMap());
         return "fragments :: featureFragment";
     }
 }

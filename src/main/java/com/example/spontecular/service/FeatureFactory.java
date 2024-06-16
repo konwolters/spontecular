@@ -24,7 +24,7 @@ public class FeatureFactory {
                 return relations;
             case CONSTRAINTS:
                 Relations existingRelations = (Relations) session.getAttribute("relations");
-                Constraints constraints = gptService.getConstraints(inputText, existingRelations.toString(), settings);
+                Constraints constraints = gptService.getConstraints(inputText, existingRelations, settings);
                 session.setAttribute("constraints", constraints);
                 return constraints;
             default:

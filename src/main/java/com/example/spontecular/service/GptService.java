@@ -119,23 +119,12 @@ public class GptService {
         return relations;
     }
 
-    public Constraints getConstraints(String inputText, String relations, SettingsForm settings) {
+    public Constraints getConstraints(String inputText, Relations relations, SettingsForm settings) {
         Constraints constraints;
 
         if (useDummyData) {
             constraints = new Constraints();
-            constraints.setConstraints(List.of(
-                    List.of("Chassis", "consistsOf", "Framework", "1", "1"),
-                    List.of("Sidewall", "isMadeFrom", "Circuit board", "1", "1"),
-                    List.of("Sidewall", "servesAs", "Circuit board", "1", "1"),
-                    List.of("Double-sided circuit board", "mayServeAs", "Circuit board", "1", "1"),
-                    List.of("Solar cell", "isMountedOn", "Printed circuit board", "1", "1"),
-                    List.of("Satellite", "needs", "Connector", "1", "1"),
-                    List.of("Internal module", "consistOf", "FR-4", "1", "1"),
-                    List.of("Internal module", "consistOf", "Circuit board", "1", "1"),
-                    List.of("Module", "isStackedInside", "Satellite", "1", "1"),
-                    List.of("Elastic bushing", "isPlacedIn", "Groove", "1", "1")
-            ));
+            constraints.setConstraints(DummyUtil.getConstraintsDummyData());
         } else {
             OutputParser<Constraints> outputParser = new BeanOutputParser<>(Constraints.class);
 

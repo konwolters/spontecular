@@ -17,6 +17,4 @@ deleted might be 0, max. cardinality = N.
 
 Concentrate exclusively on the following relationships: {relations}
 
-Output your findings in JSON format, listing each identified cardinality constraint as [Subject, Predicate,
-Object, Min. Cardinality, Max. Cardinality] under the ’constraints’ field as a list.
-Example: "constraints": [ ["User", "has", "Role", 1, 1], ["Role", "has", "Permission", 1, 1] ]
+{format}
