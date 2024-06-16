@@ -136,6 +136,7 @@ public class GptService {
                         put("definition", settings.getConstraintsDefinition());
                         put("examples", settings.getConstraintsExamples());
                         put("blacklist", settings.getConstraintsBlacklist());
+                        put("format", outputParser.getFormat());
                     }}
             );
 
