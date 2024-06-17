@@ -1,4 +1,4 @@
-package com.example.spontecular.service;
+package com.example.spontecular.jena;
 
 import com.example.spontecular.feature.classes.ClassItem;
 import com.example.spontecular.feature.classes.Classes;
@@ -8,7 +8,6 @@ import com.example.spontecular.feature.hierarchy.Hierarchy;
 import com.example.spontecular.feature.hierarchy.HierarchyItem;
 import com.example.spontecular.feature.relations.RelationItem;
 import com.example.spontecular.feature.relations.Relations;
-import com.example.spontecular.jena.JenaService;
 import com.example.spontecular.utility.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

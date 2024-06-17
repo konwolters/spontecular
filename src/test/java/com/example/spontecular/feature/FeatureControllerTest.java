@@ -1,10 +1,7 @@
-package com.example.spontecular.controller;
+package com.example.spontecular.feature;
 
 import com.example.spontecular.dto.*;
-import com.example.spontecular.feature.FeatureController;
 import com.example.spontecular.feature.classes.Classes;
-import com.example.spontecular.feature.FeatureService;
-import com.example.spontecular.feature.DummyUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

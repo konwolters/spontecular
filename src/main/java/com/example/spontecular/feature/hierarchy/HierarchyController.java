@@ -4,16 +4,14 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
+@RequestMapping("/hierarchy")
 @RequiredArgsConstructor
 public class HierarchyController {
 
-    @PostMapping("/hierarchy")
+    @PostMapping
     public String addHierarchy(@RequestParam String newParentClass,
                                @RequestParam String newChildClass,
                                Model model) {
@@ -26,7 +24,7 @@ public class HierarchyController {
         return "hierarchy-fragments :: hierarchyItem";
     }
 
-    @PutMapping("/hierarchy")
+    @PutMapping
     public String updateHierarchy(@ModelAttribute Hierarchy hierarchy, Model model, HttpSession session) {
 
         // Remove all deleted hierarchy elements

@@ -1,12 +1,10 @@
-package com.example.spontecular.service;
+package com.example.spontecular.feature;
 
 import com.example.spontecular.dto.*;
-import com.example.spontecular.feature.FeatureService;
 import com.example.spontecular.feature.classes.Classes;
 import com.example.spontecular.feature.constraints.Constraints;
 import com.example.spontecular.feature.hierarchy.Hierarchy;
 import com.example.spontecular.feature.relations.Relations;
-import com.example.spontecular.feature.DummyUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

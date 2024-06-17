@@ -4,16 +4,14 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
+@RequestMapping("/constraints")
 @RequiredArgsConstructor
 public class ConstraintsController {
 
-    @PostMapping("/constraints")
+    @PostMapping
     public String addConstraint(@RequestParam String newSubject,
                                 @RequestParam String newPredicate,
                                 @RequestParam String newObject,
@@ -29,7 +27,7 @@ public class ConstraintsController {
         return "constraints-fragments :: constraintsItem";
     }
 
-    @PutMapping("/constraints")
+    @PutMapping
     public String updateConstraints(@ModelAttribute Constraints constraints, Model model, HttpSession session) {
 
         // Remove all deleted constraints elements

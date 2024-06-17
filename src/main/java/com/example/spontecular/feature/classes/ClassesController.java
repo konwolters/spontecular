@@ -4,23 +4,21 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
+@RequestMapping("/classes")
 @RequiredArgsConstructor
-public class ClassController {
+public class ClassesController {
 
-    @PostMapping("/classes")
+    @PostMapping
     public String addClass(@RequestParam String newClass, Model model) {
         model.addAttribute("classItem", new ClassItem(newClass, false));
 
         return "classes-fragments :: classesItem";
     }
 
-    @PutMapping("/classes")
+    @PutMapping
     public String updateClasses(@ModelAttribute Classes classes, Model model, HttpSession session) {
 
         // Remove all deleted classes
