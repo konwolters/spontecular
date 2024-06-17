@@ -37,6 +37,7 @@ public class GptService {
     @Value("${USE_DUMMY_DATA}")
     boolean useDummyData; // for development purposes to avoid API calls
 
+
     public Classes getClasses(String inputText, SettingsForm settings) {
         Classes classes;
 
