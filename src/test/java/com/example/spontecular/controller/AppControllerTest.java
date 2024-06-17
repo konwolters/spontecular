@@ -1,5 +1,6 @@
 package com.example.spontecular.controller;
 
+import com.example.spontecular.feature.DummyUtil;
 import com.example.spontecular.feature.classes.Classes;
 import com.example.spontecular.feature.constraints.Constraints;
 import com.example.spontecular.feature.hierarchy.Hierarchy;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -89,15 +91,30 @@ class AppControllerTest {
     }
 
     @Test
-    void shouldExportWithAllParameters() throws Exception {
+    void shouldExportWithAllFeatures() throws Exception {
+        Classes testClasses = new Classes();
+        testClasses.setClasses(DummyUtil.getClassesDummyData());
+
+        Hierarchy testHierarchy = new Hierarchy();
+        testHierarchy.setHierarchy(DummyUtil.getHierarchyDummyData());
+
+        Relations testRelations = new Relations();
+        testRelations.setRelations(DummyUtil.getRelationsDummyData());
+
+        Constraints testConstraints = new Constraints();
+        testConstraints.setConstraints(DummyUtil.getConstraintsDummyData());
+
         when(jenaService.createOntology(any(Classes.class), any(Hierarchy.class), any(Relations.class), any(Constraints.class)))
                 .thenReturn(new JenaService.Response("Model as String", List.of("Error1", "Error2")));
 
-        MvcResult result = mockMvc.perform(post("/export")
-                        .param("classesText", "class data")
-                        .param("hierarchyText", "hierarchy data")
-                        .param("relationsText", "relations data")
-                        .param("constraintsText", "constraints data"))
+        MockHttpSession testSession = new MockHttpSession();
+        testSession.setAttribute("classes", testClasses);
+        testSession.setAttribute("hierarchy", testHierarchy);
+        testSession.setAttribute("relations", testRelations);
+        testSession.setAttribute("constraints", testConstraints);
+
+        MvcResult result = mockMvc.perform(get("/export")
+                        .session(testSession))
                 .andExpect(status().isOk())
                 .andReturn();
 
