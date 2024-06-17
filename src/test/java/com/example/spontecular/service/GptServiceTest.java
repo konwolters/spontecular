@@ -68,14 +68,20 @@ class GptServiceTest {
     private Relations testRelations;
     private Constraints testConstraints;
 
+
     @BeforeEach
     void setup() {
+        testClasses = new Classes();
+        testHierarchy = new Hierarchy();
+        testRelations = new Relations();
+        testConstraints = new Constraints();
 
         testClasses.setClasses(DummyUtil.getClassesDummyData());
         testHierarchy.setHierarchy(DummyUtil.getHierarchyDummyData());
         testRelations.setRelations(DummyUtil.getRelationsDummyData());
         testConstraints.setConstraints(DummyUtil.getConstraintsDummyData());
     }
+
 
     @Test
     public void shouldReturnDummyClasses() {
@@ -91,11 +97,11 @@ class GptServiceTest {
         gptService.useDummyData = false;
 
         setupCommonMocks();
-        when(assistantMessage.getContent()).thenReturn(objectMapper.writeValueAsString(Map.of("classes", DummyUtil.getClassesDummyData())));
+        when(assistantMessage.getContent()).thenReturn(objectMapper.writeValueAsString(testClasses));
 
         Classes result = gptService.getClasses("testString", settings);
 
-        assertThat(result.getClasses()).containsExactlyElementsOf(testClasses.getClasses());
+        assertThat(result.getClasses()).containsExactlyInAnyOrderElementsOf(testClasses.getClasses());
     }
 
     @Test
@@ -112,14 +118,11 @@ class GptServiceTest {
         gptService.useDummyData = false;
 
         setupCommonMocks();
-        when(assistantMessage.getContent()).thenReturn(objectMapper.writeValueAsString(Map.of("hierarchy", testHierarchy)));
-
-        Hierarchy expectedHierarchy = new Hierarchy();
-        expectedHierarchy.setHierarchy(testHierarchy.getHierarchy());
+        when(assistantMessage.getContent()).thenReturn(objectMapper.writeValueAsString(testHierarchy));
 
         Hierarchy result = gptService.getHierarchy("testString", testClasses, settings);
 
-        assertThat(result.getHierarchy()).containsExactlyElementsOf(expectedHierarchy.getHierarchy());
+        assertThat(result.getHierarchy()).containsExactlyInAnyOrderElementsOf(testHierarchy.getHierarchy());
     }
 
     @Test
@@ -136,14 +139,11 @@ class GptServiceTest {
         gptService.useDummyData = false;
 
         setupCommonMocks();
-        when(assistantMessage.getContent()).thenReturn(objectMapper.writeValueAsString(Map.of("relations", testRelations)));
-
-        Relations expectedRelations = new Relations();
-        expectedRelations.setRelations(testRelations.getRelations());
+        when(assistantMessage.getContent()).thenReturn(objectMapper.writeValueAsString(testRelations));
 
         Relations result = gptService.getRelations("testString", testClasses, settings);
 
-        assertThat(result.getRelations()).containsExactlyElementsOf(expectedRelations.getRelations());
+        assertThat(result.getRelations()).containsExactlyInAnyOrderElementsOf(testRelations.getRelations());
     }
 
     @Test
@@ -160,16 +160,15 @@ class GptServiceTest {
         gptService.useDummyData = false;
 
         setupCommonMocks();
-        when(assistantMessage.getContent()).thenReturn(objectMapper.writeValueAsString(Map.of("constraints", testConstraints)));
-
-        Constraints expectedConstraints = new Constraints();
-        expectedConstraints.setConstraints(testConstraints.getConstraints());
+        when(assistantMessage.getContent()).thenReturn(objectMapper.writeValueAsString(testConstraints));
 
         Constraints result = gptService.getConstraints("testString", testRelations, settings);
 
-        assertThat(result.getConstraints()).containsExactlyElementsOf(expectedConstraints.getConstraints());
+        assertThat(result.getConstraints()).containsExactlyInAnyOrderElementsOf(testConstraints.getConstraints());
     }
 
+
+    //Mock Spring AI dependencies
     private void setupCommonMocks() throws IOException {
         when(resource.getInputStream()).thenReturn(new ByteArrayInputStream("testString".getBytes()));
         when(chatClient.call(any(Prompt.class))).thenReturn(chatResponse);

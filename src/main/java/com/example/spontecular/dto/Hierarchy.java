@@ -1,17 +1,20 @@
 package com.example.spontecular.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Getter
 @Setter
-public class Hierarchy implements Feature{
+public class Hierarchy implements Feature {
     private List<HierarchyItem> hierarchy = new ArrayList<>();
 
+    @JsonIgnore
     @Override
     public Map<String, Object> getResponseMap() {
 
@@ -20,11 +23,13 @@ public class Hierarchy implements Feature{
                 .filter(item -> !item.isBlacklisted())
                 .toList();
 
-        return Map.of(
-                "featureType", "hierarchy",
-                "nextFeatureType", "relations",
-                "itemList", getHierarchy()
-        );
+        return new HashMap<>() {
+            {
+                put("featureType", "hierarchy");
+                put("nextFeatureType", "relations");
+                put("itemList", getHierarchy());
+            }
+        };
     }
 
     @Override

@@ -35,7 +35,7 @@ public class ConstraintsItem {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ConstraintsItem that = (ConstraintsItem) o;
-        return Objects.equals(minCardinality, that.minCardinality) && maxCardinality == that.maxCardinality && blacklisted == that.blacklisted && Objects.equals(subject, that.subject) && Objects.equals(predicate, that.predicate) && Objects.equals(object, that.object);
+        return Objects.equals(minCardinality, that.minCardinality) && Objects.equals(maxCardinality, that.maxCardinality) && blacklisted == that.blacklisted && Objects.equals(subject, that.subject) && Objects.equals(predicate, that.predicate) && Objects.equals(object, that.object);
     }
 
     @Override

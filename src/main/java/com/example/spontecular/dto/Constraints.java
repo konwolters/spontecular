@@ -1,12 +1,10 @@
 package com.example.spontecular.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,6 +13,7 @@ import java.util.regex.Pattern;
 public class Constraints implements Feature {
     List<ConstraintsItem> constraints = new ArrayList<>();
 
+    @JsonIgnore
     @Override
     public Map<String, Object> getResponseMap() {
 
@@ -23,11 +22,11 @@ public class Constraints implements Feature {
                 .filter(item -> !item.isBlacklisted())
                 .toList();
 
-        return Map.of(
-                "featureType", "constraints",
-                "nextFeatureType", "",
-                "itemList", getConstraints()
-        );
+        return new HashMap<>() {{
+            put("featureType", "constraints");
+            put("nextFeatureType", "");
+            put("itemList", getConstraints());
+        }};
     }
 
     @Override
