@@ -1,8 +1,12 @@
 package com.example.spontecular.controller;
 
 import com.example.spontecular.dto.*;
-import com.example.spontecular.service.JenaService;
-import com.example.spontecular.service.SpecificationService;
+import com.example.spontecular.feature.classes.Classes;
+import com.example.spontecular.feature.constraints.Constraints;
+import com.example.spontecular.feature.hierarchy.Hierarchy;
+import com.example.spontecular.feature.relations.Relations;
+import com.example.spontecular.jena.JenaService;
+import com.example.spontecular.specification.SpecificationService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;

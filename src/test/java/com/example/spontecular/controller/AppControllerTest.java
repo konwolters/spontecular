@@ -1,11 +1,11 @@
 package com.example.spontecular.controller;
 
-import com.example.spontecular.dto.Classes;
-import com.example.spontecular.dto.Constraints;
-import com.example.spontecular.dto.Hierarchy;
-import com.example.spontecular.dto.Relations;
-import com.example.spontecular.service.JenaService;
-import com.example.spontecular.service.SpecificationService;
+import com.example.spontecular.feature.classes.Classes;
+import com.example.spontecular.feature.constraints.Constraints;
+import com.example.spontecular.feature.hierarchy.Hierarchy;
+import com.example.spontecular.feature.relations.Relations;
+import com.example.spontecular.jena.JenaService;
+import com.example.spontecular.specification.SpecificationService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
