@@ -1,7 +1,14 @@
-package com.example.spontecular.service;
+package com.example.spontecular.jena;
 
-import com.example.spontecular.dto.*;
-import com.example.spontecular.service.utility.StringUtils;
+import com.example.spontecular.feature.classes.ClassItem;
+import com.example.spontecular.feature.classes.Classes;
+import com.example.spontecular.feature.constraints.Constraints;
+import com.example.spontecular.feature.constraints.ConstraintsItem;
+import com.example.spontecular.feature.hierarchy.Hierarchy;
+import com.example.spontecular.feature.hierarchy.HierarchyItem;
+import com.example.spontecular.feature.relations.RelationItem;
+import com.example.spontecular.feature.relations.Relations;
+import com.example.spontecular.utility.StringUtils;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.jena.ontology.ObjectProperty;

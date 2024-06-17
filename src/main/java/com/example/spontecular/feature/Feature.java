@@ -1,4 +1,4 @@
-package com.example.spontecular.dto;
+package com.example.spontecular.feature;
 
 import java.util.Map;
 

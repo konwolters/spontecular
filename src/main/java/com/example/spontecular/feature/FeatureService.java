@@ -1,7 +1,10 @@
-package com.example.spontecular.service;
+package com.example.spontecular.feature;
 
 import com.example.spontecular.dto.*;
-import com.example.spontecular.service.utility.DummyUtil;
+import com.example.spontecular.feature.classes.Classes;
+import com.example.spontecular.feature.constraints.Constraints;
+import com.example.spontecular.feature.hierarchy.Hierarchy;
+import com.example.spontecular.feature.relations.Relations;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.openai.OpenAiChatClient;
@@ -12,21 +15,20 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
-import java.util.List;
 
 @Service
-public class GptService {
+public class FeatureService {
     private final OpenAiChatClient chatClient;
     private final Resource classesPrompt;
     private final Resource hierarchyPrompt;
     private final Resource relationsPrompt;
     private final Resource constraintsPrompt;
 
-    public GptService(OpenAiChatClient chatClient,
-                      @Value("classpath:/prompts/classes-prompt.st") Resource classesPrompt,
-                      @Value("classpath:/prompts/hierarchy-prompt.st") Resource hierarchyPrompt,
-                      @Value("classpath:/prompts/relations-prompt.st") Resource relationsPrompt,
-                      @Value("classpath:/prompts/constraints-prompt.st") Resource constraintsPrompt) {
+    public FeatureService(OpenAiChatClient chatClient,
+                          @Value("classpath:/prompts/classes-prompt.st") Resource classesPrompt,
+                          @Value("classpath:/prompts/hierarchy-prompt.st") Resource hierarchyPrompt,
+                          @Value("classpath:/prompts/relations-prompt.st") Resource relationsPrompt,
+                          @Value("classpath:/prompts/constraints-prompt.st") Resource constraintsPrompt) {
         this.chatClient = chatClient;
         this.classesPrompt = classesPrompt;
         this.hierarchyPrompt = hierarchyPrompt;
@@ -35,7 +37,7 @@ public class GptService {
     }
 
     @Value("${USE_DUMMY_DATA}")
-    boolean useDummyData; // for development purposes to avoid API calls
+    public boolean useDummyData; // for development purposes to avoid API calls
 
 
     public Classes getClasses(String inputText, SettingsForm settings) {

@@ -1,12 +1,11 @@
-package com.example.spontecular.dto;
+package com.example.spontecular.feature.constraints;
 
+import com.example.spontecular.feature.Feature;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Getter
 @Setter

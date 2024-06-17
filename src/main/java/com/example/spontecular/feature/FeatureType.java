@@ -1,4 +1,4 @@
-package com.example.spontecular.model;
+package com.example.spontecular.feature;
 
 public enum FeatureType {
     CLASSES,

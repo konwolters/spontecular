@@ -1,6 +1,6 @@
-package com.example.spontecular.service;
+package com.example.spontecular.specification;
 
-import com.example.spontecular.service.utility.TextExtractor;
+import com.example.spontecular.utility.TextExtractor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;

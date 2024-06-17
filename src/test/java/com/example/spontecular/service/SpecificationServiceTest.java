@@ -1,6 +1,7 @@
 package com.example.spontecular.service;
 
-import com.example.spontecular.service.utility.TextExtractor;
+import com.example.spontecular.utility.TextExtractor;
+import com.example.spontecular.specification.SpecificationService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

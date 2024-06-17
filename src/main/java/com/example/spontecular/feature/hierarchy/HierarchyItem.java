@@ -1,4 +1,4 @@
-package com.example.spontecular.dto;
+package com.example.spontecular.feature.hierarchy;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

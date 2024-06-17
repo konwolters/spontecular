@@ -1,4 +1,4 @@
-package com.example.spontecular.service.utility;
+package com.example.spontecular.utility;
 
 import lombok.Getter;
 import lombok.Setter;

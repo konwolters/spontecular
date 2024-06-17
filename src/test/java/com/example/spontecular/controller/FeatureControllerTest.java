@@ -1,8 +1,10 @@
 package com.example.spontecular.controller;
 
 import com.example.spontecular.dto.*;
-import com.example.spontecular.service.GptService;
-import com.example.spontecular.service.utility.DummyUtil;
+import com.example.spontecular.feature.FeatureController;
+import com.example.spontecular.feature.classes.Classes;
+import com.example.spontecular.feature.FeatureService;
+import com.example.spontecular.feature.DummyUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,14 +23,14 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(GptController.class)
-class GptControllerTest {
+@WebMvcTest(FeatureController.class)
+class FeatureControllerTest {
 
     @Autowired
     MockMvc mockMvc;
 
     @MockBean
-    GptService gptService;
+    FeatureService gptService;
 
     SettingsForm settings;
     Classes mockClasses;

@@ -1,7 +1,12 @@
 package com.example.spontecular.service;
 
 import com.example.spontecular.dto.*;
-import com.example.spontecular.service.utility.DummyUtil;
+import com.example.spontecular.feature.FeatureService;
+import com.example.spontecular.feature.classes.Classes;
+import com.example.spontecular.feature.constraints.Constraints;
+import com.example.spontecular.feature.hierarchy.Hierarchy;
+import com.example.spontecular.feature.relations.Relations;
+import com.example.spontecular.feature.DummyUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,15 +23,13 @@ import org.springframework.core.io.Resource;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class GptServiceTest {
+class FeatureServiceTest {
 
     @Mock
     private OpenAiChatClient chatClient;
@@ -44,7 +47,7 @@ class GptServiceTest {
     private AssistantMessage assistantMessage;
 
     @InjectMocks
-    private GptService gptService;
+    private FeatureService gptService;
 
     ObjectMapper objectMapper = new ObjectMapper();
 

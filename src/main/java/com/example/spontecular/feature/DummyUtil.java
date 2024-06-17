@@ -1,9 +1,9 @@
-package com.example.spontecular.service.utility;
+package com.example.spontecular.feature;
 
-import com.example.spontecular.dto.ClassItem;
-import com.example.spontecular.dto.ConstraintsItem;
-import com.example.spontecular.dto.HierarchyItem;
-import com.example.spontecular.dto.RelationItem;
+import com.example.spontecular.feature.classes.ClassItem;
+import com.example.spontecular.feature.constraints.ConstraintsItem;
+import com.example.spontecular.feature.hierarchy.HierarchyItem;
+import com.example.spontecular.feature.relations.RelationItem;
 
 import java.util.Arrays;
 import java.util.List;

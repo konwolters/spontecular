@@ -1,11 +1,14 @@
-package com.example.spontecular.service;
+package com.example.spontecular.feature;
 
 import com.example.spontecular.dto.*;
-import com.example.spontecular.model.FeatureType;
+import com.example.spontecular.feature.classes.Classes;
+import com.example.spontecular.feature.constraints.Constraints;
+import com.example.spontecular.feature.hierarchy.Hierarchy;
+import com.example.spontecular.feature.relations.Relations;
 import jakarta.servlet.http.HttpSession;
 
 public class FeatureFactory {
-    public static Feature createFeature(String featureType, String inputText, HttpSession session, GptService gptService) {
+    public static Feature createFeature(String featureType, String inputText, HttpSession session, FeatureService gptService) {
         SettingsForm settings = (SettingsForm) session.getAttribute("settings");
         switch (FeatureType.fromString(featureType)) {
             case CLASSES:
