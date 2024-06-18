@@ -61,7 +61,7 @@ public class AppController {
     }
 
     @PostMapping("/updateSettings")
-    public ResponseEntity<Void> updateSetting (@ModelAttribute SettingsForm settings, HttpSession session) {
+    public ResponseEntity<Void> updateSettings(@ModelAttribute SettingsForm settings, HttpSession session) {
         session.setAttribute("settings", settings);
         return ResponseEntity.ok().build();
     }
