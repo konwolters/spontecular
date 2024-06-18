@@ -8,7 +8,7 @@
   </head>
   <body
     class="bg-gray-100"
-    x-data="{showButtons: false, inputText: '', showModal: false}"
+    x-data="{showButtons: false, inputText: '', showModal: false, showHelp: false}"
   >
     <div th:replace="~{navbar-fragment :: navbar}" th:remove="tag"></div>
     <div
@@ -120,6 +120,7 @@
       />
     </form>
     <div th:replace="~{settings-fragments :: settingFragment}"></div>
+    <div th:replace="~{fragments :: helpModal}" th:remove="tag"></div>
     <th:block th:replace="~{fragments :: footer}"></th:block>
   </body>
 </html>
