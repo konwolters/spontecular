@@ -26,7 +26,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AppController {
     private final JenaService jenaService;
-    private final SpecificationService specificationService;
 
     @Value("${default.definition.classes}")
     private String defaultClassesDefinition;
@@ -64,23 +63,6 @@ public class AppController {
     public ResponseEntity<Void> updateSettings(@ModelAttribute SettingsForm settings, HttpSession session) {
         session.setAttribute("settings", settings);
         return ResponseEntity.ok().build();
-    }
-
-    @PostMapping("/loadSpecification")
-    public String loadSpecification(Model model,
-                                    @RequestParam(name = "specification_type") String specificationType,
-                                    @RequestParam(required = false, name = "pdfFile") MultipartFile pdfFile,
-                                    @RequestParam(required = false, name = "wordFile") MultipartFile wordFile) {
-
-        String specification = switch (specificationType) {
-            case "example" -> specificationService.loadExampleSpecification();
-            case "pdf" -> specificationService.loadPdfSpecification(pdfFile);
-            case "word" -> specificationService.loadWordSpecification(wordFile);
-            default -> "";
-        };
-        model.addAttribute("specification", specification);
-
-        return "fragments :: specificationFragment";
     }
 
     @GetMapping("/export")
