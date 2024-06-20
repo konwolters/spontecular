@@ -7,7 +7,7 @@ import lombok.Setter;
 @Builder
 public class SettingsForm {
     private String classesDefinition;
-    private String classesExamples="";
+    private String classesExamples;
     private String classesBlacklist;
     private String hierarchyDefinition;
     private String hierarchyExamples;
