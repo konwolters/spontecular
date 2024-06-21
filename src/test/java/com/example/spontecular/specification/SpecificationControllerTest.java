@@ -28,7 +28,7 @@ class SpecificationControllerTest {
     void shouldLoadExampleSpecification() throws Exception {
         when(specificationService.loadExampleSpecification()).thenReturn("example specification");
 
-        MvcResult mvcResult = mockMvc.perform(post("/loadSpecification")
+        MvcResult mvcResult = mockMvc.perform(post("/specification")
                         .param("specification_type", "example"))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -44,7 +44,7 @@ class SpecificationControllerTest {
     void shouldLoadPdfSpecification() throws Exception {
         MockMultipartFile pdfFile = new MockMultipartFile("pdfFile", "test.pdf", "application/pdf", "PDF content".getBytes());
         when(specificationService.loadPdfSpecification(any())).thenReturn("PDF Spec");
-        MvcResult result = mockMvc.perform(multipart("/loadSpecification")
+        MvcResult result = mockMvc.perform(multipart("/specification")
                         .file(pdfFile)
                         .param("specification_type", "pdf"))
                 .andExpect(status().isOk())
@@ -58,7 +58,7 @@ class SpecificationControllerTest {
     void shouldLoadWordSpecification() throws Exception {
         MockMultipartFile wordFile = new MockMultipartFile("wordFile", "test.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "Word content".getBytes());
         when(specificationService.loadWordSpecification(any())).thenReturn("Word Spec");
-        MvcResult result = mockMvc.perform(multipart("/loadSpecification")
+        MvcResult result = mockMvc.perform(multipart("/specification")
                         .file(wordFile)
                         .param("specification_type", "word"))
                 .andExpect(status().isOk())

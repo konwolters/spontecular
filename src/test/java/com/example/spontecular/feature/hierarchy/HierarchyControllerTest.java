@@ -2,8 +2,6 @@ package com.example.spontecular.feature.hierarchy;
 
 import com.example.spontecular.feature.DummyUtil;
 import com.example.spontecular.feature.FeatureService;
-import com.example.spontecular.feature.relations.RelationItem;
-import com.example.spontecular.feature.relations.Relations;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;

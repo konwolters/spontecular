@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 @RequiredArgsConstructor
 public class FeatureController {
-    private final FeatureService gptService;
+    private final FeatureService featureService;
 
     @PostMapping("/featureRequest")
     public String getFeatureResponse(@RequestParam String featureType,
@@ -18,7 +18,7 @@ public class FeatureController {
                                      Model model,
                                      HttpSession session) {
 
-        Feature featureResponse = FeatureFactory.createFeature(featureType, inputText, session, gptService);
+        Feature featureResponse = FeatureFactory.createFeature(featureType, inputText, session, featureService);
         model.addAllAttributes(featureResponse.getResponseMap());
 
         return "fragments :: featureFragment";
