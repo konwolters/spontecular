@@ -1,6 +1,6 @@
 package com.example.spontecular.feature;
 
-import com.example.spontecular.dto.*;
+import com.example.spontecular.dto.SettingsForm;
 import com.example.spontecular.feature.classes.Classes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

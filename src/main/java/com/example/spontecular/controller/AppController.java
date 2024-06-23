@@ -25,7 +25,6 @@ import java.util.List;
 @Controller
 @RequiredArgsConstructor
 public class AppController {
-    private final JenaService jenaService;
 
     @Value("${default.definition.classes}")
     private String defaultClassesDefinition;
@@ -63,23 +62,6 @@ public class AppController {
     public ResponseEntity<Void> updateSettings(@ModelAttribute SettingsForm settings, HttpSession session) {
         session.setAttribute("settings", settings);
         return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/export")
-    public String export(Model model, HttpSession session) {
-
-        Classes classes = (Classes) session.getAttribute("classes");
-        Hierarchy hierarchy = (Hierarchy) session.getAttribute("hierarchy");
-        Relations relations = (Relations) session.getAttribute("relations");
-        Constraints constraints = (Constraints) session.getAttribute("constraints");
-
-        JenaService.Response response = jenaService.createOntology(classes, hierarchy, relations, constraints);
-        String content = response.getModelAsString();
-        List<String> errorMessages = response.getErrorMessages();
-
-        model.addAttribute("content", content);
-        model.addAttribute("errorMessages", errorMessages);
-        return "export";
     }
 
     @GetMapping("favicon.ico")

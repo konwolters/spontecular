@@ -2,8 +2,6 @@ package com.example.spontecular.feature.constraints;
 
 import com.example.spontecular.feature.DummyUtil;
 import com.example.spontecular.feature.FeatureService;
-import com.example.spontecular.feature.classes.ClassItem;
-import com.example.spontecular.feature.classes.Classes;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -13,8 +11,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
