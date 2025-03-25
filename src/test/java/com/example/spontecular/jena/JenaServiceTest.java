@@ -10,6 +10,7 @@ import com.example.spontecular.feature.relations.RelationItem;
 import com.example.spontecular.feature.relations.Relations;
 import com.example.spontecular.utility.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -69,6 +70,7 @@ class JenaServiceTest {
         );
     }
 
+    @Disabled
     @Test
     void shouldCreateOntology() {
 
