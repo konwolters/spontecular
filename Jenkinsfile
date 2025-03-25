@@ -10,12 +10,6 @@ pipeline {
     }
 
     stages {
-        stage('Checkout') {
-            steps {
-                git url: 'https://github.com/konwolters/spontecular.git', branch: 'main'
-            }
-        }
-
         stage('Build') {
             steps {
                 sh 'mvn clean install'
