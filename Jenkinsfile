@@ -51,11 +51,11 @@ pipeline {
 
         stage('Deploy') {
             when {
-                branch 'main'
-            }
-            when {
-                expression { return !params.SKIP_DEPLOY }
-            }
+                    allOf {
+                        branch 'main'
+                        expression { return !params.SKIP_DEPLOY }
+                    }
+                }
             steps {
                 sh """
             docker rm -f ${CONTAINER_NAME} || true
