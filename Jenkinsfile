@@ -9,6 +9,12 @@ pipeline {
         githubPush()
     }
 
+    environment {
+            IMAGE_NAME = 'spontecular'
+            CONTAINER_NAME = 'spontecular-app'
+            APP_PORT = '8070'
+    }
+
     stages {
         stage('Build') {
             steps {
@@ -23,20 +29,34 @@ pipeline {
         }
 
         stage('SonarQube Analysis') {
-              steps {
+            steps {
                 withSonarQubeEnv('SonarQube') {
-                  // Use verify here to rerun tests & generate reports (required by Sonar)
-                  sh 'mvn verify sonar:sonar -Dsonar.projectKey=spontecular-sonarqube'
+                    // Use verify here to rerun tests & generate reports (required by Sonar)
+                    sh 'mvn verify sonar:sonar -Dsonar.projectKey=spontecular-sonarqube'
                 }
-              }
             }
+        }
 
-            stage('Quality Gate') {
-              steps {
+        stage('Quality Gate') {
+            steps {
                 waitForQualityGate abortPipeline: true
-              }
             }
+        }
 
+        stage('Build Docker Image') {
+            steps {
+                sh "docker build -t ${IMAGE_NAME}:latest ."
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh """
+            docker rm -f ${CONTAINER_NAME} || true
+            docker run -d --name ${CONTAINER_NAME} -p ${APP_PORT}:8070 ${IMAGE_NAME}:latest
+        """
+            }
+        }
     }
 
     post {
