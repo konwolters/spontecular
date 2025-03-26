@@ -24,20 +24,15 @@ pipeline {
 
         stage('Test') {
             steps {
-                sh 'mvn test'
+                sh 'mvn test jacoco:report'
             }
         }
 
-        stage('SonarQube Analysis') {
+        stage('SonarQube') {
             steps {
                 withSonarQubeEnv('SonarQube') {
                     sh 'mvn sonar:sonar'
                 }
-            }
-        }
-
-        stage('Quality Gate') {
-            steps {
                 waitForQualityGate abortPipeline: true
             }
         }
