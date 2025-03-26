@@ -24,7 +24,7 @@ pipeline {
 
         stage('SonarQube Analysis') {
               steps {
-                withSonarQubeEnv('sonarqube') {
+                withSonarQubeEnv('SonarQube') {
                   // Use verify here to rerun tests & generate reports (required by Sonar)
                   sh 'mvn verify sonar:sonar -Dsonar.projectKey=spontecular-sonarqube'
                 }
