@@ -22,7 +22,21 @@ pipeline {
             }
         }
 
-        // You can add more stages like Deploy, SonarQube, Docker, etc.
+        stage('SonarQube Analysis') {
+              steps {
+                withSonarQubeEnv('sonarqube') {
+                  // Use verify here to rerun tests & generate reports (required by Sonar)
+                  sh 'mvn verify sonar:sonar -Dsonar.projectKey=spontecular-sonarqube'
+                }
+              }
+            }
+
+            stage('Quality Gate') {
+              steps {
+                waitForQualityGate abortPipeline: true
+              }
+            }
+
     }
 
     post {
