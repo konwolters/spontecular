@@ -31,8 +31,7 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    // Use verify here to rerun tests & generate reports (required by Sonar)
-                    sh 'mvn verify sonar:sonar -Dsonar.projectKey=spontecular-sonarqube'
+                    sh 'mvn sonar:sonar'
                 }
             }
         }
@@ -43,17 +42,14 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
-            steps {
-                sh "docker build -t ${IMAGE_NAME}:latest ."
-            }
-        }
-
         stage('Deploy') {
+            when {
+                branch 'main'
+            }
             steps {
                 sh """
             docker rm -f ${CONTAINER_NAME} || true
-            docker run -d --name ${CONTAINER_NAME} -p ${APP_PORT}:8070 ${IMAGE_NAME}:latest
+            docker run -d --name ${CONTAINER_NAME} -p ${APP_PORT}:8080 ${IMAGE_NAME}:latest
         """
             }
         }
