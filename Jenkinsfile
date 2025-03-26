@@ -1,6 +1,12 @@
 pipeline {
     agent any
 
+    parameters {
+        booleanParam(name: 'SKIP_TESTS', defaultValue: false, description: 'Skip unit tests')
+        booleanParam(name: 'SKIP_SONARQUBE', defaultValue: false, description: 'Skip SonarQube')
+        booleanParam(name: 'SKIP_DEPLOY', defaultValue: false, description: 'Skip deployment')
+    }
+
     tools {
         maven 'Maven'
     }
@@ -23,12 +29,18 @@ pipeline {
         }
 
         stage('Test') {
+            when {
+                expression { return !params.SKIP_TESTS }
+            }
             steps {
                 sh 'mvn test jacoco:report'
             }
         }
 
         stage('SonarQube') {
+            when {
+                expression { return !params.SKIP_SONARQUBE }
+            }
             steps {
                 withSonarQubeEnv('SonarQube') {
                     sh 'mvn sonar:sonar'
@@ -40,6 +52,9 @@ pipeline {
         stage('Deploy') {
             when {
                 branch 'main'
+            }
+            when {
+                expression { return !params.SKIP_DEPLOY }
             }
             steps {
                 sh """
@@ -53,6 +68,7 @@ pipeline {
     post {
         success {
             echo '🎉 Build successful!'
+            archiveArtifacts artifacts: 'target/**/*.jar,target/site/jacoco/*.xml,target/surefire-reports/*.xml'
         }
         failure {
             echo '❌ Build failed.'
