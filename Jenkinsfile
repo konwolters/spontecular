@@ -69,6 +69,7 @@ pipeline {
             }
             steps {
                 sh """
+                    docker build -t ${IMAGE_NAME}:latest .
                     docker rm -f ${CONTAINER_NAME} || true
                     docker run -d --name ${CONTAINER_NAME} -p ${APP_PORT}:8080 ${IMAGE_NAME}:latest
                 """
