@@ -19,12 +19,18 @@ pipeline {
             IMAGE_NAME = 'spontecular'
             CONTAINER_NAME = 'spontecular-app'
             APP_PORT = '8070'
+            MAVEN_CACHE = '/hdd/portainer/cache/.m2'
+            MAVEN_IMAGE = 'maven:3.9.6-eclipse-temurin-17'
     }
 
     stages {
         stage('Build') {
             steps {
-                sh 'mvn clean install -DskipTests'
+                script {
+                    docker.image(env.MAVEN_IMAGE).inside("-v ${env.MAVEN_CACHE}:/root/.m2") {
+                        sh 'mvn clean install -DskipTests'
+                    }
+                }
             }
         }
 
@@ -33,7 +39,11 @@ pipeline {
                 expression { return !params.SKIP_TESTS }
             }
             steps {
-                sh 'mvn test jacoco:report'
+                script {
+                    docker.image(env.MAVEN_IMAGE).inside("-v ${env.MAVEN_CACHE}:/root/.m2") {
+                        sh 'mvn test jacoco:report'
+                    }
+                }
             }
         }
 
@@ -42,8 +52,12 @@ pipeline {
                 expression { return !params.SKIP_SONARQUBE }
             }
             steps {
-                withSonarQubeEnv('SonarQube') {
-                    sh 'mvn sonar:sonar'
+                script {
+                    docker.image(env.MAVEN_IMAGE).inside("-v ${env.MAVEN_CACHE}:/root/.m2") {
+                        withSonarQubeEnv('SonarQube') {
+                            sh 'mvn sonar:sonar'
+                        }
+                    }
                 }
                 waitForQualityGate abortPipeline: true
             }
@@ -68,7 +82,6 @@ pipeline {
     post {
         success {
             echo '🎉 Build successful!'
-            archiveArtifacts artifacts: 'target/**/*.jar,target/site/jacoco/*.xml,target/surefire-reports/*.xml'
         }
         failure {
             echo '❌ Build failed.'
