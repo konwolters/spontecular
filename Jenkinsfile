@@ -20,7 +20,7 @@ pipeline {
             CONTAINER_NAME = 'spontecular-app'
             APP_PORT = '8070'
             MAVEN_CACHE = '/hdd/portainer/cache/.m2'
-            MAVEN_IMAGE = 'maven:3.9.6-eclipse-temurin-17'
+            MAVEN_IMAGE = 'maven:3.9.9-eclipse-temurin-17'
     }
 
     stages {
@@ -29,6 +29,22 @@ pipeline {
                 script {
                     docker.image(env.MAVEN_IMAGE).inside("-v ${env.MAVEN_CACHE}:/root/.m2") {
                         sh 'mvn clean install -DskipTests'
+                    }
+                }
+            }
+        }
+
+        stage('Debug Maven Mount') {
+            steps {
+                script {
+                    docker.image(env.MAVEN_IMAGE).inside("-v ${env.MAVEN_CACHE}:/root/.m2") {
+                        sh '''
+                    echo "👉 Inside container as user: $(id)"
+                    mkdir -p /root/.m2/test123
+                    touch /root/.m2/test123/from-container.txt
+                    echo "✅ Created test file in /root/.m2/test123"
+                    ls -la /root/.m2/test123
+                '''
                     }
                 }
             }
@@ -69,7 +85,7 @@ pipeline {
                         branch 'main'
                         expression { return !params.SKIP_DEPLOY }
                     }
-                }
+            }
             steps {
                 sh """
             docker rm -f ${CONTAINER_NAME} || true
